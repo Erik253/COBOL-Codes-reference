@@ -1,0 +1,5 @@
+SELECT NOMECLI,ALTURACLI                                                00010000
+FROM TBCLI                                                              00020000
+WHERE ALTURACLI < 1.7                                                   00030000
+-----------                                                             00040000
+---EXIBIR O NOME DOS CLIENTES COM MENOS DE 1.7 DE ALTURA                00050000

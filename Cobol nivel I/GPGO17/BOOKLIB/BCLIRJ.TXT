@@ -1,0 +1,7 @@
+       01  :XX-:REG-CLIRJ.                                              00010003
+           05 :XX-:CPFCLI-RJ               PIC x(11).                   00020002
+           05 :XX-:NOMECLI-RJ              PIC X(25).                   00030002
+           05 :XX-:ENDCLI-RJ               PIC X(30).                   00040002
+           05 :XX-:FONECLI-RJ              PIC X(10).                   00050002
+           05 :XX-:TOTALCOMPRAS-RJ         PIC 9(08)V99.                00060002
+           05 :XX-:ULTIMACOMPRA-RJ         PIC X(10).                   00070005

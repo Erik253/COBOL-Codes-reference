@@ -1,0 +1,11 @@
+       01  WS-REG-VCADPRD.
+           05 WS-CODPROD-V                 PIC X(04).
+           05 WS-DESCPROD-V                PIC X(20).
+           05 WS-UNIDPROD-V                PIC X(05).
+           05 WS-LOCALPROD-V               PIC X(05).
+           05 WS-QTDEST-V                  PIC 9(05).
+           05 WS-QTDMAX-V                  PIC 9(05).
+           05 WS-QTDMIN-V                  PIC 9(05).
+           05 WS-PRECOCOMPRA-V             PIC 9(06)V99.
+           05 WS-PRECOVENDA-V              PIC 9(06)V99.
+           05 WS-PERCOMIS-V                PIC 9(02)V99.

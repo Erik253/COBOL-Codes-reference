@@ -1,0 +1,66 @@
+      *--------------------------------------------------------------*
+      * EXERCICIO PG:12 PARTE 1 DA APOSTILA
+      * JOB: ERIKEX01 | COMPILADOR: ERIKCO01
+      *--------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *--------------------------------------------------------------*
+       PROGRAM-ID.                         ERIKEX01.
+       AUTHOR.                             ERIK.
+      *--------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *--------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+      *--------------------------------------------------------------*
+       DATA                                DIVISION.
+      *--------------------------------------------------------------*
+       FILE                                SECTION.
+       WORKING-STORAGE                     SECTION.
+       77  WS-HORAS-TRAB                   PIC 9(03).
+       77  WS-SALARIO                      PIC 9(06).
+       77  WS-CTLIDOS                      PIC 9(03).
+       77  WS-TOTAL-PAGO                   PIC 9(08)V99.
+      *--------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *--------------------------------------------------------------*
+       0000-ERIKEX01.
+           PERFORM 1000-INICIALIZAR
+           PERFORM 2000-PROCESSAR UNTIL WS-HORAS-TRAB = ZEROS
+           PERFORM 3000-TERMINO
+           STOP RUN
+           .
+       1000-INICIALIZAR.
+           MOVE 0                          TO WS-CTLIDOS
+           MOVE 0                          TO WS-TOTAL-PAGO
+           PERFORM 1500-LER-SYSIN
+           DISPLAY " LISTA DE PAGAMENTOS "
+           DISPLAY " ------------------  "
+           .
+      *
+       1500-LER-SYSIN.
+           ACCEPT WS-HORAS-TRAB            FROM SYSIN
+           IF WS-HORAS-TRAB NOT = ZEROS
+              ADD 1                        TO WS-CTLIDOS
+           END-IF
+           .
+      *
+       2000-PROCESSAR.
+           COMPUTE WS-SALARIO    = WS-HORAS-TRAB * 25
+           COMPUTE WS-TOTAL-PAGO = WS-TOTAL-PAGO + WS-SALARIO
+           DISPLAY " "
+           DISPLAY " FUNCIONARIO.............: " WS-CTLIDOS
+           DISPLAY " HORAS TRABALHADAS NO MES: " WS-HORAS-TRAB
+           DISPLAY " SALARIO DO MES..........: " WS-SALARIO
+           PERFORM 1500-LER-SYSIN
+           .
+      *
+       3000-TERMINO.
+           DISPLAY " "
+           DISPLAY " ******************** "
+           DISPLAY " *INFORMACOES GERAIS* "
+           DISPLAY " ******************** "
+           DISPLAY " TOTAL DE REGISTROS LIDOS: " WS-CTLIDOS
+           DISPLAY " VALOR TOTAL PAGO........: " WS-TOTAL-PAGO
+           .

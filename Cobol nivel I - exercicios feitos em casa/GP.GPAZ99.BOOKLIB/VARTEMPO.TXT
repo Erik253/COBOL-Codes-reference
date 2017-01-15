@@ -1,0 +1,25 @@
+      *----------------------VARIAVEIS DE TEMPO----------------------
+       01  WS-HORARIO-I.
+           05 WS-HORA-I                    PIC 9(02).
+           05 WS-MIN-I                     PIC 9(02).
+           05 WS-SEG-I                     PIC 9(02).
+           05 WS-CENT-I                    PIC 9(02).
+      *
+       01  WS-HORARIO-F.
+           05 WS-HORA-F                    PIC 9(02).
+           05 WS-MIN-F                     PIC 9(02).
+           05 WS-SEG-F                     PIC 9(02).
+           05 WS-CENT-F                    PIC 9(02).
+      *
+       01  WS-HORARIO-P.
+           05 WS-HORA-P                    PIC 9(02).
+           05 FILLER                       PIC X(01) VALUE ":".
+           05 WS-MIN-P                     PIC 9(02).
+           05 FILLER                       PIC X(01) VALUE ":".
+           05 WS-SEG-P                     PIC 9(02).
+           05 FILLER                       PIC X(01) VALUE ":".
+           05 WS-CENT-P                    PIC 9(02).
+      *
+       77  WS-TOTAL-CENT                   PIC 9(09).
+      *--------------------FIM VARIAVES DE TEMPO----------------------
+      *

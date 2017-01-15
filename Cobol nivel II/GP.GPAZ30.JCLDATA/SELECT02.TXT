@@ -1,0 +1,4 @@
+--EXIBIR O NOME E O ENDERECO DOS CLIENTES DO TIPO 01                    00001000
+SELECT NOMECLI,ENDCLI                                                   00010000
+FROM TBCLI                                                              00020000
+WHERE CODTIPOCLI = '01'                                                 00030000

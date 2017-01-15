@@ -1,0 +1,295 @@
+      *----------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *----------------------------------------------------------*
+       PROGRAM-ID.                         GPAZ30D4.
+       AUTHOR.                             ERIK.
+      *----------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *----------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+            DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+       FILE-CONTROL.
+      *
+           SELECT MOVPRDD4 ASSIGN          TO UT-S-MOVPRDD4
+           FILE STATUS IS FS-MOVPRDD4
+           .
+      *----------------------------------------------------------*
+       DATA                                DIVISION.
+      *----------------------------------------------------------*
+       FILE                                SECTION.
+       FD  MOVPRDD4
+           RECORDING MODE IS F
+           .
+       01  REG-MOVPRDD4                    PIC X(70).
+      *----------------------------------------------------------
+       WORKING-STORAGE                     SECTION.
+      *--------------------FILE-STATUS/MSG/SQLCODE---------------
+       01  FS-MOVPRDD4                     PIC X(02).
+           88 EOF                          VALUE "10".
+           88 OK                           VALUE "00".
+       77  WS-MSG                          PIC X(60).
+       77  WS-SQLCODE                      PIC +9(9).
+      *-------------------CONTADORES---------------------------
+       01  WS-CONTADORES-COMP.
+           05 WS-CTLIDO-C                  PIC 9(04) COMP.
+           05 WS-CTLIDO-M                  PIC 9(04) COMP.
+           05 WS-CTEXC                     PIC 9(04) COMP.
+           05 WS-CTALT                     PIC 9(04) COMP.
+           05 WS-CTINV                     PIC 9(04) COMP.
+      *                         ||
+       01  WS-CONTADORES-F.
+           05 WS-CTLIDO-CF                 PIC 9(04).
+           05 WS-CTLIDO-MF                 PIC 9(04).
+           05 WS-CTEXC-F                   PIC 9(04).
+           05 WS-CTALT-F                   PIC 9(04).
+           05 WS-CTINV-F                   PIC 9(04).
+      *--------------------VARIAVEIS GERADAS PELO DCLGEN
+           EXEC SQL
+                INCLUDE PRODUTO
+           END-EXEC
+      *--------------------VARIAVEIS DA BOOKLIB
+            EXEC SQL
+                 INCLUDE MOVPRDD4
+            END-EXEC
+      *--------------------VARIAVEIS DO SQLCODE
+           EXEC SQL
+                INCLUDE SQLCA
+           END-EXEC
+      *----------------------------------------------------------*
+       LINKAGE                             SECTION.
+      *----------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *----------------------------------------------------------*
+      **000-GPAZ30D4.
+           PERFORM 010-INICIALIZAR
+           PERFORM 040-PROCESSAR UNTIL EOF
+           PERFORM 070-TERMINO
+           STOP RUN
+           .
+      *
+       010-INICIALIZAR.
+           INITIALIZE WS-CONTADORES-COMP
+      *
+           OPEN INPUT MOVPRDD4
+           IF NOT OK
+              MOVE "ERRO DE ABERTURA DO ARQ MOVPRDD4" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           EXEC SQL
+               DECLARE MANUTENCAO CURSOR FOR
+               SELECT CODPROD,
+                      DESCPROD,
+                      UNIDPROD,
+                      LOCALPROD,
+                      QTDEST,
+                      QTDMAX,
+                      QTDMIN,
+                      PRECOCOMPRA,
+                      PRECOVENDA,
+                      PERCOMIS
+               FROM PRODUTO
+               WHERE QTDEST < QTDMIN
+               FOR UPDATE OF CODPROD,
+                             DESCPROD,
+                             UNIDPROD,
+                             LOCALPROD,
+                             QTDEST,
+                             QTDMAX,
+                             QTDMIN,
+                             PRECOCOMPRA,
+                             PRECOVENDA,
+                             PERCOMIS
+           END-EXEC
+      *
+           PERFORM 020-LER-MOVPRDD4
+           .
+      *
+       020-LER-MOVPRDD4.
+           READ MOVPRDD4 INTO WS-REG-MOVPRDD4
+           IF OK
+              ADD 1                        TO WS-CTLIDO-M
+           ELSE
+              IF NOT EOF
+                 MOVE "ERRO DE LEITURA DO ARQ MOVPRDD4" TO WS-MSG
+                 GO                        TO 999-ERRO
+              END-IF
+           END-IF
+           .
+      *
+       030-LER-MANUTENCAO.
+           EXEC SQL
+                FETCH MANUTENCAO
+                INTO :DCLPRODUTO
+           END-EXEC
+      *
+           IF SQLCODE = 0
+              ADD 1                        TO WS-CTLIDO-C
+           ELSE
+              IF SQLCODE NOT = +100
+                 MOVE "ERRO DE LEITURA DO CURSOR PRODUTO" TO WS-MSG
+                 MOVE SQLCODE              TO WS-SQLCODE
+                 GO                        TO 999-ERRO-DB2
+              END-IF
+           END-IF
+           .
+      *
+       040-PROCESSAR.
+           EXEC SQL
+                OPEN MANUTENCAO
+           END-EXEC
+           IF SQLCODE NOT = 0
+              MOVE "ERRO DE ABERTURA DO CURSO MANUTENCAO" TO WS-MSG
+              MOVE SQLCODE                 TO WS-SQLCODE
+              GO                           TO 999-ERRO-DB2
+           END-IF
+      *
+           PERFORM 030-LER-MANUTENCAO
+           WITH TEST AFTER UNTIL WS-CODPROD-M = CODPROD OR SQLCODE = 100
+      *
+           IF SQLCODE = 0
+              EVALUATE WS-TIPOMOVTO-M
+                 WHEN "E" PERFORM 050-EXCLUSAO
+                 WHEN "A" PERFORM 060-ALTERACAO
+                 WHEN OTHER ADD 1          TO WS-CTINV
+           ELSE
+              ADD 1                        TO WS-CTINV
+           END-IF
+      *
+           EXEC SQL
+               CLOSE MANUTENCAO
+           END-EXEC
+           IF SQLCODE NOT = ZEROS
+              MOVE "ERRO DE FECHAMENTO DO CURSOR MANUTENCAO" TO WS-MSG
+              MOVE SQLCODE                 TO WS-SQLCODE
+              GO                           TO 999-ERRO-DB2
+           END-IF
+      *
+           PERFORM 020-LER-MOVPRDD4
+           .
+      *
+       050-EXCLUSAO.
+           EXEC SQL
+                DELETE FROM PRODUTO
+                WHERE CURRENT OF MANUTENCAO
+           END-EXEC
+      *
+           EVALUATE SQLCODE
+              WHEN 0     ADD 1             TO WS-CTEXC
+              WHEN 100   ADD 1             TO WS-CTINV
+              WHEN OTHER
+              MOVE "ERRO NO DELETE PRODUTO" TO WS-MSG
+              MOVE SQLCODE                 TO WS-SQLCODE
+              GO                           TO 999-ERRO-DB2
+           END-EVALUATE
+           .
+      *
+       060-ALTERACAO.
+           IF WS-DESCPROD-M NOT = SPACES
+              MOVE WS-DESCPROD-M           TO DESCPROD-TEXT
+              MOVE +20                     TO DESCPROD-LEN
+           END-IF
+      *
+           IF WS-UNIDPROD-M NOT = SPACES
+              MOVE WS-UNIDPROD-M           TO UNIDPROD
+           END-IF
+      *
+           IF WS-LOCALPROD-M NOT = SPACES
+              MOVE WS-LOCALPROD-M          TO LOCALPROD
+           END-IF
+      *
+           IF WS-QTDEST-M IS NUMERIC
+              MOVE WS-QTDEST-M             TO QTDEST
+           END-IF
+      *
+           IF WS-QTDMAX-M IS NUMERIC
+              MOVE WS-QTDMAX-M             TO QTDMAX
+           END-IF
+      *
+           IF WS-QTDMIN-M IS NUMERIC
+              MOVE WS-QTDMIN-M             TO QTDMIN
+           END-IF
+      *
+           IF WS-PRECOCOMPRA-M IS NUMERIC
+              MOVE WS-PRECOCOMPRA-M        TO PRECOCOMPRA
+           END-IF
+      *
+           IF WS-PRECOVENDA-M IS NUMERIC
+              MOVE WS-PRECOVENDA-M         TO PRECOVENDA
+           END-IF
+      *
+           IF WS-PERCOMIS-M    IS NUMERIC
+              MOVE WS-PERCOMIS-M           TO PERCOMIS
+           END-IF
+      *
+           EXEC SQL
+                UPDATE PRODUTO
+                SET DESCPROD        = :DESCPROD,
+                    UNIDPROD        = :UNIDPROD,
+                    LOCALPROD       = :LOCALPROD,
+                    QTDEST          = :QTDEST,
+                    QTDMAX          = :QTDMAX,
+                    QTDMIN          = :QTDMIN,
+                    PRECOCOMPRA     = :PRECOCOMPRA,
+                    PRECOVENDA      = :PRECOVENDA,
+                    PERCOMIS        = :PERCOMIS
+                WHERE CURRENT OF MANUTENCAO
+           END-EXEC
+      *
+           EVALUATE SQLCODE
+              WHEN 0    ADD 1              TO WS-CTALT
+              WHEN 100  ADD 1              TO WS-CTINV
+              WHEN -545 ADD 1              TO WS-CTINV
+              WHEN OTHER
+                 MOVE "ERRO NO UPDATE DA TABELA PRODUTO" TO WS-MSG
+                 MOVE SQLCODE              TO WS-SQLCODE
+                 GO                        TO 999-ERRO-DB2
+           END-EVALUATE
+           .
+      *
+       070-TERMINO.
+           MOVE WS-CTLIDO-C                TO WS-CTLIDO-CF
+           MOVE WS-CTLIDO-M                TO WS-CTLIDO-MF
+           MOVE WS-CTEXC                   TO WS-CTEXC-F
+           MOVE WS-CTALT                   TO WS-CTALT-F
+           MOVE WS-CTINV                   TO WS-CTINV-F
+           DISPLAY " "
+           DISPLAY "------------INFORMACOES GERAIS-----------"
+           DISPLAY "TOTAL DE REGISTROS LIDOS DO CURSOR :"  WS-CTLIDO-CF
+           DISPLAY "TOTAL DE REGISTROS LIDOS DO ARQ    :"  WS-CTLIDO-MF
+           DISPLAY "TOTAL DE REGISTROS EXCLUIDOS: "        WS-CTEXC-F
+           DISPLAY "TOTAL DE REGISTROS ALTERADOS: "        WS-CTALT-F
+           DISPLAY "TOTAL DE REGISTROS INVALIDOS: "        WS-CTINV-F
+           DISPLAY "******************************************"
+      *
+           CLOSE MOVPRDD4
+           IF NOT OK
+              MOVE "ERRO DE FECHAMENTO DO ARQ MOVPRDD4" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           DISPLAY "----------TERMINO NORMAL DO PROCESSAMENTO----------"
+           .
+      *
+       999-ERRO.
+           DISPLAY " "
+           DISPLAY "------------ROTINA DE ERRO NORMAL----------"
+           DISPLAY "MENSAGEM....:" WS-MSG
+           DISPLAY "FILE-STATUS.:" FS-MOVPRDD4
+           DISPLAY "TERMINO ANORMAL DO PROGRAMA GPAZ30D3"
+           DISPLAY "-------------------------------------------"
+           MOVE 12                          TO RETURN-CODE
+           STOP RUN
+           .
+      *
+       999-ERRO-DB2.
+           DISPLAY " "
+           DISPLAY "-------------ROTINA DE ERRO DB2----------"
+           DISPLAY " MENSAGEM.:" WS-MSG
+           DISPLAY " SQLCODE..:" WS-SQLCODE
+           DISPLAY " TERMINO ANORMAL DO PROGRAMA GPAZ30D3 "
+           MOVE 12                         TO RETURN-CODE
+           STOP RUN
+           .

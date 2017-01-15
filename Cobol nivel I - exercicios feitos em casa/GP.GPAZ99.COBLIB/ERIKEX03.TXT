@@ -1,0 +1,71 @@
+      *--------------------------------------------------------------*
+      * EXERCICIO PG:24 PARTE 1 DA APOSTILA
+      * JOB: ERIKEX03 | COMPILADOR: ERIKCO03
+      *--------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *--------------------------------------------------------------*
+       PROGRAM-ID.                         ERIKEX03.
+       AUTHOR.                             ERIK.
+      *--------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *--------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+      *--------------------------------------------------------------*
+       DATA                                DIVISION.
+      *--------------------------------------------------------------*
+       FILE                                SECTION.
+       WORKING-STORAGE                     SECTION.
+       77  WS-NUMERO                       PIC 9(04).
+       77  WS-TOTAL                        PIC 9(04).
+       77  WS-CTLIDOS                      PIC 9(04).
+       77  WS-CONT                         PIC 9(04).
+      *--------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *--------------------------------------------------------------*
+       0000-ERIKEX03.
+           PERFORM 1000-INICIALIZAR
+           PERFORM 2000-PROCESSAR UNTIL WS-NUMERO = ZEROS
+           PERFORM 3000-TERMINO
+           STOP RUN
+           .
+      *
+       1000-INICIALIZAR.
+           INITIALIZE WS-CTLIDOS
+                      WS-TOTAL
+                      WS-CONT
+           PERFORM 1500-LER-SYSIN
+           DISPLAY " SOMA DOS NUMEROS NATURAIS "
+           DISPLAY " ------------------------- "
+           .
+      *
+       1500-LER-SYSIN.
+           ACCEPT WS-NUMERO                FROM SYSIN
+           IF WS-NUMERO NOT = ZEROS
+              ADD 1                        TO WS-CTLIDOS
+           END-IF
+           .
+      *
+       2000-PROCESSAR.
+           PERFORM 2500-CALCULAR UNTIL WS-CONT > WS-NUMERO
+           DISPLAY " "
+           DISPLAY " A SOMA DOS NUMEROS ATE " WS-NUMERO " = " WS-TOTAL
+           MOVE 0                          TO WS-CONT
+           MOVE 0                          TO WS-TOTAL
+           PERFORM 1500-LER-SYSIN
+           .
+      *
+       2500-CALCULAR.
+           COMPUTE WS-TOTAL = WS-TOTAL + WS-CONT
+           ADD 1                           TO WS-CONT
+           .
+      *
+       3000-TERMINO.
+           DISPLAY " "
+           DISPLAY " ******************** "
+           DISPLAY " *INFORMACOES GERAIS* "
+           DISPLAY " ******************** "
+           DISPLAY " TOTAL DE REGITROS LIDOS : " WS-CTLIDOS
+           .

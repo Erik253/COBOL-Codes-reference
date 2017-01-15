@@ -1,0 +1,16 @@
+      *----------------------------------------------------------------*
+      * BOOK - ARQUIVO E01CAD
+      *      - LRECL (LOGIC RECORD LENGTH) = 100 POSICOES
+      *----------------------------------------------------------------*
+       01  ::REGISTRO-E01CAD.
+           03 ::CHAVE-E01CAD.
+              05 ::E01CAD-UNIDADE          PIC 9(03).
+              05 ::E01CAD-NUMERO           PIC 9(04).
+           03 ::E01CAD-NOME-CLIENTE        PIC X(40).
+           03 ::E01CAD-TELEFONE            PIC 9(10).
+           03 ::E01CAD-DATA-GRAVACAO.
+              05 ::E01CAD-ANO              PIC 9(04).
+              05 ::E01CAD-MES              PIC 9(02).
+              05 ::E01CAD-DIA              PIC 9(02).
+           03 ::E01CAD-HORA-GRAVACAO       PIC 9(06).
+           03 FILLER                       PIC X(29).

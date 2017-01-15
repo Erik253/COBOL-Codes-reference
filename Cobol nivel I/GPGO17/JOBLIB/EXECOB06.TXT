@@ -1,0 +1,9 @@
+//GPGO1706 JOB ERIK,MSGCLASS=X,CLASS=C,NOTIFY=GPGO17,TIME=(0,20)        00010019
+//*----------------------------------------------------------------     00020000
+//STEP1    EXEC PGM=GPGO1706                                            00030019
+//STEPLIB  DD DSN=GP.GERAL.LOADLIB,DISP=SHR                             00040011
+//CLIOLD   DD DSN=GP.GPGO99.CLIOLD,DISP=SHR                             00050019
+//CLIMOV   DD DSN=GP.GPGO99.CLIMOV,DISP=SHR                             00052019
+//CLINEW   DD DSN=GP.GPGO17.CLINEW,DISP=(OLD,CATLG,DELETE),             00060021
+//            SPACE=(TRK,(1,1),RLSE),UNIT=SYSALLDA,                     00070012
+//            DCB=(LRECL=79,RECFM=FB,DSORG=PS,BLKSIZE=0)                00080019

@@ -1,0 +1,460 @@
+      *----------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *----------------------------------------------------------------*
+       PROGRAM-ID.                         ACC06001.
+      ******************************************************************
+      *AUTHOR    : ERIK LIMA                                           *
+      *DATA      : 09/08/2014                                          *
+      *PROGRAMA  : ACC06001                                            *
+      *DESCRICAO : GERAR UM NOVO ARQUIVO DE CLIENTES S01ARQ ENTRE O CAD*
+      *- ASTRO DE ATUAL E01CAD E O E02ALT.                            *
+      ******************************************************************
+      *----------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *----------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+      *----------------------------------------------------------------*
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+      *----------------------------------------------------------------*
+       INPUT-OUTPUT                        SECTION.
+      *----------------------------------------------------------------*
+       FILE-CONTROL.
+      *----------------------------------------------------------------*
+      *
+           SELECT E01CAD  ASSIGN           TO UT-S-E01CAD
+           FILE STATUS IS FS-E01CAD.
+      *
+           SELECT E02ALT   ASSIGN          TO UT-S-E02ALT
+           FILE STATUS IS FS-E02ALT.
+      *
+           SELECT S01ARQ   ASSIGN          TO UT-S-S01ARQ
+           FILE STATUS IS FS-S01ARQ.
+      *
+      *----------------------------------------------------------------*
+       DATA                                DIVISION.
+      *----------------------------------------------------------------*
+       FILE                                SECTION.
+      *----------------------------------------------------------------*
+       FD  E01CAD
+           LABEL RECORD STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+           RECORD CONTAINS 100 CHARACTERS
+           DATA RECORD IS  REG-E01CAD
+           .
+           COPY E01CAD REPLACING  ==::== BY ====.
+      *
+      *----------------------------------------------------------------*
+       FD  E02ALT
+           LABEL RECORD STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+           RECORD CONTAINS 110 CHARACTERS
+           DATA RECORD IS  REG-E02ALT
+           .
+           COPY E02ALT REPLACING  ==::== BY ====.
+      *
+      *----------------------------------------------------------------*
+       FD  S01ARQ
+           LABEL RECORD STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+           RECORD CONTAINS 128 CHARACTERS
+           DATA RECORD IS  REG-S01ARQ
+           .
+           COPY S01ARQ REPLACING  ==::== BY ====.
+      *
+      *----------------------------------------------------------------*
+       WORKING-STORAGE                     SECTION.
+      *----------------------------------------------------------------*
+      *
+      *COPY DO ARQ E01CAD
+           COPY E01CAD REPLACING ==::== BY ==WS-==.
+      *
+      *COPY DO ARQ E02ALT
+           COPY E02ALT REPLACING ==::== BY ==WS-==.
+      *
+      *COPY DO ARQ S01ARQ
+           COPY S01ARQ REPLACING ==::== BY ==WS-==.
+      *
+      *COPY DO SUBPROGRAMA
+           COPY POOL0010.
+      *
+      *----------------------------------------------------------------*
+      *    FLAGS - FILE STATUS
+      *----------------------------------------------------------------*
+       01  FS-E01CAD                       PIC X(02).
+           88 SUCESSO-E01CAD                       VALUE "00".
+           88 FIM-ARQ-E01CAD                       VALUE "10".
+      *
+       01  FS-E02ALT                       PIC X(02).
+           88 SUCESSO-E02ALT                       VALUE "00".
+           88 FIM-ARQ-E02ALT                       VALUE "10".
+      *
+       01  FS-S01ARQ                       PIC X(02).
+           88 SUCESSO-S01ARQ                       VALUE "00".
+           88 FIM-ARQ-S01ARQ                       VALUE "10".
+      *
+      *----------------------------------------------------------------*
+      *    CONTADORES NO FORMATO BINARIO
+      *----------------------------------------------------------------*
+       01  WS-CONTADORES-BINARIOS.
+           05  WS-CTLIDOS-E01CAD-BIN       PIC 9(06) COMP VALUE ZEROS.
+           05  WS-CTLIDOS-E02ALT-BIN       PIC 9(06) COMP VALUE ZEROS.
+           05  WS-CT-INCLUIDOS-BIN         PIC 9(06) COMP VALUE ZEROS.
+           05  WS-CT-ALTERADOS-BIN         PIC 9(06) COMP VALUE ZEROS.
+           05  WS-CT-EXCLUIDOS-BIN         PIC 9(06) COMP VALUE ZEROS.
+      *
+      *----------------------------------------------------------------*
+      *    CONTADORES PARA DISPLAY
+      *----------------------------------------------------------------*
+       01  WS-CONTADORES-DISPLAY.
+           05  WS-CTLIDOS-E01CAD           PIC ZZZ.ZZ9    VALUE ZEROS.
+           05  WS-CTLIDOS-E02ALT           PIC ZZZ.ZZ9    VALUE ZEROS.
+           05  WS-CT-INCLUIDOS             PIC ZZZ.ZZ9    VALUE ZEROS.
+           05  WS-CT-ALTERADOS             PIC ZZZ.ZZ9    VALUE ZEROS.
+           05  WS-CT-EXCLUIDOS             PIC ZZZ.ZZ9    VALUE ZEROS.
+      *
+      *----------------------------------------------------------------*
+      *    VARIAVEIS AUXILIARES
+      *----------------------------------------------------------------*
+       77  WS-FS                           PIC X(02)      VALUE SPACES.
+       77  WS-MSG                          PIC X(60)      VALUE SPACES.
+      *
+      *----------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *----------------------------------------------------------------*
+      *
+      *----------------------------------------------------------------*
+      *ROTINA PRINCIPAL   
+      *----------------------------------------------------------------*
+       0000-ACC06001.
+           PERFORM  1000-INICIALIZAR.
+
+           PERFORM  2000-PROCESSAR
+             UNTIL  FIM-ARQ-E01CAD  AND  FIM-ARQ-E02ALT.
+
+           PERFORM  3000-TERMINO.
+           STOP RUN.
+
+      *----------------------------------------------------------------*
+      *FIM-ROTINA 
+      *----------------------------------------------------------------*
+      *
+      *----------------------------------------------------------------*
+      *ROTINA DE INICIALIZACAO 
+      *----------------------------------------------------------------*
+
+       1000-INICIALIZAR.
+      *
+           INITIALIZE     WS-CONTADORES-BINARIOS
+                          WS-CONTADORES-DISPLAY
+                          WS-REG-E01CAD
+                          WS-REG-E02ALT
+                          WS-REG-S01ARQ
+                          WS-FS.
+      *
+           PERFORM 1100-OPEN-E01CAD.
+           PERFORM 1200-OPEN-E02ALT.
+           PERFORM 1300-OPEN-E02ALT.        
+
+      *
+           PERFORM 1400-READ-E01CAD.
+
+      *
+      *EFETUAR A PRIMEIRA LEITURA DO ARQUIVO E01CAD
+      *
+
+      *
+           IF  FIM-ARQ-E01CAD
+               MOVE     FS-E01CAD               TO WS-FS
+               DISPLAY "ARQUIVO E01CAD VAZIO"
+               DISPLAY "FILE STATUS: " WS-FS
+               STOP RUN
+           END-IF.
+      *
+      *EFETUAR A PRIMEIRA LEITURA DO ARQUIVO E02ALT
+      *
+           PERFORM 030-READ-E02ALT.
+      *
+           IF  FIM-ARQ-E02ALT
+               MOVE    FS-E02ALT            TO WS-FS
+               DISPLAY "ARQUIVO E02ALT  ESTA VAZIO"
+               DISPLAY "FILE STATUS: " WS-FS
+               GOBACK
+           END-IF.
+      *
+           PERFORM RT-COLETAR-DATA-HORA.
+      *
+           DISPLAY "*----------------------------------------------*".
+           DISPLAY "INICIO PROCESSAMENTO " LS-DATA-MASC " " LS-HORA-MASC.
+           DISPLAY "PROGRAMA ACC06001 - ERIK FRANCISCO ALVES DE LIMA".
+           DISPLAY "*----------------------------------------------*".
+      *
+      *----------------------------------------------------------------*
+      *FIM-ROTINA
+      *----------------------------------------------------------------*
+      *
+      *----------------------------------------------------------------*
+      *ROTINA PARA ABERTURA DO ARQUIVO E01CAD    
+      *----------------------------------------------------------------*
+       1100-OPEN-E01CAD.
+      *
+           OPEN INPUT E01CAD.
+      *
+           IF  NOT SUCESSO-E01CAD
+               MOVE     FS-E01CAD           TO WS-FS
+               DISPLAY "ERRO NO OPEN ARQUIVO E01CAD"
+               DISPLAY "FILE STATUS: " WS-FS
+               GO                          TO 9999-ERRO
+           END-IF.
+
+      *----------------------------------------------------------------*
+      *FIM-ROTINA 
+      *----------------------------------------------------------------*
+      *
+      *----------------------------------------------------------------*
+      *ROTINA PARA ABERTURA DO ARQUIVO E02ALT     
+      *----------------------------------------------------------------*
+       1200-OPEN-E02ALT.
+      *  
+           OPEN INPUT E02ALT.
+      *
+           IF  NOT SUCESSO-E02ALT
+               MOVE FS-E02ALT              TO WS-FS
+               DISPLAY "ERRO NO OPEN ARQUIVO E02ALT"
+               DISPLAY "FILE STATUS: " WS-FS
+               STOP RUN
+           END-IF.
+
+      *----------------------------------------------------------------*
+      *FIM-ROTINA 
+      *----------------------------------------------------------------*
+      *
+      *----------------------------------------------------------------*
+      *ROTINA    
+      *----------------------------------------------------------------*
+       1300-OPEN-E02ALT.
+
+           OPEN OUTPUT S01ARQ
+      *
+           IF  NOT SUCESSO-S01ARQ
+               MOVE    FS-S01ARQ           TO WS-FS
+               DISPLAY "ERRO NO OPEN DO ARQUIVO S01ARQ"
+               DISPLAY "FILE STATUS: " WS-FS
+               GO                          TO 999-ERRO
+           END-IF.
+
+      *----------------------------------------------------------------*
+      *FIM-ROTINA 
+      *----------------------------------------------------------------*
+      *
+      *----------------------------------------------------------------*
+      *ROTINA DE LEITURA DO ARQUIVO E01CAD                             *
+      *----------------------------------------------------------------*
+       1400-READ-E01CAD.
+      *
+           READ E01CAD  INTO  WS-REG-E01CAD
+           IF  SUCESSO-E01CAD
+               ADD 1                        TO WS-CTLIDOS-E01CAD-BIN
+           ELSE
+               IF  FIM-ARQ-E01CAD
+                   MOVE HIGH-VALUES         TO WS-CHAVE-E01CAD
+               ELSE
+                  MOVE    FS-E01CAD         TO WS-FS
+                  DISPLAY "ERRO NO READ DO ARQUIVO E01CAD"
+                  DISPLAY "FILE STATUS: " WS-FS
+                  GO                        TO 999-ERRO
+               END-IF
+           END-IF.
+      *
+      *----------------------------------------------------------------*
+      *FIM-ROTINA
+      *----------------------------------------------------------------*
+      *
+      *----------------------------------------------------------------*
+      *ROTINA DE LEITURA DO ARQUIVO E02ALT  
+      *----------------------------------------------------------------*
+       1500-READ-E02ALT.
+      *
+           READ E02ALT  INTO  WS-REG-E02ALT
+           IF  SUCESSO-E02ALT
+               ADD 1                        TO WS-CTLIDOS-E02ALT-BIN
+           ELSE
+               IF  FIM-ARQ-E02ALT
+                   MOVE HIGH-VALUES         TO WS-CHAVE-E02ALT
+               ELSE
+                   MOVE    FS-E02ALT         TO WS-FS
+                   DISPLAY "ERRO NO READ DO ARQUIVO E01CAD"
+                   DISPLAY "FILE STATUS: " WS-FS
+                   GO                        TO 9999-ERRO
+               END-IF
+           END-IF.
+      *
+      *----------------------------------------------------------------*
+      *FIM-ROTINA
+      *----------------------------------------------------------------*
+      *
+      *----------------------------------------------------------------*
+      *ROTINA DE PROCESSAMENTO
+      *----------------------------------------------------------------*
+       200-PROCESSAR.
+      *
+           MOVE  2                         TO LS-FLAG-ROTINA.
+           MOVE WS-E02ALT-DATA-NASCT       TO LS-DT-PARA-VALIDAR.
+      *
+           CALL   'AC990010'               USING WS-POOL0010.
+           CANCEL 'AC990010'.
+      *
+           IF  LS-FLAG-RETORNO EQUAL 2
+               DISPLAY  "REGISTRO COM DATA NASCIMENTO INVALIDA"
+               STOP RUN
+           END-IF.
+      *
+           IF  WS-CHAVE-E01CAD > WS-CHAVE-E02ALT
+      *
+               MOVE  WS-E01CAD-UNIDADE        TO
+                                               WS-S01ARQ-UNIDADE
+               MOVE  WS-E01CAD-NUMERO-CLIENTE TO
+                                               WS-S01ARQ-NUMERO-CLIENTE
+               MOVE  WS-E02ALT-NOME-CLIENTE   TO
+                                               WS-S01ARQ-NOME-CLIENTE
+               MOVE  WS-E02ALT-TELEFONE       TO
+                                               WS-S01ARQ-TELEFONE
+               MOVE  WS-E02ALT-EMAIL          TO
+                                               WS-S01ARQ-EMAIL
+               MOVE  WS-E02ALT-DATA-NASCTO    TO
+                                               WS-S01ARQ-DATA-NASCT
+               MOVE  WS-LS-DATA-MASC          TO
+                                                WS-S01ARQ-DATA-GRAVACAO
+               MOVE  WS-LA-HORA-MAS           TO
+                                                WS-S01ARQ-HORA-GRAVACAO
+      *
+               PERFORM  040-GRAVAR-S01ARQ
+               PERFORM  030-READ-E02ALT
+      *
+           ELSE
+               IF  WS-CHAVE-E01CAD EQUAL  WS-CHAVE-E02ALT
+                   MOVE  WS-E02ALT-UNIDADE        TO
+                                               WS-S01ARQ-UNIDADE
+                   MOVE  WS-E02ALT-NUMERO-CLIENTE TO
+                                               WS-S01ARQ-NUMERO-CLIENTE
+                   MOVE  WS-E02ALT-NOME-CLIENTE   TO
+                                               WS-S01ARQ-NOME-CLIENTE
+                   MOVE  WS-E02ALT-TELEFONE       TO
+                                               WS-S01ARQ-TELEFONE
+                   MOVE  WS-E02ALT-EMAIL          TO
+                                               WS-S01ARQ-EMAIL
+                   MOVE  WS-E02ALT-DATA-NASCTO    TO
+                                               WS-S01ARQ-DATA-NASCT
+                   MOVE  WS-LS-DATA-MASC          TO
+                                                WS-S01ARQ-DATA-GRAVACAO
+                   MOVE  WS-LA-HORA-MAS           TO
+                                                WS-S01ARQ-HORA-GRAVACAO
+      *
+                   PERFORM  040-GRAVAR-S01ARQ
+                   ADD      1                 TO WS-CT-ALTERADOS-BIN
+                   PERFORM  020-READ-E01CAD
+                   PERFORM  030-READ-E02ALT
+      *
+               ELSE
+      *
+                   ADD  1                      TO WS-CT-EXCLUIDOS-BIN
+                   PERFORM  020-READ-E01CAD
+               END-IF
+           END-IF.
+      *
+      *----------------------------------------------------------------*
+      *FIM-ROTINA
+      *----------------------------------------------------------------*
+      *
+      *----------------------------------------------------------------*
+      *ROTINA DE TERMINO
+      *----------------------------------------------------------------*
+       300-TERMINO.
+      *
+           CLOSE E01CAD.
+      *
+           IF  NOT SUCESSO-E01CAD
+               MOVE    FS-E01CAD               TO WS-FS
+               DISPLAY "ERRO NO CLOSE DO ARQUIVO E01CAD"
+               DISPLAY "FILE STATUS: " WS-FS
+               GO                              TO 999-ERRO
+           END-IF.
+      *
+           CLOSE E02ALT.
+      *
+           IF  NOT  SUCESSO-E02ALT
+               MOVE    FS-E02ALT               TO WS-FS
+               DISPLAY "ERRO CLOSE DO ARQUIVO E02ALT"
+               DISPLAY "FILE STATUS: " WS-FS
+               GO                              TO 999-ERRO
+           END-IF.
+      *
+           CLOSE S01ARQ.
+      *
+           IF  NOT  SUCESSO-S01ARQ
+               MOVE    FS-S01ARQ               TO WS-FS
+               DISPLAY "ERRO CLOSE DO ARQUIVO S01ARQ"
+               DISPLAY "FILE STATUS: " WS-FS
+               GO                              TO 999-ERRO
+           END-IF.
+      *
+           MOVE  WS-CONTADORES-BINARIOS    TO  WS-CONTADORES-DISPLAY.
+      *
+           DISPLAY "*-------------------------------------------*".
+           DISPLAY "ESTATISTICAS DO PROGRAMA ACC06001".
+           DISPLAY "*-------------------------------------------*".
+           DISPLAY "TOTAL DE REG.LIDOS        ...: " WS-
+           DISPLAY "TOTAL DE REG.LIDOS        ...: " WS-
+           DISPLAY "TOTAL REGISTROS INCLUIDOS....: " WS-
+           DISPLAY "TOTAL REGISTROS ALTERADOS....: " WS-
+           DISPLAY "TOTAL REGISTROS EXCLUIDOS....: " WS-
+           DISPLAY "*-------------------------------------------*".
+           DISPLAY "FIM PROCESSAMENTO PROGRAMA ACC06001".
+           DISPLAY "*-------------------------------------------*".
+      *
+      *----------------------------------------------------------------*
+      *FIM-ROTINA
+      *----------------------------------------------------------------*
+      *
+      *----------------------------------------------------------------*
+      *ROTINA PARA COLETA DA DATA/HORA 
+      *----------------------------------------------------------------*
+       RT-COLETAR-DATA-HORA.
+      *
+           MOVE 1                          TO LS-FLAG-ROTINA.
+      *
+           CALL   'AC990010'               USING WS-POOL0010.
+           CANCEL 'AC990010'.
+      *
+           MOVE LS-HORA-MASC               TO WS-S01ARQ-HORA-GRAVACAO.
+           MOVE LS-DATA-MASC               TO WS-S01ARQ-DATA-GRAVACAO.
+      *
+      *----------------------------------------------------------------*
+      *FIM-ROTINA
+      *----------------------------------------------------------------*
+      *
+*
+      *----------------------------------------------------------------*
+      *ROTINA DE ERRO
+      *----------------------------------------------------------------*
+       9999-ERRO.
+           DISPLAY "*--------------------------------------------*"
+           DISPLAY "     TERMINO ANORMAL DO PROGRAMA ACC06001    *"
+           DISPLAY "*--------------------------------------------*"
+           DISPLAY "MENSAGEM .....: " WS-MSG
+           DISPLAY "FILE STATUS ..: " ws-FS
+           DISPLAY "*--------------------------------------------*"
+           MOVE 12                         TO RETURN-CODE
+           STOP RUN
+           .
+      *
+      *----------------------------------------------------------------*
+      *FIM-ROTINA
+      *----------------------------------------------------------------*
+      *
+      *----------------------------------------------------------------*
+      *                     FIM DO PROGRAMA ACC06001                   *
+      *----------------------------------------------------------------*

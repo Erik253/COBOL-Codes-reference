@@ -1,0 +1,10 @@
+//GPGO1703 JOB ERIK,MSGCLASS=X,CLASS=C,NOTIFY=GPGO17,TIME=(0,20)        00010014
+//*----------------------------------------------------------------     00020000
+//* SUBSTITUIR GO17 PELO SEU USUARIO                                    00020114
+//*----------------------------------------------------------------     00021013
+//STEP1    EXEC PGM=GPGO1703                                            00030014
+//STEPLIB  DD DSN=GP.GERAL.LOADLIB,DISP=SHR                             00040011
+//SIMUEMP  DD DSN=GP.GPGO99.SIMUEMP,DISP=SHR                            00050013
+//EMPAPROV DD DSN=GP.GPGO17.EMPAPROV,DISP=(OLD,CATLG,DELETE),           00060015
+//            SPACE=(TRK,(1,1),RLSE),UNIT=SYSALLDA,                     00070012
+//            DCB=(LRECL=35,RECFM=FB,DSORG=PS,BLKSIZE=0)                00080012

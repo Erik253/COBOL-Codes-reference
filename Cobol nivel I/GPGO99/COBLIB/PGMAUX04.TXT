@@ -1,0 +1,70 @@
+      *----------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *----------------------------------------------------------------*
+       PROGRAM-ID.                         PGMAUX04.
+
+      *----------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *----------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+       FILE-CONTROL.
+
+      *----------------------------------------------------------------*
+       DATA                                DIVISION.
+      *----------------------------------------------------------------*
+       FILE                                SECTION.
+      *----------------------------------------------------------------*
+       WORKING-STORAGE                     SECTION.
+      *----------------------------------------------------------------*
+       01  WS-VARIAVEIS-PARA-CALCULO.
+           05 WS-LUCRO                     PIC S9(06)V99.
+
+      *----------------------------------------------------------------*
+       LINKAGE                             SECTION.
+      *----------------------------------------------------------------*
+       01   LS-MENSAGEM.
+            05 LS-QTDEST                   PIC 9(05) COMP-3.
+            05 LS-QTDMAX                   PIC 9(05) COMP-3.
+            05 LS-QTDMIN                   PIC 9(05) COMP-3.
+            05 LS-PRECOCOMPRA              PIC 9(06)V99 COMP-3.
+            05 LS-PRECOVENDA               PIC 9(06)V99 COMP-3.
+            05 LS-PERCOMIS                 PIC 9(02)V99 COMP-3.
+            05 LS-CLASSIFICACAO.
+               10 LS-CLASSIF-LUCRO         PIC X(01).
+               10 LS-CLASSIF-ESTOQUE       PIC X(01).
+               10 LS-CLASSIF-COMISSAO      PIC X(01).
+
+
+      *----------------------------------------------------------------*
+       PROCEDURE DIVISION USING LS-MENSAGEM.
+      *----------------------------------------------------------------*
+           COMPUTE WS-LUCRO = (( LS-PRECOVENDA /
+                                 LS-PRECOCOMPRA) - 1 ) * 100
+
+           EVALUATE TRUE
+               WHEN WS-LUCRO <  0 MOVE "0" TO LS-CLASSIF-LUCRO
+               WHEN WS-LUCRO < 10 MOVE "1" TO LS-CLASSIF-LUCRO
+               WHEN WS-LUCRO < 15 MOVE "2" TO LS-CLASSIF-LUCRO
+               WHEN OTHER         MOVE "3" TO LS-CLASSIF-LUCRO
+           END-EVALUATE
+           EVALUATE TRUE
+               WHEN LS-QTDMIN > LS-QTDEST  MOVE "0" TO LS-CLASSIF-LUCRO
+               WHEN LS-QTDMIN NOT > LS-QTDEST AND
+                    LS-QTDEST NOT > LS-QTDMAX
+                                           MOVE "1" TO LS-CLASSIF-LUCRO
+               WHEN LS-QTDEST > LS-QTDMAX  MOVE "2" TO LS-CLASSIF-LUCRO
+               WHEN OTHER         MOVE "3" TO LS-CLASSIF-LUCRO
+           END-EVALUATE
+           EVALUATE TRUE
+               WHEN LS-PERCOMIS < 5   MOVE "0" TO LS-CLASSIF-LUCRO
+               WHEN LS-PERCOMIS NOT < 5 AND
+                    LS-PERCOMIS NOT > 10
+                                      MOVE "1" TO LS-CLASSIF-LUCRO
+               WHEN LS-PERCOMIS > 10  MOVE "2" TO LS-CLASSIF-LUCRO
+               WHEN OTHER         MOVE "3" TO LS-CLASSIF-LUCRO
+           END-EVALUATE
+           GOBACK
+           .

@@ -1,0 +1,31 @@
+       9100-TEMPO.                                                      00010000
+           COMPUTE WS-TOT-CENT = ( WS-HORA-F * 360000 +                 00020000
+                           WS-MIN-F * 6000 +                            00030000
+                           WS-SEG-F * 100 +                             00040000
+                           WS-CENT-F )- ( WS-HORA-I * 360000 +          00050000
+                           WS-MIN-I * 6000 +                            00060000
+                           WS-SEG-I * 100 +                             00070000
+                           WS-CENT-I )                                  00080000
+           MOVE WS-TOT-CENT              TO WS-HORARIO-P                00090001
+      *                                                                 00100000
+           ACCEPT WS-DATA-SYS FROM DATE                                 00110002
+           MOVE CORR WS-DATA-SYS TO WS-DATA-FORMATADA                   00110106
+           ACCEPT WS-DATA-JULIANA FROM DAY                              00111000
+           ACCEPT WS-DIA-SEMANA FROM DAY-OF-WEEK                        00112000
+           DISPLAY "*----------------------------*"                     00113000
+           DISPLAY "        DATA E HORA           "                     00114000
+           DISPLAY "*----------------------------*"                     00115000
+           DISPLAY " TEMPO DE PROCESSAMENTO..." WS-HORARIO-P            00116000
+           DISPLAY " DATA DO PROCESSAMENTO...." WS-DATA-FORMATADA       00117000
+           DISPLAY " DIA DO ANO..............." WS-DATA-JULIANA         00118000
+           EVALUATE WS-DIA-SEMANA                                       00119000
+             WHEN 1 DISPLAY " DIA DA SEMANA....: SEGUNDA-FEIRA "        00120000
+             WHEN 2 DISPLAY " DIA DA SEMANA....: TERCA-FEIRA "          00130000
+             WHEN 3 DISPLAY " DIA DA SEMANA....: QUARTA-FEIRA "         00140000
+             WHEN 4 DISPLAY " DIA DA SEMANA....: QUINTA-FEIRA "         00150000
+             WHEN 5 DISPLAY " DIA DA SEMANA....: SEXTA-FEIRA "          00160000
+             WHEN 6 DISPLAY " DIA DA SEMANA....: SABADO "               00170000
+             WHEN 7 DISPLAY " DIA DA SEMANA....: DOMINGO "              00180000
+           END-EVALUATE                                                 00190003
+           DISPLAY "*-----------------------------------*"              00200004
+           .                                                            00210005

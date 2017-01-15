@@ -1,0 +1,12 @@
+---EXIBIR A DESCRICAO DOS PRODUTOS COMPRADOS POR CLIENTES DO TIPO '04'  00010000
+---(SUB-QUERIE)                                                         00020000
+---                                                                     00030000
+SELECT DESCPROD                                                         00030102
+FROM TBPROD                                                             00030202
+WHERE CODPROD IN (SELECT CODPROD                                        00030302
+                  FROM TBVENDA                                          00031002
+                  WHERE CODCLI IN (SELECT CODCLI                        00032002
+                                   FROM TBCLI                           00033002
+                                   WHERE  CODTIPOCLI = '04'))           00040002
+----------------------------------------------------------------------- 00050003
+----OUTRO JEITO SELECT 23                                               00060004

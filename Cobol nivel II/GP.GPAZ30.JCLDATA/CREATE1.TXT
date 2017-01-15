@@ -1,0 +1,5 @@
+CREATE TABLE TBTIPOCLI                                                  00010000
+(                                                                       00020000
+ CODTIPOCLI  CHAR(2)      UNIQUE   NOT NULL ,                           00030001
+ DESCTIPOCLI VARCHAR(30)           NOT NULL                             00040002
+)                                                                       00050000

@@ -1,0 +1,6 @@
+---EXIBIR O NOME E A DATA DE NASCIMENTO DOS CLIENTES MAIORES QUE 18 ANOS00010000
+---(YEAR E CURRENT DATE)                                                00020000
+---                                                                     00030000
+SELECT NOMECLI,DATANASCCLI, YEAR(CURRENT DATE - DATANASCCLI) IDADE      00040002
+FROM TBCLI                                                              00050000
+WHERE YEAR(CURRENT DATE - DATANASCCLI) > 18                             00060001

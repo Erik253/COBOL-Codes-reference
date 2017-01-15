@@ -1,0 +1,329 @@
+      *----------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *----------------------------------------------------------------*
+       PROGRAM-ID.                         AC990009.
+
+      *----------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *----------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+       FILE-CONTROL.
+           SELECT CADCLI ASSIGN TO UT-S-CADCLI
+           FILE STATUS FS-CADCLI.
+      *
+           SELECT ALTCLI ASSIGN TO UT-S-ALTCLI
+           FILE STATUS FS-ALTCLI.
+      *
+           SELECT CADCLIN ASSIGN TO UT-S-CADCLIN
+           FILE STATUS FS-CADCLIN.
+
+      *----------------------------------------------------------------*
+       DATA                                DIVISION.
+      *----------------------------------------------------------------*
+       FILE                                SECTION.
+      *----------------------------------------------------------------*
+       FD  CADCLI
+           RECORDING MODE IS F.
+       01  REGISTRO-CADCLI                 PIC X(87).
+      *
+       FD  ALTCLI
+           RECORDING MODE IS F.
+       01  REGISTRO-ALTCLI                 PIC X(73).
+      *
+       FD  CADCLIN
+           RECORDING MODE IS F.
+       01  REGISTRO-CADCLIN                PIC X(104).
+      *----------------------------------------------------------------*
+       WORKING-STORAGE                     SECTION.
+      *----------------------------------------------------------------*
+       01  WS-REGISTRO-CADCLI.
+           05 CHAVE-CADCLI.
+              10 CADCLI-AGENCIA            PIC 9(04).
+              10 CADCLI-NUMERO-CONTA       PIC 9(06).
+           05 CADCLI-NOME-CLIENTE          PIC X(40).
+           05 CADCLI-TELEFONE              PIC 9(10).
+           05 CADCLI-SALDO-ATUAL           PIC 9(11)V99.
+           05 CADCLI-DATA-GRAVACAO.
+              10 CADCLI-ANO-GRAVACAO       PIC 9(04).
+              10 CADCLI-MES-GRAVACAO       PIC 9(02).
+              10 CADCLI-DIA-GRAVACAO       PIC 9(02).
+           05 CADCLI-HORA-GRAVACAO         PIC 9(06).
+      *
+       01  WS-REGISTRO-ALTCLI.
+           05 CHAVE-ALTCLI.
+              10 ALTCLI-AGENCIA            PIC 9(04).
+              10 ALTCLI-NUMERO-CONTA       PIC 9(06).
+           05 ALTCLI-NOME-CLIENTE          PIC X(40).
+           05 ALTCLI-TELEFONE              PIC 9(10).
+           05 ALTCLI-RENDA-MENSAL          PIC 9(11)V99.
+      *
+       01  WS-REGISTRO-CADCLIN.
+           05 CHAVE-CADCLIN.
+              10 CADCLIN-AGENCIA           PIC 9(04).
+              10 CADCLIN-NUMERO-CONTA      PIC 9(06).
+           05 CADCLIN-NOME-CLIENTE         PIC X(40).
+           05 CADCLIN-TELEFONE             PIC 9(10).
+           05 CADCLIN-RENDA-MENSAL         PIC 9(11)V99.
+           05 CADCLIN-SALDO-ATUAL          PIC 9(11)V99.
+           05 CADCLIN-DATA-GRAVACAO        PIC X(10).
+           05 CADCLIN-HORA-GRAVACAO        PIC X(08).
+      *
+           COPY POOL0010.
+      *
+       01  WS-CONTADORES.
+           05 WS-CTLIDO-CADCLI             PIC 9(06) COMP.
+           05 WS-CTLIDO-ALTCLI             PIC 9(06) COMP.
+           05 WS-CTINC-CADCLIN             PIC 9(06) COMP.
+           05 WS-CTALT-CADCLIN             PIC 9(06) COMP.
+           05 WS-CTEXC-CADCLIN             PIC 9(06) COMP.
+      *
+       01  WS-CONTADORES-FORMATADOS.
+           05 WS-CTLIDO-CADCLI-F           PIC ZZZ.ZZ9.
+           05 WS-CTLIDO-ALTCLI-F           PIC ZZZ.ZZ9.
+           05 WS-CTINC-CADCLIN-F           PIC ZZZ.ZZ9.
+           05 WS-CTALT-CADCLIN-F           PIC ZZZ.ZZ9.
+           05 WS-CTEXC-CADCLIN-F           PIC ZZZ.ZZ9.
+       01  FS-CADCLI                       PIC X(02).
+           88 CADCLI-SUCESSO                       VALUE '00'.
+           88 CADCLI-EOF                           VALUE '10'.
+       01  FS-ALTCLI                       PIC X(02).
+           88 ALTCLI-SUCESSO                       VALUE '00'.
+           88 ALTCLI-EOF                           VALUE '10'.
+       01  FS-CADCLIN                      PIC X(02).
+           88 CADCLIN-SUCESSO                      VALUE '00'.
+           88 CADCLIN-EOF                          VALUE '10'.
+      *
+       01  WS-MENSAGENS.
+           05 WS-MSG01                     PIC X(50)
+                                                   VALUE
+              "ERRO ABERTURA CADCLI                              ".
+           05 WS-MSG02                     PIC X(50)
+                                                   VALUE
+              "ERRO ABERTURA ALTCLI                              ".
+           05 WS-MSG03                     PIC X(50)
+                                                   VALUE
+              "ERRO ABERTURA CADCLIN                             ".
+           05 WS-MSG04                     PIC X(50)
+                                                   VALUE
+              "ERRO LEITURA CADCLI                               ".
+           05 WS-MSG05                     PIC X(50)
+                                                   VALUE
+              "ERRO LEITURA ALTCLI                               ".
+           05 WS-MSG06                     PIC X(50)
+                                                   VALUE
+              "ERRO GRAVACAO CADCLIN                             ".
+           05 WS-MSG07                     PIC X(50)
+                                                   VALUE
+              "ERRO FECHAMENTO CADCLI                            ".
+           05 WS-MSG08                     PIC X(50)
+                                                   VALUE
+              "ERRO FECHAMENTO ALTCLI                            ".
+           05 WS-MSG09                     PIC X(50)
+                                                   VALUE
+              "ERRO FECHAMENTO CADCLIN                           ".
+       77  WS-MSG                          PIC X(50).
+       77  WS-FS                           PIC X(02).
+       77  AC990010                        PIC X(08)
+                                                   VALUE "AC990010".
+      *----------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *----------------------------------------------------------------*
+       0000-ROTINA-PRINCIPAL.
+           PERFORM 1000-INICIO
+      *
+           PERFORM 2000-PROCESSAMENTO
+             UNTIL CADCLI-EOF AND
+                   ALTCLI-EOF
+      *
+           PERFORM 3000-FINAL
+      *
+           STOP RUN
+           .
+
+       1000-INICIO.
+           INITIALIZE WS-CONTADORES
+      *
+           OPEN INPUT CADCLI
+           IF NOT CADCLI-SUCESSO
+              MOVE WS-MSG01                TO WS-MSG
+              MOVE FS-CADCLI               TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+      *
+           OPEN INPUT ALTCLI
+           IF NOT ALTCLI-SUCESSO
+              MOVE WS-MSG02                TO WS-MSG
+              MOVE FS-ALTCLI               TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+      *
+           OPEN OUTPUT CADCLIN
+           IF NOT CADCLIN-SUCESSO
+              MOVE WS-MSG03                TO WS-MSG
+              MOVE FS-CADCLIN              TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+      *
+           PERFORM 1100-LER-CADCLI
+           PERFORM 1200-LER-ALTCLI
+           .
+
+       1100-LER-CADCLI.
+           READ CADCLI INTO WS-REGISTRO-CADCLI
+           IF CADCLI-SUCESSO
+              PERFORM 9100-VALIDAR-DATA
+              ADD 1 TO WS-CTLIDO-CADCLI
+           ELSE
+              IF CADCLI-EOF
+                 MOVE HIGH-VALUES          TO CHAVE-CADCLI
+              ELSE
+                 MOVE WS-MSG04             TO WS-MSG
+                 MOVE FS-CADCLI            TO WS-FS
+                 GO TO 9000-ERRO
+              END-IF
+           END-IF
+           .
+      *
+       1200-LER-ALTCLI.
+           READ ALTCLI INTO WS-REGISTRO-ALTCLI
+           IF ALTCLI-SUCESSO
+              ADD 1 TO WS-CTLIDO-ALTCLI
+           ELSE
+              IF ALTCLI-EOF
+                 MOVE HIGH-VALUES          TO CHAVE-ALTCLI
+              ELSE
+                 MOVE WS-MSG05             TO WS-MSG
+                 MOVE FS-ALTCLI            TO WS-FS
+                 GO TO 9000-ERRO
+              END-IF
+           END-IF
+           .
+
+       2000-PROCESSAMENTO.
+           EVALUATE TRUE
+              WHEN CHAVE-CADCLI = CHAVE-ALTCLI
+                 PERFORM 2100-ALTERACAO
+                 PERFORM 1100-LER-CADCLI
+                 PERFORM 1200-LER-ALTCLI
+              WHEN CHAVE-CADCLI < CHAVE-ALTCLI
+                 PERFORM 2200-EXCLUSAO
+                 PERFORM 1100-LER-CADCLI
+              WHEN CHAVE-CADCLI > CHAVE-ALTCLI
+                 PERFORM 2300-INCLUSAO
+                 PERFORM 1200-LER-ALTCLI
+           END-EVALUATE
+           .
+      *
+       2100-ALTERACAO.
+           MOVE 1                          TO LS-FLAG-ROTINA
+           CALL   AC990010 USING POOL0010-LINKAGE
+           CANCEL AC990010
+
+           MOVE ALTCLI-AGENCIA             TO CADCLIN-AGENCIA
+           MOVE ALTCLI-NUMERO-CONTA        TO CADCLIN-NUMERO-CONTA
+           MOVE ALTCLI-NOME-CLIENTE        TO CADCLIN-NOME-CLIENTE
+           MOVE ALTCLI-TELEFONE            TO CADCLIN-TELEFONE
+           MOVE ALTCLI-RENDA-MENSAL        TO CADCLIN-RENDA-MENSAL
+           MOVE CADCLI-SALDO-ATUAL         TO CADCLIN-SALDO-ATUAL
+           MOVE LS-DATA-MASC               TO CADCLIN-DATA-GRAVACAO
+           MOVE LS-HORA-MASC               TO CADCLIN-HORA-GRAVACAO
+
+           WRITE REGISTRO-CADCLIN FROM WS-REGISTRO-CADCLIN
+           IF NOT CADCLIN-SUCESSO
+              MOVE WS-MSG06                TO WS-MSG
+              MOVE FS-CADCLIN              TO WS-FS
+              PERFORM 9000-ERRO
+           END-IF
+
+           ADD 1 TO WS-CTALT-CADCLIN
+           .
+      *
+       2200-EXCLUSAO.
+           ADD 1 TO WS-CTEXC-CADCLIN
+           .
+      *
+       2300-INCLUSAO.
+           MOVE 1                          TO LS-FLAG-ROTINA
+           CALL   AC990010 USING POOL0010-LINKAGE
+           CANCEL AC990010
+
+           MOVE ALTCLI-AGENCIA             TO CADCLIN-AGENCIA
+           MOVE ALTCLI-NUMERO-CONTA        TO CADCLIN-NUMERO-CONTA
+           MOVE ALTCLI-NOME-CLIENTE        TO CADCLIN-NOME-CLIENTE
+           MOVE ALTCLI-TELEFONE            TO CADCLIN-TELEFONE
+           MOVE ALTCLI-RENDA-MENSAL        TO CADCLIN-RENDA-MENSAL
+           MOVE ZEROS                      TO CADCLIN-SALDO-ATUAL
+           MOVE LS-DATA-MASC               TO CADCLIN-DATA-GRAVACAO
+           MOVE LS-HORA-MASC               TO CADCLIN-HORA-GRAVACAO
+
+           WRITE REGISTRO-CADCLIN FROM WS-REGISTRO-CADCLIN
+           IF NOT CADCLIN-SUCESSO
+              MOVE WS-MSG06                TO WS-MSG
+              MOVE FS-CADCLIN              TO WS-FS
+              PERFORM 9000-ERRO
+           END-IF
+
+           ADD 1 TO WS-CTINC-CADCLIN
+           .
+
+      *
+       3000-FINAL.
+           MOVE WS-CTLIDO-CADCLI           TO WS-CTLIDO-CADCLI-F
+           MOVE WS-CTLIDO-ALTCLI           TO WS-CTLIDO-ALTCLI-F
+           MOVE WS-CTINC-CADCLIN           TO WS-CTINC-CADCLIN-F
+           MOVE WS-CTALT-CADCLIN           TO WS-CTALT-CADCLIN-F
+           MOVE WS-CTEXC-CADCLIN           TO WS-CTEXC-CADCLIN-F
+
+           DISPLAY "TOTAL DE REG. LIDOS CADCLI.....: "
+                   WS-CTLIDO-CADCLI-F
+           DISPLAY "TOTAL DE REG. LIDOS ALTCLI.....: "
+                   WS-CTLIDO-ALTCLI-F
+           DISPLAY "TOTAL REGISTROS INCLUIDOS......: "
+                   WS-CTINC-CADCLIN-F
+           DISPLAY "TOTAL REGISTROS ALTERADOS......: "
+                   WS-CTALT-CADCLIN-F
+           DISPLAY "TOTAL REGISTROS EXCLUIDOS......: "
+                   WS-CTEXC-CADCLIN-F
+
+           CLOSE CADCLI
+           IF NOT CADCLI-SUCESSO
+              MOVE WS-MSG07                TO WS-MSG
+              MOVE FS-CADCLI               TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+      *
+           CLOSE ALTCLI
+           IF NOT ALTCLI-SUCESSO
+              MOVE WS-MSG08                TO WS-MSG
+              MOVE FS-ALTCLI               TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+      *
+           CLOSE CADCLIN
+           IF NOT CADCLIN-SUCESSO
+              MOVE WS-MSG09                TO WS-MSG
+              MOVE FS-CADCLIN              TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+           .
+      *
+       9000-ERRO.
+           DISPLAY "MENSAGEM....: " WS-MSG
+           DISPLAY "FILE STATUS.: " WS-FS
+           STOP RUN
+           .
+      *
+       9100-VALIDAR-DATA.
+           MOVE 2                          TO LS-FLAG-ROTINA
+           MOVE CADCLI-DATA-GRAVACAO       TO LS-DT-PARA-VALIDAR
+           CALL   AC990010 USING POOL0010-LINKAGE
+           CANCEL AC990010
+           IF LS-FLAG-RETORNO NOT = 1
+              DISPLAY "REGISTRO COM DATA DE GRAVACAO INVALIDA, ARQUIVO C
+      -               "ADCLI CORROMPIDO"
+              STOP RUN
+           END-IF
+           .

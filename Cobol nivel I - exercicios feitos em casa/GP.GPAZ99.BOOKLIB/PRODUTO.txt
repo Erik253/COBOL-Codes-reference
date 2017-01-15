@@ -1,0 +1,39 @@
+      ******************************************************************
+      * DCLGEN TABLE(PRODUTO)                                          *
+      *        LIBRARY(GP.GPAZ99.BOOKLIB(PRODUTO))                     *
+      *        ACTION(REPLACE)                                         *
+      *        LANGUAGE(COBOL)                                         *
+      *        QUOTE                                                   *
+      *        INDVAR(YES)                                             *
+      * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
+      ******************************************************************
+           EXEC SQL DECLARE PRODUTO TABLE
+           ( CODPROD                        CHAR(6) NOT NULL,
+             DESCRI                         VARCHAR(35) NOT NULL,
+             LOCAL                          CHAR(6),
+             QTDMIN                         DECIMAL(4, 0),
+             QTDMAX                         DECIMAL(4, 0),
+             QTDEST                         DECIMAL(4, 0),
+             PRECO                          DECIMAL(6, 2)
+           ) END-EXEC.
+      ******************************************************************
+      * COBOL DECLARATION FOR TABLE PRODUTO                            *
+      ******************************************************************
+       01  DCLPRODUTO.
+           10 CODPROD              PIC X(6).
+           10 DESCRI.
+              49 DESCRI-LEN        PIC S9(4) USAGE COMP.
+              49 DESCRI-TEXT       PIC X(35).
+           10 LOCAL                PIC X(6).
+           10 QTDMIN               PIC S9(4)V USAGE COMP-3.
+           10 QTDMAX               PIC S9(4)V USAGE COMP-3.
+           10 QTDEST               PIC S9(4)V USAGE COMP-3.
+           10 PRECO                PIC S9(4)V9(2) USAGE COMP-3.
+      ******************************************************************
+      * INDICATOR VARIABLE STRUCTURE                                   *
+      ******************************************************************
+       01  IPRODUTO.
+           10 INDSTRUC             PIC S9(4) USAGE COMP OCCURS 7 TIMES.
+      ******************************************************************
+      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 7       *
+      ******************************************************************

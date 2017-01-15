@@ -1,0 +1,6 @@
+---O COMANDO 'NULL' ELIMINA OS ELEMENTOS DA CONDICAO QUE SOLICITAR      00010000
+---                                                                     00020000
+SELECT CHAVEA, DESCB,VALB                                               00030000
+FROM TBA A RIGHT JOIN TBB B                                             00040000
+ON A.CHAVEA = B.CHAVEB                                                  00050000
+WHERE A.CHAVEA IS NULL                                                  00060000

@@ -1,0 +1,244 @@
+      *--------------------------------------------------------------*
+      * EXERCICIO PG:10 PARTE 5 DA APOSTILA
+      * JOB: ERIKEX08 | COMPILADOR: ERIKCO08
+      *--------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *--------------------------------------------------------------*
+       PROGRAM-ID.                         ERIKEX08.
+       AUTHOR.                             ERIK.
+      *--------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *--------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+       FILE-CONTROL.
+           SELECT CADFUNC2 ASSIGN          TO UT-S-CADFUNC2
+           FILE STATUS IS FS-CADFUNC2
+           .
+      *
+           SELECT FUNCANT ASSIGN           TO UT-S-FUNCANT
+           FILE STATUS IS FS-FUNCANT
+           .
+      *
+           SELECT FUNCNOVO ASSIGN          TO UT-S-FUNCNOVO
+           FILE STATUS IS FS-FUNCNOVO
+           .
+      *--------------------------------------------------------------*
+       DATA                                DIVISION.
+      *--------------------------------------------------------------*
+       FILE                                SECTION.
+       FD  CADFUNC2
+           LABEL RECORD IS STANDARD
+           BLOCK CONTAINS 0 CHARACTERS
+           RECORDING MODE IS F
+           RECORD CONTAINS 43 CHARACTERS
+           DATA RECORD IS REG-CADFUNC2
+           .
+       01  REG-CADFUNC2.
+           05 CODFUNC-C                    PIC X(05).
+           05 NOMEFUNC-C                   PIC X(30).
+           05 VALORHORA-C                  PIC 9(02)V99.
+           05 QTDHRSTRAB-C                 PIC 9(04).
+      *
+       FD  FUNCANT
+           LABEL RECORD IS STANDARD
+           BLOCK CONTAINS 0 CHARACTERS
+           RECORDING MODE IS F
+           RECORD CONTAINS 43 CHARACTERS
+           DATA RECORD IS REG-FUNCANT
+           .
+       01  REG-FUNCANT.
+           05 CODFUNC-A                    PIC X(05).
+           05 NOMEFUNC-A                   PIC X(30).
+           05 VALORHORA-A                  PIC 9(02)V99.
+           05 QTDHRSTRAB-A                 PIC 9(04).
+      *
+       FD  FUNCNOVO
+           LABEL RECORD IS STANDARD
+           BLOCK CONTAINS 0 CHARACTERS
+           RECORDING MODE IS F
+           RECORD CONTAINS 43 CHARACTERS
+           DATA RECORD IS REG-FUNCNOVO
+           .
+       01  REG-FUNCNOVO.
+           05 CODFUNC-N                    PIC X(05).
+           05 NOMEFUNC-N                   PIC X(30).
+           05 VALORHORA-N                  PIC 9(02)V99.
+           05 QTDHRSTRAB-N                 PIC 9(04).
+      *
+       WORKING-STORAGE                     SECTION.
+       77  FS-CADFUNC2                     PIC X(02).
+       77  FS-FUNCANT                      PIC X(02).
+       77  FS-FUNCNOVO                     PIC X(02).
+      *
+       77  WS-CTLIDOS                      PIC 9(02).
+       77  WS-CTLIDO-A                     PIC 9(02).
+       77  WS-CTLIDO-N                     PIC 9(02).
+       77  WS-CTGRAV                       PIC 9(02).
+      *
+       77  WS-FS                           PIC X(02).
+       77  WS-MSG                          PIC X(60).
+      *
+       01  WS-REG-CADFUNC2.
+           05 WS-CODFUNC-C                 PIC X(05).
+           05 WS-NOMEFUNC-C                PIC X(30).
+           05 WS-VALORHORA-C               PIC 9(02)V99.
+           05 WS-QTDHRSTRAB-C              PIC 9(04).
+      *
+       01  WS-REG-FUNCANT.
+           05 WS-CODFUNC-A                 PIC X(05).
+           05 WS-NOMEFUNC-A                PIC X(30).
+           05 WS-VALORHORA-A               PIC 9(02)V99.
+           05 WS-QTDHRSTRAB-A              PIC 9(04).
+      *
+       01  WS-REG-FUNCNOVO.
+           05 WS-CODFUNC-N                 PIC X(05).
+           05 WS-NOMEFUNC-N                PIC X(30).
+           05 WS-VALORHORA-N               PIC 9(02)V99.
+           05 WS-QTDHRSTRAB-N              PIC 9(04).
+      *--------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *--------------------------------------------------------------*
+       0000-ERIKEX08.
+           PERFORM 1000-INICIALIZAR
+           PERFORM 2000-PROCESSAR UNTIL FS-FUNCANT  = "10" AND
+                                        FS-FUNCNOVO = "10"
+           PERFORM 3000-TERMINO
+           STOP RUN
+           .
+      *
+       1000-INICIALIZAR.
+           INITIALIZE WS-CTLIDOS
+                      WS-CTLIDO-A
+                      WS-CTLIDO-N
+                      WS-CTGRAV
+      *
+           OPEN OUTPUT CADFUNC2
+           IF FS-CADFUNC2 NOT = ZEROS
+              MOVE " ERRO DE ABERTURA DO ARQ CADFUNC2 " TO WS-MSG
+              MOVE FS-CADFUNC2             TO WS-FS
+              GO                           TO 9999-ERRO
+           END-IF
+      *
+           OPEN INPUT FUNCANT
+           IF FS-FUNCANT NOT = ZEROS
+              MOVE " ERRO DE ABERTURA DO ARQ FUNCANT " TO WS-MSG
+              MOVE FS-FUNCANT              TO WS-FS
+              GO                           TO 9999-ERRO
+           END-IF
+      *
+           OPEN INPUT FUNCNOVO
+           IF FS-FUNCNOVO NOT = ZEROS
+              MOVE " ERRO DE ABERTURA DO ARQ FUNCNOVO " TO WS-MSG
+              MOVE FS-FUNCNOVO             TO WS-FS
+              GO                           TO 9999-ERRO
+           END-IF
+      *
+           PERFORM 1500-LER-FUNCANT
+           PERFORM 1600-LER-FUNCNOVO
+           .
+      *
+       1500-LER-FUNCANT.
+           READ FUNCANT INTO WS-REG-FUNCANT
+           IF FS-FUNCANT = ZEROS
+              ADD 1                        TO WS-CTLIDOS
+              ADD 1                        TO WS-CTLIDO-A
+           ELSE
+              IF FS-FUNCANT NOT = "10"
+                 MOVE " ERRO DE LEITURA DO ARQ FUNCANT " TO WS-MSG
+                 MOVE FS-FUNCANT           TO WS-FS
+                 GO                        TO 9999-ERRO
+              ELSE
+                 MOVE HIGH-VALUES          TO WS-CODFUNC-A
+              END-IF
+           END-IF
+           .
+      *
+       1600-LER-FUNCNOVO.
+           READ FUNCNOVO INTO WS-REG-FUNCNOVO
+           IF FS-FUNCNOVO = ZEROS
+              ADD 1                        TO WS-CTLIDOS
+              ADD 1                        TO WS-CTLIDO-N
+           ELSE
+              IF FS-FUNCNOVO NOT = "10"
+                 MOVE " ERRO DE LEITURA DO ARQ FUNCNOVO " TO WS-MSG
+                 MOVE FS-FUNCNOVO          TO WS-FS
+                 GO                        TO 9999-ERRO
+              ELSE
+                 MOVE HIGH-VALUES          TO WS-CODFUNC-N
+              END-IF
+           END-IF
+           .
+      *
+       2000-PROCESSAR.
+           IF WS-CODFUNC-A < WS-CODFUNC-N
+              MOVE WS-CODFUNC-A            TO WS-CODFUNC-C
+              MOVE WS-NOMEFUNC-A           TO WS-NOMEFUNC-C
+              MOVE WS-QTDHRSTRAB-A         TO WS-QTDHRSTRAB-C
+              MOVE WS-VALORHORA-A          TO WS-VALORHORA-C
+              WRITE REG-CADFUNC2 FROM WS-REG-CADFUNC2
+              IF FS-CADFUNC2 NOT = ZEROS
+                 MOVE " ERRO DE GRAVACAO DO ARQ CADFUNC2 " TO WS-MSG
+                 MOVE FS-CADFUNC2          TO WS-FS
+                 GO                        TO 9999-ERRO
+              END-IF
+              ADD 1                        TO WS-CTGRAV
+              PERFORM 1500-LER-FUNCANT
+           ELSE
+              MOVE WS-CODFUNC-N            TO WS-CODFUNC-C
+              MOVE WS-NOMEFUNC-N           TO WS-NOMEFUNC-C
+              MOVE WS-QTDHRSTRAB-N         TO WS-QTDHRSTRAB-C
+              MOVE WS-VALORHORA-N          TO WS-VALORHORA-C
+              WRITE REG-CADFUNC2 FROM WS-REG-CADFUNC2
+              IF FS-CADFUNC2 NOT = ZEROS
+                 MOVE " ERRO DE GRAVACAO DO ARQ CADFUNC2 " TO WS-MSG
+                 MOVE FS-CADFUNC2          TO WS-FS
+                 GO                        TO 9999-ERRO
+              END-IF
+              ADD 1                        TO WS-CTGRAV
+              PERFORM 1600-LER-FUNCNOVO
+           END-IF
+           .
+      *
+       3000-TERMINO.
+           DISPLAY " "
+           DISPLAY " -------------- INFORMACOES GERAIS ------------ "
+           DISPLAY " TOTAL DE REGISTROS LIDOS FUNCANT : " WS-CTLIDO-A
+           DISPLAY " TOTAL DE REGISTROS LIDOS FUNCNOVO: " WS-CTLIDO-N
+           DISPLAY " TOTAL DE REGISTROS LIDOS.........: " WS-CTLIDOS
+           DISPLAY " TOTAL DE REGISTROS GRAVADOS......: " WS-CTGRAV
+           DISPLAY " ---------------------------------------------- "
+      *
+           CLOSE CADFUNC2
+           IF FS-CADFUNC2 NOT = ZEROS
+              MOVE " ERRO DE FECHAMENTO DO ARQ CADFUNC2 " TO WS-MSG
+              MOVE FS-CADFUNC2             TO WS-FS
+              GO                           TO 9999-ERRO
+           END-IF
+      *
+           CLOSE FUNCANT
+           IF FS-FUNCANT NOT = ZEROS
+              MOVE " ERRO DE FECHAMENTO DO ARQ FUNCANT " TO WS-MSG
+              MOVE FS-FUNCANT              TO WS-FS
+              GO                           TO 9999-ERRO
+           END-IF
+      *
+           CLOSE FUNCNOVO
+           IF FS-FUNCNOVO NOT = ZEROS
+              MOVE " ERRO DE FECHEMENTO DO ARQ FUNCNOVO " TO WS-MSG
+              MOVE FS-FUNCNOVO             TO WS-FS
+              GO                           TO 9999-ERRO
+           END-IF
+      *
+           .
+      *
+       9999-ERRO.
+           DISPLAY " --------------- ROTINA DE ERRO --------------- "
+           DISPLAY " MENSAGEM....: " WS-MSG
+           DISPLAY " FILE STATUS.: " WS-FS
+           DISPLAY " TERMINO ANORMAL DO JOB ERIKEX08 "
+           DISPLAY " ---------------------------------------------- "
+           STOP RUN
+           .

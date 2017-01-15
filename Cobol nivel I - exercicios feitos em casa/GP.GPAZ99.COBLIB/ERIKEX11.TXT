@@ -1,0 +1,399 @@
+      *--------------------------------------------------------------*
+      * EXERCICIO PG:12 PARTE 7 DA APOSTILA
+      * JOB: ERIKEX11 | COMPILADOR: ERIKCO11
+      *--------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *--------------------------------------------------------------*
+       PROGRAM-ID.                         ERIKEX11.
+       AUTHOR.                             ERIK.
+      *--------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *--------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+       FILE-CONTROL.
+           SELECT PSOLD ASSIGN             TO UT-S-PSOLD
+           FILE STATUS IS FS-PSOLD
+           .
+      *
+           SELECT PSMOV ASSIGN             TO UT-S-PSMOV
+           FILE STATUS IS FS-PSMOV
+           .
+      *
+           SELECT PSNEW ASSIGN             TO UT-S-PSNEW
+           FILE STATUS IS FS-PSNEW
+           .
+      *--------------------------------------------------------------*
+       DATA                                DIVISION.
+      *--------------------------------------------------------------*
+       FILE                                SECTION.
+       FD  PSOLD
+           LABEL RECORD STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+           RECORD CONTAINS 43 CHARACTERS
+           DATA RECORD IS REG-PSOLD
+           .
+       01  REG-PSOLD                       PIC X(43).
+      *
+       FD  PSMOV
+           LABEL RECORD STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+           RECORD CONTAINS 44 CHARACTERS
+           DATA RECORD IS REG-PSMOV
+           .
+       01  REG-PSMOV                       PIC X(44).
+      *
+       FD  PSNEW
+           LABEL RECORD STANDARD
+           BLOCK CONTAINS 0 CHARACTERS
+           RECORDING MODE IS F
+           RECORD CONTAINS 42 CHARACTERS
+           DATA RECORD IS REG-PSNEW
+           .
+      *
+      01   REG-PSNEW.
+           05 CODPS-N                      PIC X(05).
+           05 DESCPS-N                     PIC X(30).
+           05 VALORPS-N                    PIC 9(05)V99.
+      *
+       WORKING-STORAGE                     SECTION.
+       77  FS-PSOLD                        PIC X(02).
+       77  FS-PSMOV                        PIC X(02).
+       77  FS-PSNEW                        PIC X(02).
+      *
+       77  WS-CTLIDO-OLD                   PIC 9(02).
+       77  WS-CTLIDO-MOV                   PIC 9(02).
+       77  WS-CTLIDOS                      PIC 9(02).
+       77  WS-CTGRAV                       PIC 9(02).
+       77  WS-CTALT                        PIC 9(02).
+       77  WS-CTEXC                        PIC 9(02).
+       77  WS-CTINC                        PIC 9(02).
+       77  WS-CTMANTIDO                    PIC 9(02).
+       77  WS-CTINVALIDO                   PIC 9(02).
+      *
+       77  WS-MSG                          PIC X(60).
+       77  WS-FS                           PIC X(02).
+      *--------------------PSOLD--------------------
+       01  WS-REG-PSOLD.
+           05 WS-TIPO-REGISTRO-O           PIC X(01).
+           05 FILLER                       PIC X(42).
+      *
+       01  WS-REG-PSOLD-HEADER REDEFINES WS-REG-PSOLD.
+           05 FILLER                       PIC X(01).
+           05 WS-SIGLA-SYS-O               PIC X(05).
+           05 WS-ANO-MES-REF-O             PIC X(06).
+           05 FILLER                       PIC X(31).
+      *
+       01  WS-REG-PSOLD-DATA REDEFINES WS-REG-PSOLD.
+           05 FILLER                       PIC X(01).
+           05 WS-CODPS-O                   PIC X(05).
+           05 WS-DESCPS-O                  PIC X(30).
+           05 WS-VALORPS-O                 PIC 9(05)V99.
+      *
+       01  WS-REG-PSOLD-TRAILER REDEFINES WS-REG-PSOLD.
+           05 FILLER                       PIC X(01).
+           05 WS-QTD-REG-O                 PIC 9(05).
+           05 FILLER                       PIC X(37).
+      *    -----------------FIM PSOLD---------------
+       01  WS-REG-PSMOV.
+           05 WS-TIPO-REGISTRO-M           PIC X(01).
+           05 FILLER                       PIC X(43).
+      *
+       01  WS-REG-PSMOV-HEADER REDEFINES WS-REG-PSMOV.
+           05 FILLER                       PIC X(01).
+           05 WS-SIGLA-SYS-M               PIC X(05).
+           05 WS-ANO-MES-REF-M             PIC X(06).
+           05 FILLER                       PIC X(32).
+      *
+       01  WS-REG-PSMOV-DATA REDEFINES WS-REG-PSMOV.
+           05 FILLER                       PIC X(01).
+           05 WS-CODPS-M                   PIC X(05).
+           05 WS-DESCPS-M                  PIC X(30).
+           05 WS-VALORPS-M                 PIC 9(05)V99.
+           05 WS-TIPOMOV-M                 PIC X(01).
+      *
+       01  WS-REG-PSMOV-TRAILER REDEFINES WS-REG-PSMOV.
+           05 FILLER                       PIC X(01).
+           05 WS-QTD-REG-M                 PIC 9(05).
+           05 FILLER                       PIC X(38).
+      *---------------------FIM PSMOV-------------------
+      *---------------------PSNEW-----------------------
+       01  WS-REG-PSNEW.
+           05 WS-CODPS-N                    PIC X(05).
+           05 WS-DESCPS-N                   PIC X(30).
+           05 WS-VALORPS-N                  PIC 9(05)V99.
+      *---------------------FIM PSNEW--------------------
+      *-VARIAVEIS DE DATA E TEMPO
+       COPY VARDATA.
+       COPY VARTEMPO.
+      *--------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *--------------------------------------------------------------*
+       0000-ERIKEX11.
+           PERFORM 1000-INICIALIZAR
+           PERFORM 2000-PROCESSAR UNTIL WS-TIPO-REGISTRO-O = "T" AND
+                                        WS-TIPO-REGISTRO-M = "T"
+           PERFORM 3000-TERMINO
+           STOP RUN
+           .
+      *
+       1000-INICIALIZAR.
+           INITIALIZE WS-CTLIDO-OLD
+                      WS-CTLIDO-MOV
+                      WS-CTLIDOS
+                      WS-CTGRAV
+                      WS-CTALT
+                      WS-CTEXC
+                      WS-CTINC
+                      WS-CTMANTIDO
+           ACCEPT WS-HORARIO-I             FROM TIME
+           ACCEPT WS-DIA-SEMANA            FROM DAY-OF-WEEK
+           ACCEPT WS-DATA-JULIANA          FROM DAY
+           ACCEPT WS-DATA-SISTEMA          FROM DATE
+           MOVE CORRESPONDING WS-DATA-SISTEMA TO WS-DATA-FORMATADA
+      *
+           OPEN INPUT PSOLD
+           IF FS-PSOLD NOT = ZEROS
+              MOVE " ERRO DE ABERTURA DO ARQ PSOLD " TO WS-MSG
+              MOVE FS-PSOLD                   TO WS-FS
+              GO                              TO 9999-ERRO
+           END-IF
+      *
+           OPEN INPUT PSMOV
+           IF FS-PSMOV NOT = ZEROS
+              MOVE " ERRO DE ABERTURA DO ARQ PSMOV " TO WS-MSG
+              MOVE FS-PSMOV                   TO WS-FS
+              GO                              TO 9999-ERRO
+           END-IF
+      *
+           OPEN OUTPUT PSNEW
+           IF FS-PSNEW NOT = ZEROS
+              MOVE " ERRO DE ABERTURA DO ARQ PSNEW " TO WS-MSG
+              MOVE FS-PSNEW                   TO WS-FS
+              GO                              TO 9999-ERRO
+           END-IF
+      *
+           PERFORM 1500-LER-PSOLD
+           IF FS-PSOLD = "10"
+              MOVE " ARQ PSOLD ESTA VAZIO "   TO WS-MSG
+              MOVE FS-PSOLD                   TO WS-FS
+              GO                              TO 9999-ERRO
+           END-IF
+      *
+           IF WS-TIPO-REGISTRO-O NOT = "H"
+              MOVE " ARQ PSOLD NAO TEM HEADER " TO WS-MSG
+              MOVE FS-PSOLD                    TO WS-FS
+              GO                               TO 9999-ERRO
+           END-IF
+      *
+           PERFORM 1500-LER-PSOLD
+      *
+           IF WS-TIPO-REGISTRO-O NOT = "D"
+              MOVE " ARQ PSOLD NAO TEM DATA " TO WS-MSG
+              MOVE FS-PSOLD                   TO WS-FS
+              GO                              TO 9999-ERRO
+           END-IF
+      ********************
+           PERFORM 1600-LER-PSMOV
+           IF FS-PSMOV = "10"
+              MOVE " ARQ PSMOV ESTA VAZIO "   TO WS-MSG
+              MOVE FS-PSMOV                   TO WS-FS
+              GO                              TO 9999-ERRO
+           END-IF
+      *
+           IF WS-TIPO-REGISTRO-M NOT = "H"
+              MOVE " ARQ PSMOV NAO TEM HEADER " TO WS-MSG
+              MOVE FS-PSMOV                   TO WS-FS
+              GO                              TO 9999-ERRO
+           END-IF
+      *
+           PERFORM 1600-LER-PSMOV
+           IF WS-TIPO-REGISTRO-M NOT = "D"
+              MOVE " ARQ PSMOV NAO TEM DATA "  TO WS-MSG
+              MOVE FS-PSMOV                   TO WS-FS
+              GO                              TO 9999-ERRO
+           END-IF
+           .
+      *
+       1500-LER-PSOLD.
+           READ PSOLD INTO WS-REG-PSOLD
+           IF FS-PSOLD = ZEROS
+              ADD 1                           TO WS-CTLIDOS
+              ADD 1                           TO WS-CTLIDO-OLD
+              IF WS-TIPO-REGISTRO-O = "T"
+                 MOVE HIGH-VALUES             TO WS-CODPS-O
+              END-IF
+           ELSE
+              IF FS-PSOLD NOT = "10"
+                 MOVE " ERRO DE LEITURA DO ARQ PSOLD " TO WS-MSG
+                 MOVE FS-PSOLD                TO WS-FS
+                 GO                           TO 9999-ERRO
+              ELSE
+                 MOVE " ARQ PSOLD SEM TRAILER " TO WS-MSG
+                 MOVE FS-PSOLD                TO WS-FS
+                 GO                           TO 9999-ERRO
+              END-IF
+           END-IF
+           .
+      *
+       1600-LER-PSMOV.
+           READ PSMOV INTO WS-REG-PSMOV
+           IF FS-PSMOV = ZEROS
+              ADD 1                           TO WS-CTLIDO-MOV
+              ADD 1                           TO WS-CTLIDOS
+              IF WS-TIPO-REGISTRO-M = "T"
+                 MOVE HIGH-VALUES             TO WS-CODPS-M
+              END-IF
+           ELSE
+              IF FS-PSMOV = "10"
+                 MOVE " ARQ PSMOV SEM TRAILER " TO WS-MSG
+                 MOVE FS-PSMOV                TO WS-FS
+                 GO                           TO 9999-ERRO
+              ELSE
+                 MOVE " ERRO DE LEITURA DO AQV PSMOV " TO WS-MSG
+                 MOVE FS-PSMOV                TO WS-FS
+                 GO                           TO 9999-ERRO
+              END-IF
+          END-IF
+          .
+      *
+       2000-PROCESSAR.
+           IF WS-CODPS-O < WS-CODPS-M
+              PERFORM 2100-MANTER
+              PERFORM 1500-LER-PSOLD
+           ELSE
+              IF WS-CODPS-O > WS-CODPS-M
+                 PERFORM 2200-INCLUIR
+                 PERFORM 1600-LER-PSMOV
+              ELSE
+                 PERFORM 2300-ALT-EXC
+                 PERFORM 1500-LER-PSOLD
+                 PERFORM 1600-LER-PSMOV
+              END-IF
+           END-IF
+           .
+      *
+       2100-MANTER.
+           PERFORM 2400-GRAVA-O
+           ADD 1                           TO WS-CTMANTIDO
+           .
+      *
+       2200-INCLUIR.
+           IF WS-TIPOMOV-M = "I"
+              PERFORM 2500-GRAVA-M
+              ADD 1                        TO WS-CTINC
+           ELSE
+              ADD 1                        TO WS-CTINVALIDO
+           END-IF
+           .
+      *
+       2300-ALT-EXC.
+           IF WS-TIPOMOV-M = "A"
+              PERFORM 2500-GRAVA-M
+              ADD 1                        TO WS-CTALT
+           ELSE
+              IF WS-TIPOMOV-M = "E"
+                 ADD 1                     TO WS-CTEXC
+              ELSE
+                 ADD 1                     TO WS-CTINVALIDO
+                 PERFORM 2400-GRAVA-O
+              END-IF
+           END-IF
+           .
+      *
+       2400-GRAVA-O.
+           MOVE WS-CODPS-O                 TO WS-CODPS-N
+           MOVE WS-DESCPS-O                TO WS-DESCPS-N
+           MOVE WS-VALORPS-O               TO WS-VALORPS-N
+           WRITE REG-PSNEW                 FROM WS-REG-PSNEW
+           IF FS-PSNEW NOT = ZEROS
+              MOVE " ERRO DE GRAVACAO DO ARQ PSNEW " TO WS-MSG
+              MOVE FS-PSNEW                TO WS-FS
+              GO                           TO 9999-ERRO
+           ELSE
+              ADD 1                        TO WS-CTGRAV
+           END-IF
+           .
+      *
+       2500-GRAVA-M.
+           IF WS-CODPS-M NOT = SPACES
+              MOVE WS-CODPS-M              TO WS-CODPS-N
+           ELSE
+              MOVE WS-CODPS-O              TO WS-DESCPS-N
+           END-IF
+      *
+           IF WS-DESCPS-M NOT = SPACES
+              MOVE WS-DESCPS-M             TO WS-DESCPS-N
+           ELSE
+              MOVE WS-DESCPS-O             TO WS-DESCPS-N
+           END-IF
+      *
+           IF WS-VALORPS-M IS NUMERIC
+              MOVE WS-VALORPS-M            TO WS-VALORPS-N
+           ELSE
+              MOVE WS-VALORPS-O            TO WS-VALORPS-N
+           END-IF
+      *
+           WRITE REG-PSNEW                 FROM WS-REG-PSNEW
+           IF FS-PSNEW NOT = ZEROS
+              MOVE " ERRO DE GRAVACAO DO ARQ PSNEW" TO WS-MSG
+              MOVE FS-PSNEW                TO WS-FS
+              GO                           TO 9999-ERRO
+           ELSE
+              ADD 1                        TO WS-CTGRAV
+           END-IF
+           .
+      *
+       3000-TERMINO.
+           COPY CALCULOT.
+           DISPLAY " "
+           DISPLAY " ----------INFORMACOES GERAIS---------- "
+           DISPLAY " TOTAL DE REGISTROS LIDOS PSOLD: " WS-CTLIDO-OLD
+           DISPLAY " TOTAL DE REGISTROS LIDOS PSMOV: " WS-CTLIDO-MOV
+           DISPLAY " TOTAL DE REGISTROS LIDOS......: " WS-CTLIDOS
+           DISPLAY " TOTAL DE REGITROS GRAVADOS....: " WS-CTGRAV
+           DISPLAY " TOTAL DE REGISTROS INCLUIDOS..: " WS-CTINC
+           DISPLAY " TOTAL DE REGISTROS EXCLUIDOS..: " WS-CTEXC
+           DISPLAY " TOTAL DE REGISTROS ALTERADOS..: " WS-CTALT
+           DISPLAY " TOTAL DE REGISTROS MANTIDOS...: " WS-CTMANTIDO
+           DISPLAY " ------------------------------- "
+           DISPLAY " DATA DO PROCESSAMENTO.........: " WS-DATA-FORMATADA
+           DISPLAY " DIA DA SEMANA.................: " WS-DIA-SEMANA
+           DISPLAY " DATA JULIANA..................: " WS-DATA-JULIANA
+           DISPLAY " TEMPO TOTAL DE PROCESSAMENTO..: " WS-HORARIO-P
+           DISPLAY " ------------------------------- "
+      *
+           CLOSE PSOLD
+           IF FS-PSOLD NOT = ZEROS
+              MOVE " ERRO DE FECHAMENTO DO ARQ PSOLD " TO WS-MSG
+              MOVE FS-PSOLD                TO WS-FS
+              GO                           TO 9999-ERRO
+           END-IF
+      *
+           CLOSE PSMOV
+           IF FS-PSMOV NOT = ZEROS
+              MOVE " ERRO DE FECHAMENTO DO ARQ PSMOV " TO WS-MSG
+              MOVE FS-PSMOV                TO WS-FS
+              GO                           TO 9999-ERRO
+      *
+           CLOSE PSNEW
+           IF FS-PSNEW NOT = ZEROS
+              MOVE " ERRO DE FECHAMENTO DO ARQ PSNEW " TO WS-MSG
+              MOVE FS-PSNEW                TO WS-FS
+              GO                           TO 9999-ERRO
+           END-IF
+           .
+      *
+       9999-ERRO.
+           DISPLAY " "
+           DISPLAY " --------------ROTINA DE ERRO------------ "
+           DISPLAY " MENSAGEM DO ERRO: " WS-MSG
+           DISPLAY " FILE STATUS.....: " WS-FS
+           DISPLAY " TERMINO ANORMAL DO JOB ERIKEX11 "
+           DISPLAY " ---------------------------------------- "
+           STOP RUN
+           .

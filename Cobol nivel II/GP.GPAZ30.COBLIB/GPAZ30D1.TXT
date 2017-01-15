@@ -1,0 +1,199 @@
+      *----------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *----------------------------------------------------------*
+       PROGRAM-ID.                         GPAZ30D1.
+       AUTHOR.                             ERIK.
+      *----------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *----------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+            DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+       FILE-CONTROL.
+           SELECT VCADPRD ASSIGN           TO DA-I-VCADPRD
+           ORGANIZATION IS INDEXED
+           ACCESS MODE IS SEQUENTIAL
+           RECORD KEY IS CODPROD-V
+           FILE STATUS IS FS-VCADPRD
+           .
+      *----------------------------------------------------------*
+       DATA                                DIVISION.
+      *----------------------------------------------------------*
+       FILE                                SECTION.
+       FD  VCADPRD.
+       01  REG-VCADPRD.
+           05 CODPROD-V                    PIC X(04).
+           05 FILLER                       PIC X(65).
+      *
+      *
+       WORKING-STORAGE                     SECTION.
+           EXEC SQL
+              INCLUDE VCADPRD
+           END-EXEC
+      *
+           EXEC SQL
+              INCLUDE PRODUTO
+           END-EXEC
+      *
+      *ESSA E A BOOK DO SQL,ESTA AS VARIAVEIS DE ERRO PG 57 DA APOSTILA COBOL II
+           EXEC SQL
+            INCLUDE SQLCA
+           END-EXEC
+      *
+      *--------------------CONTADORES----------------------------*
+       01  WS-CONTADORES-COMP.
+           05 WS-CTLIDO                    PIC 9(04) COMP.
+           05 WS-CTGRAV                    PIC 9(04) COMP.
+           05 WS-CTDUP                     PIC 9(04) COMP.
+           05 WS-CTINV                     PIC 9(04) COMP.
+      *                       -
+       01  WS-CONTADORES-F.
+           05 WS-CTLIDO-F                  PIC ZZZ9.
+           05 WS-CTGRAV-F                  PIC ZZZ9.
+           05 WS-CTDUP-F                   PIC ZZZ9.
+           05 WS-CTINV-F                   PIC ZZZ9.
+      *--------------------FILE STATUS/SQLCODE/MSG---------------*
+       77  WS-SQLCODE                      PIC +9(9).
+       77  WS-MSG                          PIC X(80).
+       01  FS-VCADPRD                      PIC X(02).
+           88 EOF                          VALUE "10".
+           88 OK                           VALUE "00".
+      *----------------------------------------------------------*
+       LINKAGE                             SECTION.
+      *----------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *----------------------------------------------------------*
+      **000-GPAZ30D1.
+           PERFORM 010-INICIALIZAR
+           PERFORM 030-PROCESSAR UNTIL EOF
+           PERFORM 040-TERMINO
+           STOP RUN
+           .
+      *
+       010-INICIALIZAR.
+           INITIALIZE WS-CONTADORES-COMP
+      *
+           OPEN INPUT VCADPRD
+           IF NOT OK
+             MOVE " ERRO DE ABERTURA DO ARQ VCADPRD " TO WS-MSG
+             GO                            TO 999-ERRO
+           END-IF
+           PERFORM 020-LER-VCADPRD
+           .
+      *
+       020-LER-VCADPRD.
+           READ VCADPRD INTO WS-REG-VCADPRD
+           IF OK
+             ADD 1                         TO WS-CTLIDO
+           ELSE
+             IF NOT EOF
+                MOVE " ERRO DE LEITURA DO ARQV VCADPRD " TO WS-MSG
+                GO                         TO 999-ERRO
+             END-IF
+           END-IF
+           .
+      *
+       030-PROCESSAR.
+      *MOVENDO DADOS PARA AS VARIAVEIS HOSPEDEIRAS DA TABELA PRODUTO
+           MOVE WS-CODPROD-V                TO CODPROD
+           MOVE WS-DESCPROD-V               TO DESCPROD-TEXT
+           MOVE +20                         TO DESCPROD-LEN
+           MOVE WS-UNIDPROD-V               TO UNIDPROD
+           MOVE WS-LOCALPROD-V              TO LOCALPROD
+           MOVE WS-QTDEST-V                 TO QTDEST
+           MOVE WS-QTDMAX-V                 TO QTDMAX
+           MOVE WS-QTDMIN-V                 TO QTDMIN
+           MOVE WS-PRECOCOMPRA-V            TO PRECOCOMPRA
+           MOVE WS-PRECOVENDA-V             TO PRECOVENDA
+           MOVE WS-PERCOMIS-V               TO PERCOMIS
+      *
+           EXEC SQL
+            INSERT INTO PRODUTO
+            (
+             CODPROD,
+             DESCPROD,
+             UNIDPROD,
+             LOCALPROD,
+             QTDEST,
+             QTDMAX,
+             QTDMIN,
+             PRECOCOMPRA,
+             PRECOVENDA,
+             PERCOMIS
+            )
+            VALUES
+            (
+             :CODPROD,
+             :DESCPROD,
+             :UNIDPROD,
+             :LOCALPROD,
+             :QTDEST,
+             :QTDMAX,
+             :QTDMIN,
+             :PRECOCOMPRA,
+             :PRECOVENDA,
+             :PERCOMIS
+            )
+           END-EXEC
+      *
+           EVALUATE SQLCODE
+              WHEN 0    ADD 1              TO WS-CTGRAV
+              WHEN -803 ADD 1              TO WS-CTDUP
+              WHEN -545 ADD 1              TO WS-CTINV
+              WHEN OTHER
+              MOVE " ERRO DE INSERT PRODUTO "  TO WS-MSG
+              MOVE SQLCODE                 TO WS-SQLCODE
+              GO                           TO 999-ERRO-DB2
+           END-EVALUATE
+           PERFORM 020-LER-VCADPRD
+           .
+      *
+       040-TERMINO.
+           MOVE WS-CTLIDO                   TO WS-CTLIDO-F
+           MOVE WS-CTGRAV                   TO WS-CTGRAV-F
+           MOVE WS-CTDUP                    TO WS-CTDUP-F
+           MOVE WS-CTINV                    TO WS-CTINV-F
+      *
+           DISPLAY " "
+           DISPLAY " *-----------------------------* "
+           DISPLAY " *      INFORMACOES GERAIS     * "
+           DISPLAY " *-----------------------------* "
+           DISPLAY " TOTAL DE REGISTROS LIDOS: "      WS-CTLIDO
+           DISPLAY " TOTAL DE REGISTROS GRAVADOS: "   WS-CTGRAV
+           DISPLAY " TOTAL DE REGISTROS DUPLICADOS: " WS-CTDUP
+           DISPLAY " TOTAL DE REGISTROS INVALIDOS: "  WS-CTINV
+           DISPLAY " ------------------------------* "
+      *
+           CLOSE VCADPRD
+           IF NOT OK
+             MOVE " ERRO DE FECHAMENTO DO ARQ VCADPRD " TO WS-MSG
+             GO                            TO 999-ERRO
+           END-IF
+      *
+           DISPLAY " ------------------------------------------ "
+           DISPLAY " -----TERMINO NORMAL DE PROCESSAMENTO------ "
+           DISPLAY "                       , _ ,                "
+           DISPLAY "    E                 ( O O )    E          "
+           DISPLAY "     R               /'` ' `'\    R         "
+           DISPLAY "      I              |'''''''|     I        "
+           DISPLAY "       K             |\\'''//|      K       "
+           DISPLAY "                        """               " "
+           DISPLAY " ------------------------------------------ "
+           .
+      *
+       999-ERRO.
+           DISPLAY " TERMINO ANORMAL DO PROGRAMA GPAZ30D1 "
+           DISPLAY " MENSAGEM....: " WS-MSG
+           DISPLAY " FILE STATUS.: " FS-VCADPRD
+           MOVE 12                          TO RETURN-CODE
+           STOP RUN
+           .
+      *
+       999-ERRO-DB2.
+           DISPLAY " TERMINO ANORMAL DO PROGRAMA GPAZ30D1 "
+           DISPLAY " MENSAGEM : " WS-MSG
+           DISPLAY " SQL-CODE : " WS-SQLCODE
+           MOVE 12                          TO RETURN-CODE
+           STOP RUN
+           .

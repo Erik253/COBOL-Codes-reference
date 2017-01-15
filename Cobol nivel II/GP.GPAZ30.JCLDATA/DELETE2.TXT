@@ -1,0 +1,8 @@
+---EXCLUIR OS PRODUTOS QUE FORAM VENDIDOS APENAS UMA VEZ                00010000
+---                                                                     00020000
+DELETE FROM TBPROD                                                      00030000
+WHERE CODPROD IN                                                        00040000
+                 (SELECT CODPROD                                        00050000
+                  FROM TBVENDA                                          00060000
+                  GROUP BY CODPROD                                      00070000
+                  HAVING COUNT(*) = 1)                                  00080000

@@ -1,0 +1,44 @@
+      ******************************************************************
+      * DCLGEN TABLE(PRODUTO)                                          *
+      *        LIBRARY(GP.GPAZ30.JCLDATA(PRODUTO))                     *
+      *        LANGUAGE(COBOL)                                         *
+      *        QUOTE                                                   *
+      *        INDVAR(YES)                                             *
+      * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
+      ******************************************************************
+           EXEC SQL DECLARE PRODUTO TABLE
+           ( CODPROD                        CHAR(4) NOT NULL,
+             DESCPROD                       VARCHAR(20) NOT NULL,
+             UNIDPROD                       CHAR(5) NOT NULL,
+             LOCALPROD                      CHAR(5) NOT NULL,
+             QTDEST                         DECIMAL(5, 0),
+             QTDMAX                         DECIMAL(5, 0),
+             QTDMIN                         DECIMAL(5, 0),
+             PRECOCOMPRA                    DECIMAL(8, 2),
+             PRECOVENDA                     DECIMAL(8, 2),
+             PERCOMIS                       DECIMAL(4, 2)
+           ) END-EXEC.
+      ******************************************************************
+      * COBOL DECLARATION FOR TABLE PRODUTO                            *
+      ******************************************************************
+       01  DCLPRODUTO.
+           10 CODPROD              PIC X(4).
+           10 DESCPROD.
+              49 DESCPROD-LEN      PIC S9(4) USAGE COMP.
+              49 DESCPROD-TEXT     PIC X(20).
+           10 UNIDPROD             PIC X(5).
+           10 LOCALPROD            PIC X(5).
+           10 QTDEST               PIC S9(5)V USAGE COMP-3.
+           10 QTDMAX               PIC S9(5)V USAGE COMP-3.
+           10 QTDMIN               PIC S9(5)V USAGE COMP-3.
+           10 PRECOCOMPRA          PIC S9(6)V9(2) USAGE COMP-3.
+           10 PRECOVENDA           PIC S9(6)V9(2) USAGE COMP-3.
+           10 PERCOMIS             PIC S9(2)V9(2) USAGE COMP-3.
+      ******************************************************************
+      * INDICATOR VARIABLE STRUCTURE                                   *
+      ******************************************************************
+       01  IPRODUTO.
+           10 INDSTRUC             PIC S9(4) USAGE COMP OCCURS 10 TIMES.
+      ******************************************************************
+      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 10      *
+      ******************************************************************

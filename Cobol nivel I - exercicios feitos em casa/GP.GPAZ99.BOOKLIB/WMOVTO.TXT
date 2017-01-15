@@ -1,0 +1,9 @@
+       01  WS-REG-CADMOVTO.
+           05 WS-CODFUN-M         PIC 9(04).
+           05 WS-NOME-M           PIC X(35).
+           05 WS-FUNCAO-M         PIC X(20).
+           05 WS-SALARIO-M        PIC 9(04)V99.
+           05 WS-VENCTOS-M        PIC 9(04)V99.
+           05 WS-DESCTOS-M        PIC 9(04)V99.
+           05 WS-TIPO-M           PIC X(01).
+           05 FILLER              PIC X(02).

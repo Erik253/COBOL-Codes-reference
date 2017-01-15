@@ -1,0 +1,7 @@
+       01  :XX-:REG-CLIUNIF.                                            00010004
+           05 :XX-:CPFCLI-UNIF             PIC x(11).                   00020002
+           05 :XX-:NOMECLI-UNIF            PIC X(25).                   00030002
+           05 :XX-:ENDCLI-UNIF             PIC X(30).                   00040002
+           05 :XX-:FONECLI-UNIF            PIC X(10).                   00050002
+           05 :XX-:TOTALCOMPRAS-UNIF       PIC 9(08)V99.                00060003
+           05 :XX-:ULTIMACOMPRA-UNIF       PIC X(10).                   00070003

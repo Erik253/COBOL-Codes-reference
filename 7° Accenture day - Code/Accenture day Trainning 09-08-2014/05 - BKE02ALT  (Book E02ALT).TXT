@@ -1,0 +1,17 @@
+      *----------------------------------------------------------------*
+      * BOOK - ARQUIVO E02ALT
+      *      - LRECL (LOGIC RECORD LENGTH) = 110 POSICOES
+      *----------------------------------------------------------------*
+       01  ::REGISTRO-E02ALT.
+           03 ::CHAVE-E02ALT.
+              05 ::E02ALT-UNIDADE          PIC 9(03).
+              05 ::E02ALT-NUMERO-CLIENTE   PIC 9(04).
+           03 ::E02ALT-NOME-CLIENTE        PIC X(40).
+           03 ::E02ALT-TELEFONE            PIC 9(10).
+           03 ::E02ALT-EMAIL               PIC X(30).
+           03 ::E02ALT-DATA-NASCTO.
+              05 ::E02ALT-NASCTO           PIC 9(04).
+              05 ::E02ALT-NASCTO           PIC 9(02).
+              05 ::E02ALT-NASCTO           PIC 9(02).
+           03 ::E02ALT-HORA-GRAVACAO       PIC 9(06).
+           03 FILLER                       PIC X(01).

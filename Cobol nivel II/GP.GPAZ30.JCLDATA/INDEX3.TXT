@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX IDXCLI                                              00010000
+ ON TBCLI (CODCLI)                                                      00020000

@@ -1,0 +1,9 @@
+----------------------------------------------------------------------- 00010000
+----------------OU O SEGUNDO JEITO DE FAZER O EXERCICO 21------------   00020000
+----------------------------------------------------------------------- 00030000
+SELECT DISTINCT DESCTIPOPROD                                            00040000
+FROM  TBTIPOPROD,TBPROD,TBVENDA,TBCLI                                   00050000
+WHERE TBTIPOPROD.CODTIPOPROD = TBPROD.CODTIPOPROD AND                   00060000
+      TBPROD.CODPROD         = TBVENDA.CODPROD    AND                   00070000
+      TBVENDA.CODCLI         = TBCLI.CODCLI       AND                   00080000
+      CODTIPOCLI = '03' AND QTDVENDA > 10                               00090000

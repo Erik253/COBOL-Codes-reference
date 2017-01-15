@@ -1,0 +1,6 @@
+----ALTERAR PARA O TIPO '05' OS CLIENTES NASCIDOS DEPOIS DE 1980 COM MAI00010000
+----S DE 1.6M DE ALTURA                                                 00020000
+----                                                                    00030000
+UPDATE TBCLI                                                            00040000
+SET CODTIPOCLI = '05'                                                   00050000
+WHERE ALTURACLI > 1.6 AND YEAR(DATANASCCLI) > 1980                      00060001

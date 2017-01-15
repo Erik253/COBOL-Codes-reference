@@ -1,0 +1,10 @@
+//GPAZ9911 JOB ERIK,MSGCLASS=X,CLASS=C,NOTIFY=GPAZ99,TIME=(0,20)        00010089
+//*****************************************************************     00020016
+//* JOB DE COMPILACAO PROGRAMA COBOL BATCH                              00030016
+//* TROCAR NN POR SEU NUMERO                                            00040076
+//*************************************************************         00080016
+// JCLLIB   ORDER=GP.LB.PROCLIB                                         00090016
+//COBCOMP  EXEC DFHCOBOL,INSTR='GPAZ99',NOME='ERIKEX11'                 00100089
+//LKED.SYSIN    DD   *                                                  00110016
+  NAME  ERIKEX11(R)                                                     00120089
+/*                                                                      00130016

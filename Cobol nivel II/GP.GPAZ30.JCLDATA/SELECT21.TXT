@@ -1,0 +1,16 @@
+---EXIBIR A DESCRICAO DO TIPO DE PRODUTO QUE OS CLIENTES DO TIPO '03'   00010000
+---COMPRARAM MAIS DE 10 UNIDADES POR COMPRA. (JOIN / SUB-QUERIE)        00020000
+---                                                                     00030000
+SELECT DESCTIPOPROD                                                     00040000
+FROM TBTIPOPROD                                                         00050000
+WHERE CODTIPOPROD IN                                                    00060000
+                 (SELECT CODTIPOPROD                                    00070000
+                 FROM TBPROD                                            00080000
+                 WHERE CODPROD IN                                       00090000
+                               (SELECT CODPROD                          00100000
+                               FROM TBVENDA                             00110000
+                               WHERE CODCLI IN                          00120000
+                                           (SELECT CODCLI               00130000
+                                           FROM TBCLI                   00140000
+                                           WHERE CODTIPOCLI = '03') AND 00150000
+                                                 QTDVENDA > 10))        00160000

@@ -1,0 +1,69 @@
+      *--------------------------------------------------------------*
+      * EXERCICIO PG:22 PARTE 1 DA APOSTILA
+      * JOB: ERIKEX02 | COMPILADOR: ERIKCO02
+      *--------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *--------------------------------------------------------------*
+       PROGRAM-ID.                         ERIKEX02.
+       AUTHOR.                             ERIK.
+      *--------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *--------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+      *--------------------------------------------------------------*
+       DATA                                DIVISION.
+      *--------------------------------------------------------------*
+       FILE                                SECTION.
+       WORKING-STORAGE                     SECTION.
+       77  WS-NUMERO                       PIC 9(03).
+       77  WS-CTLIDOS                      PIC 9(03).
+       77  WS-TOTAL                        PIC 9(04).
+       77  WS-MULTIPLICADO                 PIC 9(04).
+      *--------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *--------------------------------------------------------------*
+       0000-ERIKEX02.
+           PERFORM 1000-INICIALIZAR
+           PERFORM 2000-PROCESSAR UNTIL WS-NUMERO = ZEROS
+           PERFORM 3000-TERMINO
+           STOP RUN
+           .
+      *
+       1000-INICIALIZAR.
+           INITIALIZE WS-CTLIDOS
+                      WS-MULTIPLICADO
+           PERFORM 1500-LER-SYSIN
+           .
+      *
+       1500-LER-SYSIN.
+           ACCEPT WS-NUMERO                FROM SYSIN
+           IF WS-NUMERO NOT = ZEROS
+              ADD 1                        TO WS-CTLIDOS
+           END-IF
+           .
+      *
+       2000-PROCESSAR.
+           DISPLAY " "
+           DISPLAY " TABUADA DO NUMERO " WS-NUMERO
+           PERFORM 2500-IMPRIMIR-TABUADA UNTIL WS-MULTIPLICADO = 11
+           MOVE 0                          TO WS-MULTIPLICADO
+           PERFORM 1500-LER-SYSIN
+           .
+      *
+       2500-IMPRIMIR-TABUADA.
+           COMPUTE WS-TOTAL = WS-NUMERO * WS-MULTIPLICADO
+           DISPLAY WS-NUMERO " X " WS-MULTIPLICADO " = " WS-TOTAL
+           ADD 1                           TO WS-MULTIPLICADO
+           .
+      *
+       3000-TERMINO.
+           DISPLAY " "
+           DISPLAY " ********************* "
+           DISPLAY " * INFORMACOES GERAIS* "
+           DISPLAY " ********************* "
+           DISPLAY " TOTAL DE REGISTROS LIDOS: " WS-CTLIDOS
+           DISPLAY " TERMINO NORMAL DO PROGRAMA ERIKEX02 "
+           .

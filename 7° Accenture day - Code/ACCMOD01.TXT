@@ -1,0 +1,322 @@
+      *--------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *--------------------------------------------------------------*
+       PROGRAM-ID.                         ACCMOD01.
+
+      *--------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *--------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+       FILE-CONTROL.
+
+           SELECT E01CAD ASSIGN TO UT-S-E01CAD
+           FILE STATUS IS FS-E01CAD.
+
+           SELECT E02ALT ASSIGN TO UT-S-E02ALT
+           FILE STATUS IS FS-E02ALT.
+
+           SELECT S01ARQ ASSIGN TO UT-S-S01ARQ
+           FILE STATUS IS FS-S01ARQ.
+
+      *--------------------------------------------------------------*
+       DATA                  DIVISION.
+      *--------------------------------------------------------------*
+       FILE                  SECTION.
+      *--------------------------------------------------------------*
+       FD  E01CAD
+           RECORDING MODE IS F.
+           COPY BKE01CAD REPLACING ==::== BY ====.
+
+       FD  E02ALT
+           RECORDING MODE IS F.
+           COPY BKE02ALT REPLACING ==::== BY ====.
+
+       FD  S01ARQ
+           RECORDING MODE IS F.
+           COPY BKS01ARQ REPLACING ==::== BY ====.
+
+      *--------------------------------------------------------------*
+       WORKING-STORAGE                     SECTION.
+      *--------------------------------------------------------------*
+           COPY BKE01CAD REPLACING ==::== BY ==WS-==.
+
+           COPY BKE02ALT REPLACING ==::== BY ==WS-==.
+
+           COPY BKS01ARQ REPLACING ==::== BY ==WS-==.
+
+           COPY POOL0010.
+
+       01  FS-E01CAD                       PIC X(02).
+           88 E01CAD-SUCESSO                       VALUE "00".
+           88 E01CAD-FIM-ARQUIVO                   VALUE "10".
+
+       01  FS-E02ALT                       PIC X(02).
+           88 E02ALT-SUCESSO                       VALUE "00".
+           88 E02ALT-FIM-ARQUIVO                   VALUE "10".
+
+       01  FS-S01ARQ                       PIC X(02).
+           88 S01ARQ-SUCESSO                       VALUE "00".
+           88 S01ARQ-FIM-ARQUIVO                   VALUE "10".
+
+       01  WS-CONTADORES-COMP.
+           03 WS-CONT-LIDOS-E01CAD         PIC 9(6) COMP.
+           03 WS-CONT-LIDOS-E02ALT         PIC 9(6) COMP.
+           03 WS-CONT-INCLUIDOS            PIC 9(6) COMP.
+           03 WS-CONT-ALTERADOS            PIC 9(6) COMP.
+           03 WS-CONT-EXCLUIDOS            PIC 9(6) COMP.
+
+       01  WS-CONTADORES-FORMATADOS.
+           03 WS-CONT-LIDOS-E01CAD-F       PIC ZZZ.ZZ9.
+           03 WS-CONT-LIDOS-E02ALT-F       PIC ZZZ.ZZ9.
+           03 WS-CONT-INCLUIDOS-F          PIC ZZZ.ZZ9.
+           03 WS-CONT-ALTERADOS-F          PIC ZZZ.ZZ9.
+           03 WS-CONT-EXCLUIDOS-F          PIC ZZZ.ZZ9.
+
+       77  WS-MSG                          PIC X(60).
+       77  WS-FS                           PIC X(02).
+
+      *--------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *--------------------------------------------------------------*
+       0000-ACCMOD01.
+           PERFORM 1000-INICIALIZAR
+           PERFORM 2000-PROCESSAR
+             UNTIL E01CAD-FIM-ARQUIVO AND
+                   E02ALT-FIM-ARQUIVO
+           PERFORM 3000-TERMINO
+           STOP RUN
+           .
+
+       1000-INICIALIZAR.
+
+           OPEN INPUT E01CAD
+
+           IF NOT E01CAD-SUCESSO
+              MOVE "ERRO ABERTURA ARQUIVO: E01CAD"
+                                           TO WS-MSG
+              MOVE FS-E01CAD               TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+
+
+           OPEN INPUT E02ALT
+
+           IF NOT E02ALT-SUCESSO
+              MOVE "ERRO ABERTURA ARQUIVO: E02ALT"
+                                           TO WS-MSG
+              MOVE FS-E02ALT               TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+
+           OPEN OUTPUT S01ARQ
+
+           IF NOT S01ARQ-SUCESSO
+              MOVE "ERRO ABERTURA ARQUIVO: S01ARQ"
+                                           TO WS-MSG
+              MOVE FS-S01ARQ               TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+
+
+           PERFORM 1100-LER-E01CAD
+           IF E01CAD-FIM-ARQUIVO
+              DISPLAY "ARQUIVO E01CAD VAZIO"
+              STOP RUN
+           END-IF
+
+
+           PERFORM 1200-LER-E02ALT
+           IF E02ALT-FIM-ARQUIVO
+              DISPLAY "ARQUIVO E02ALT VAZIO"
+              STOP RUN
+           END-IF
+
+      ******************************************************************
+      * INICIALIZAR CAMPOS WS-REGISTRO-E01CAD                          *
+      *                                                                *
+      *    HAVIA UM ERRO NA ESPECIFICACAO, POIS ERA PARA FAZER ESTA    *
+      *    INICIALIZACAO EM WS-REGISTRO-S01ARQ                         *
+      *                                                                *
+      ******************************************************************
+
+           INITIALIZE WS-REGISTRO-S01ARQ
+
+           MOVE 1                          TO LS-FLAG-ROTINA
+           CALL   "ACNN0010" USING POOL0010-LINKAGE
+           CANCEL "ACNN0010"
+
+           MOVE LS-HORA-MASC               TO S01ARQ-HORA-GRAVACAO
+           MOVE LS-DATA-MASC               TO S01ARQ-DATA-GRAVACAO
+
+           DISPLAY "INICIO PROCESSAMENTO"
+                   LS-DATA-MASC
+                   " "
+                   LS-HORA-MASC
+           DISPLAY "PROGRAMA ACNN001 - SEU NOME"
+           .
+
+
+
+       1100-LER-E01CAD.
+           READ E01CAD INTO WS-REGISTRO-E01CAD
+           IF E01CAD-SUCESSO
+              ADD 1 TO WS-CONT-LIDOS-E01CAD
+           ELSE
+              IF NOT E01CAD-FIM-ARQUIVO
+                 MOVE "ERRO LEITURA ARQUIVO: E01CAD"
+                                           TO WS-MSG
+                 MOVE FS-E01CAD            TO WS-FS
+                 GO TO 9000-ERRO
+              END-IF
+           END-IF
+           .
+
+
+
+
+       1200-LER-E02ALT.
+           READ E02ALT INTO WS-REGISTRO-E02ALT
+           IF E02ALT-SUCESSO
+              ADD 1 TO WS-CONT-LIDOS-E02ALT
+           ELSE
+              IF NOT E02ALT-FIM-ARQUIVO
+                 MOVE "ERRO LEITURA ARQUIVO: E02ALT"
+                                           TO WS-MSG
+                 MOVE FS-E02ALT            TO WS-FS
+                 GO TO 9000-ERRO
+              END-IF
+           END-IF
+           .
+
+
+
+       2000-PROCESSAR.
+
+           MOVE 2                          TO LS-FLAG-ROTINA
+           MOVE E02ALT-DATA-NASCTO         TO LS-DT-PARA-VALIDAR
+
+           CALL   "ACNN0010" USING POOL0010-LINKAGE
+           CANCEL "ACNN0010"
+
+           IF LS-FLAG-RETORNO = 2
+              DISPLAY "REGISTRO COM DATA DE NASCIMENTO INVALIDA. ARQUIVO
+      -               " E02ALT CORROMPIDO"
+              STOP RUN
+           END-IF
+
+           IF WS-CHAVE-E01CAD > WS-CHAVE-E02ALT
+      *       INCLUSAO DE E02ALT
+              MOVE WS-E02ALT-UNIDADE       TO WS-S01ARQ-UNIDADE
+              MOVE WS-E02ALT-NUMERO-CLIENTE
+                                           TO WS-S01ARQ-NUMERO-CLIENTE
+              MOVE WS-E02ALT-NOME-CLIENTE  TO WS-S01ARQ-NOME-CLIENTE
+              MOVE WS-E02ALT-TELEFONE      TO WS-S01ARQ-TELEFONE
+              MOVE WS-E02ALT-EMAIL         TO WS-S01ARQ-EMAIL
+              MOVE WS-E02ALT-DATA-NASCTO   TO WS-S01ARQ-DATA-NASCTO
+
+              ADD 1 TO WS-CONT-INCLUIDOS
+
+              PERFORM 2100-GRAVAR-S01ARQ
+              PERFORM 1200-LER-E02ALT
+           ELSE
+              IF WS-CHAVE-E01CAD = WS-CHAVE-E02ALT
+      *       ALTERACAO DE DADOS CADASTRAIS
+                 MOVE WS-E02ALT-UNIDADE    TO WS-S01ARQ-UNIDADE
+                 MOVE WS-E02ALT-NUMERO-CLIENTE
+                                           TO WS-S01ARQ-NUMERO-CLIENTE
+                 MOVE WS-E02ALT-NOME-CLIENTE
+                                           TO WS-S01ARQ-NOME-CLIENTE
+                 MOVE WS-E02ALT-TELEFONE   TO WS-S01ARQ-TELEFONE
+                 MOVE WS-E02ALT-EMAIL      TO WS-S01ARQ-EMAIL
+                 MOVE WS-E02ALT-DATA-NASCTO
+                                           TO WS-S01ARQ-DATA-NASCTO
+
+                 ADD 1 TO WS-CONT-ALTERADOS
+                 PERFORM 2100-GRAVAR-S01ARQ
+                 PERFORM 1100-LER-E01CAD
+                 PERFORM 1200-LER-E02ALT
+              ELSE
+      *       CONSIDERAR EXCLUSAO DE REGISTRO
+                 ADD 1 TO WS-CONT-EXCLUIDOS
+                 PERFORM 1100-LER-E01CAD
+              END-IF
+           END-IF
+           .
+
+
+
+       2100-GRAVAR-S01ARQ.
+           WRITE REGISTRO-S01ARQ           FROM WS-REGISTRO-S01ARQ
+           IF NOT S01ARQ-SUCESSO
+              MOVE "ERRO GRAVACAO ARQUIVO: S01ARQ"
+                                           TO WS-MSG
+              MOVE FS-S01ARQ               TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+           .
+
+
+
+
+       3000-TERMINO.
+           CLOSE E01CAD
+           IF NOT E01CAD-SUCESSO
+              MOVE "ERRO FECHAMENTO ARQUIVO: E01CAD"
+                                           TO WS-MSG
+              MOVE FS-E01CAD               TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+
+           CLOSE E02ALT
+           IF NOT E02ALT-SUCESSO
+              MOVE "ERRO FECHAMENTO ARQUIVO: E02ALT"
+                                           TO WS-MSG
+              MOVE FS-E01CAD               TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+
+           CLOSE S01ARQ
+           IF NOT S01ARQ-SUCESSO
+              MOVE "ERRO FECHAMENTO ARQUIVO: S01ARQ"
+                                           TO WS-MSG
+              MOVE FS-S01ARQ               TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+
+           MOVE WS-CONT-LIDOS-E01CAD       TO WS-CONT-LIDOS-E01CAD-F
+           MOVE WS-CONT-LIDOS-E02ALT       TO WS-CONT-LIDOS-E02ALT-F
+           MOVE WS-CONT-INCLUIDOS          TO WS-CONT-INCLUIDOS-F
+           MOVE WS-CONT-ALTERADOS          TO WS-CONT-ALTERADOS-F
+           MOVE WS-CONT-EXCLUIDOS          TO WS-CONT-EXCLUIDOS-F
+
+           DISPLAY "*--------------------------------------------*"
+           DISPLAY "TOTAL DE REG. LIDOS E01CAD ..: "
+                   WS-CONT-LIDOS-E01CAD-F
+           DISPLAY "TOTAL DE REG. LIDOS E02ALT ..: "
+                   WS-CONT-LIDOS-E02ALT-F
+           DISPLAY "TOTAL REGISTROS INCLUIDOS ...: "
+                   WS-CONT-INCLUIDOS-F
+           DISPLAY "TOTAL REGISTROS ALTERADOS ...: "
+                   WS-CONT-ALTERADOS-F
+           DISPLAY "TOTAL REGISTROS EXCLUIDOS ...: "
+                   WS-CONT-EXCLUIDOS-F
+           DISPLAY "*--------------------------------------------*"
+           DISPLAY "FIM PROCESSAMENTO PROGRAMA ACNN001"
+           DISPLAY "*--------------------------------------------*"
+           .
+
+
+
+       9000-ERRO.
+           DISPLAY "*--------------------------------------------*"
+           DISPLAY "     TERMINO ANORMAL DO PROGRAMA ACNN001     *"
+           DISPLAY "*--------------------------------------------*"
+           DISPLAY "MENSAGEM .....: " WS-MSG
+           DISPLAY "FILE STATUS ..: " ws-FS
+           DISPLAY "*--------------------------------------------*"
+           MOVE 12                         TO RETURN-CODE
+           STOP RUN
+           .

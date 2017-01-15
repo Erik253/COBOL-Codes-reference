@@ -1,0 +1,50 @@
+INSERT INTO TBCLI                                                       00010000
+( CODCLI,NOMECLI,ENDCLI,DATANASCCLI,ALTURACLI,CODTIPOCLI )              00020000
+VALUES                                                                  00021000
+( '0001','MARIO BROS','RUA DO ENCANAMENTO, 23','25.10.1989',1.72,'01'); 00030000
+----------------------------------------------------------------------- 00040000
+INSERT INTO TBCLI                                                       00050000
+( CODCLI,NOMECLI,ENDCLI,DATANASCCLI,ALTURACLI,CODTIPOCLI )              00060000
+VALUES                                                                  00070000
+( '0002','LUIGI BROS','RUA DOS COGUMELOS, 28','27.11.1989',1.80,'01' ); 00080000
+----------------------------------------------------------------------- 00090000
+INSERT INTO TBCLI                                                       00100000
+(CODCLI,NOMECLI,ENDCLI,DATANASCCLI,ALTURACLI,CODTIPOCLI )               00110001
+VALUES                                                                  00120000
+('0003','COPAS','AVENIDA DO CASTELO, 100','30.11.2000',2.00,'03' );     00130001
+----------------------------------------------------------------------- 00140000
+INSERT INTO TBCLI                                                       00150000
+(CODCLI,NOMECLI,ENDCLI,DATANASCCLI,ALTURACLI,CODTIPOCLI )               00160001
+VALUES                                                                  00170000
+('0004','JUQUINHA','RUA DO JUQUINHAS, 50','04.10.2001',2.01,'05' );     00180001
+----------------------------------------------------------------------- 00190000
+INSERT INTO TBCLI                                                       00200000
+(CODCLI,NOMECLI,ENDCLI,DATANASCCLI,ALTURACLI,CODTIPOCLI )               00210001
+VALUES                                                                  00220000
+('0005','SEU MADRUGA','RUA DA VILA, 23','25.10.1930',1.80,'01' );       00230001
+----------------------------------------------------------------------- 00240000
+INSERT INTO TBCLI                                                       00250000
+(CODCLI,NOMECLI,ENDCLI,DATANASCCLI,ALTURACLI,CODTIPOCLI )               00260001
+VALUES                                                                  00270000
+('0006','CHAPOLIN','RUA CHISPIRITO, 01','02.01.1990',1.50,'04' );       00280001
+----------------------------------------------------------------------- 00290000
+INSERT INTO TBCLI                                                       00300000
+(CODCLI,NOMECLI,ENDCLI,DATANASCCLI,ALTURACLI,CODTIPOCLI )               00310001
+VALUES                                                                  00320000
+('0007','BOB ESPONJA','FEIRA DO BIQUINI, 87','01.01.2003',1.40,'04' );  00330001
+----------------------------------------------------------------------- 00340000
+INSERT INTO TBCLI                                                       00350000
+(CODCLI,NOMECLI,ENDCLI,DATANASCCLI,ALTURACLI,CODTIPOCLI )               00360001
+VALUES                                                                  00370000
+('0008','LULA MOLUSCO','FEIRA DO BIQUINI, 11','02.03.1999',1.60,'01');  00380001
+----------------------------------------------------------------------- 00390000
+INSERT INTO TBCLI                                                       00400000
+(CODCLI,NOMECLI,ENDCLI,DATANASCCLI,ALTURACLI,CODTIPOCLI )               00410001
+VALUES                                                                  00420000
+('0009','ZEZINHO DA SILVA','RUA DO ZE, 55','06.06.1966',1.90,'05' );    00430001
+----------------------------------------------------------------------- 00440000
+INSERT INTO TBCLI                                                       00450000
+(CODCLI,NOMECLI,ENDCLI,DATANASCCLI,ALTURACLI,CODTIPOCLI )               00460001
+VALUES                                                                  00470000
+('0010','PELEZINHO DO VILA','RUA DO PELE, 70','05.04.1970',1.40,'01' )  00480001
+----------------------------------------------------------------------- 00490000

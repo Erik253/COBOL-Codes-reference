@@ -1,0 +1,19 @@
+       01  POOL0010-LINKAGE.
+           03 LS-FLAG-ROTINA               PIC 9(01).
+           03 LS-FLAG-RETORNO              PIC 9(01).
+           03 LS-DATA-MASC.
+              05 LS-DIA-MASC               PIC 9(02).
+              05 LS-BARRA1                 PIC X(01).
+              05 LS-MES-MASC               PIC 9(02).
+              05 LS-BARRA2                 PIC X(01).
+              05 LS-ANO-MASC               PIC 9(04).
+           03 LS-HORA-MASC.
+              05 LS-HH                     PIC 9(02).
+              05 LS-PONTO1                 PIC X(01).
+              05 LS-MM                     PIC 9(02).
+              05 LS-PONTO2                 PIC X(01).
+              05 LS-SS                     PIC 9(02).
+           03 LS-DT-PARA-VALIDAR.
+              05 LS-ANO-VALIDA             PIC 9(04).
+              05 LS-MES-VALIDA             PIC 9(02).
+              05 LS-DIA-VALIDA             PIC 9(02).

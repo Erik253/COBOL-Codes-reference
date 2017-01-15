@@ -1,0 +1,15 @@
+       FD  CADFUNCN
+           LABEL RECORD STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+           RECORD CONTAINS 80 CHARACTERS
+           DATA RECORD IS REG-CADFUNN
+           .
+       01  REG-CADFUNCN.
+           05 CODFUN-N         PIC 9(04).
+           05 NOME-N           PIC X(35).
+           05 FUNCAO-N         PIC X(20).
+           05 SALARIO-N        PIC 9(04)V99.
+           05 VENCTOS-N        PIC 9(04)V99.
+           05 DESCTOS-N        PIC 9(04)V99.
+           05 FILLER           PIC X(03).

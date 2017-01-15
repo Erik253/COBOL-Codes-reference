@@ -1,0 +1,1 @@
+       77  WS-REG-RELREPO                  PIC X(80).

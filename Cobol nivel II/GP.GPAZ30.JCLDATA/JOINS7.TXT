@@ -1,0 +1,7 @@
+---UNIAO - A INTERSECCAO                                                00010000
+---                                                                     00020000
+SELECT CHAVEA,DESCB,VALB                                                00030000
+FROM   TBA A FULL OUTER JOIN TBB B                                      00040000
+ON     A.CHAVEA = B.CHAVEB                                              00050000
+WHERE  A.CHAVEA IS NULL OR                                              00060000
+       B.CHAVEB IS NULL                                                 00070000

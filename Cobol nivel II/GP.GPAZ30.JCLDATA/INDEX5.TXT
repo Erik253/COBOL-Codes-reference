@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX IDXVENDA                                            00010000
+ ON TBVENDA (NUMVENDA)                                                  00020000

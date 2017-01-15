@@ -1,0 +1,143 @@
+      *--------------------------------------------------------------*  00001019
+      * PROJETO 02 - BANCO DOPOLVO S.A.                              *  00002019
+      *--------------------------------------------------------------*  00003019
+      * OBJETIVO : REALIZAR ALTERACOES UTILIZANDO O PROJETO GPGO1702 *  00004019
+      * ADICIONANDO INFORMACOES DE TEMPO E DATA.                     *  00005019
+      *                                                              *  00006019
+      *--------------------------------------------------------------*  00010013
+       IDENTIFICATION                      DIVISION.                    00020019
+      *--------------------------------------------------------------*  00030013
+       PROGRAM-ID.                         GPGO1702.                    00040019
+       AUTHOR.                             ERIK.                        00050013
+
+      *--------------------------------------------------------------*  00060013
+       ENVIRONMENT                         DIVISION.                    00070019
+      *--------------------------------------------------------------*  00080013
+       CONFIGURATION                       SECTION.                     00090019
+       SPECIAL-NAMES.                                                   00100013
+           DECIMAL-POINT IS COMMA.                                      00110013
+                                                                        00111019
+       INPUT-OUTPUT                        SECTION.                     00120019
+       FILE-CONTROL.                                                    00130019
+                                                                        00135019
+      *--------------------------------------------------------------*  00140013
+       DATA                                DIVISION.                    00150019
+      *--------------------------------------------------------------*  00160013
+       FILE                                SECTION.                     00170019
+                                                                        00179119
+       WORKING-STORAGE                     SECTION.                     00180019
+                                                                        00231019
+       01  WS-REG-SYSIN.                                                00232019
+           05 WS-NUM-SIMULACAO             PIC 9(04).                   00233019
+           05 WS-VAL-EMPRESTIMO            PIC 9(06)V99.
+           05 WS-TX-JUROS                  PIC 9(02)V99.
+           05 WS-QTD-PARCELAS              PIC 9(02).
+
+       77  WS-PARCELA                      PIC 9(06)V99.
+       77  WS-SOMA-PARCELAS                PIC 9(07)V99.
+       77  WS-CONTLIDOS                    PIC 9(08).
+       77  WS-CONTPROCESSADOS              PIC 9(08).
+      *--
+       01  WS-HORARIO-I.
+           05 WS-HORA-I                    PIC 99.
+           05 WS-MIN-I                     PIC 99.
+           05 WS-SEG-I                     PIC 99.
+           05 WS-CENT-I                    PIC 99.
+      * ---
+       01  WS-HORARIO-F.
+           05 WS-HORA-F                    PIC 99.
+           05 WS-MIN-F                     PIC 99.
+           05 WS-SEG-F                     PIC 99.
+           05 WS-CENT-F                    PIC 99.
+      *---
+       01  WS-HORARIO-P.
+           05 WS-HORA-P                    PIC 9(02).
+           05 FILLER                       PIC X(01)
+                                                VALUE ":".
+           05 WS-MIN-P                     PIC 9(02).
+           05 FILLER                       PIC X(02)
+                                                VALUE ":".
+           05 WS-SEG-P                     PIC 99.
+           05 FILLER                       PIC X(02)
+                                                VALUE ":".
+           05 WS-CENT-P                    PIC 99.
+      *---
+       01  WS-TOT-CENT                     PIC 9(07).
+      *---
+       01  WS-DATA-SYS.
+           05 WS-ANO                       PIC 9(02).
+           05 WS-MES                       PIC 9(02).
+           05 WS-DIA                       PIC 99.
+      *---
+       01  WS-DATA-FORMATADA.
+           05 WS-DIA                       PIC 99.
+           05 FILLER                       PIC X(01)
+                                                VALUE "/".
+           05 WS-MES                       PIC 99.
+           05 FILLER                       PIC X(01)
+                                                VALUE "/".
+           05 WS-ANO                       PIC 99.
+           05 FILLER                       PIC 9(03)
+                                                VALUE "/20".
+      *--------------------------------------------------------------*  00240013
+       PROCEDURE                           DIVISION.                    00250019
+      *--------------------------------------------------------------*  00260013
+       0000-PRINCIPAL.                                                  00270019
+           PERFORM 1000-INICIALIZAR
+           PERFORM 2000-PROCESSAR UNTIL WS-REG-SYSIN = ALL "0"
+           PERFORM 3000-TERMINO
+           STOP RUN
+           .
+       1000-INICIALIZAR.
+           MOVE 0 TO WS-CONTLIDOS
+           MOVE 0 TO WS-CONTPROCESSADOS
+           ACCEPT WS-HORARIO-I FROM TIME
+           ACCEPT WS-DATA-SYS FROM DATE
+           MOVE CORRESPONDING WS-DATA-SYS TO WS-DATA-FORMATADA
+           PERFORM 1100-LER-SYSIN
+           .
+       1100-LER-SYSIN.
+           ACCEPT WS-REG-SYSIN FROM SYSIN
+           IF WS-REG-SYSIN NOT = ALL "0"
+              COMPUTE WS-CONTLIDOS = WS-CONTLIDOS + 1
+           END-IF
+           .
+       2000-PROCESSAR.
+           COMPUTE WS-PARCELA = ( WS-VAL-EMPRESTIMO * WS-TX-JUROS / 100
+                                ) /( 1 - 1 /( 1 + WS-TX-JUROS )
+                                ** WS-QTD-PARCELAS )
+           COMPUTE WS-SOMA-PARCELAS = WS-QTD-PARCELAS * WS-PARCELA
+           DISPLAY "NUMERO DA SIMULACAO....: " WS-NUM-SIMULACAO
+           DISPLAY "VALOR DO EMPRESTIMO....: " WS-VAL-EMPRESTIMO
+           DISPLAY "TAXA DE JUROS..........: " WS-TX-JUROS
+           DISPLAY "QTDE.PARCELAS..........: " WS-QTD-PARCELAS
+           DISPLAY "VALOR DA PARCELA.......: " WS-PARCELA
+           DISPLAY "VALOR TOTAL:............:" WS-SOMA-PARCELAS
+           DISPLAY "/////////////////////////"
+           COMPUTE WS-CONTPROCESSADOS = WS-CONTPROCESSADOS + 1
+           PERFORM 1100-LER-SYSIN
+           .
+       3000-TERMINO.
+           ACCEPT WS-HORARIO-F FROM TIME
+           COMPUTE WS-TOT-CENT = ( WS-HORA-F * 360000 +
+                          WS-MIN-F * 6000 +
+                          WS-SEG-F * 100 +
+                          WS-CENT-F )- ( WS-HORA-I * 360000 +
+                          WS-MIN-I * 6000 +
+                          WS-SEG-I * 100 +
+                          WS-CENT-I )
+           MOVE WS-TOT-CENT TO WS-HORARIO-P
+           DISPLAY "//////////////////////////////////////0///"
+           DISPLAY "TOTAL DE SIMULACOES PROCESSADAS:" WS-CONTPROCESSADOS
+           DISPLAY "TOTAL DE LIDAS:................:" WS-CONTLIDOS
+           DISPLAY "TEMPO TOTAL DE PROCESSAMENTO...:" WS-HORARIO-P
+           DISPLAY "DATA GREGORIANA................:" WS-DATA-FORMATADA
+           DISPLAY "//////////////////////////////////////////"
+
+
+
+
+           .
+      ****************************************************************
+      *          F I M  D O  P R O G R A M A  G P G O 1 7 0 2  *
+      ****************************************************************

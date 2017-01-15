@@ -1,0 +1,150 @@
+      *--------------------------------------------------------------*
+      * EXERCICIO PG:20 PARTE 7 DA APOSTILA
+      * JOB: ERIKEX12 | COMPILADOR: ERIKCO12
+      *--------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *--------------------------------------------------------------*
+       PROGRAM-ID.                         ERIKEX12.
+       AUTHOR.                             ERIK.
+      *--------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *--------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+       FILE-CONTROL.
+      *
+       SELECT CLIOLD ASSIGN                TO UT-S-CLIOLD
+       FILE STATUS IS FS-CLIOLD
+       .
+      *
+       SELECT CLIMOV ASSIGN                TO UT-S-CLIMOV
+       FILE STATUS IS FS-CLIMOV
+       .
+      *
+       SELECT CLINEW ASSIGN                TO UT-S-CLINEW
+       FILE STATUS IS FS-CLINEW
+       .
+      *
+      *--------------------------------------------------------------*
+       DATA                                DIVISION.
+      *--------------------------------------------------------------*
+       FILE                                SECTION.
+      *
+       FD  CLIOLD
+           LABEL RECORD STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+           RECORD CONTAINS 80 CHARACTERS
+           DATA RECORD IS REG-CLIOLD
+           .
+       01  REG-CLIOLD                      PIC X(80).
+      *
+       FD  CLIMOV
+           LABEL RECORD STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+           RECORD CONTAINS 81 CHARACTERS
+           DATA RECORD IS REG-CLIMOV
+           .
+       01  REG-CLIMOV                      PIC X(81).
+      *
+       FD  CLINEW
+           LABEL RECORD STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+           RECORD CONTAINS 79 CHARACTERS
+           DATA RECORD IS REG-CLINEW
+           .
+       01  REG-CLINEW                      PIC X(79).
+      *
+       WORKING-STORAGE                     SECTION.
+      *
+       77  FS-CLIOLD                       PIC X(02).
+       77  FS-CLIMOV                       PIC X(02).
+       77  FS-CLINEW                       PIC X(02).
+      *
+       77  WS-MSG                          PIC X(60).
+       77  WS-FS                           PIC X(02).
+      *
+       01  WS-CONTADORES.
+           05 WS-CTLIDO-OLD                PIC 9(02).
+           05 WS-CTLIDO-MOV                PIC 9(02).
+           05 WS-CTLIDOS                   PIC 9(02).
+           05 WS-CTGRAV                    PIC 9(02).
+           05 WS-CTMATIDO                  PIC 9(02).
+           05 WS-CTALT                     PIC 9(02).
+           05 WS-CTEXC                     PIC 9(02).
+           05 WS-CTINVALIDO                PIC 9(02).
+      *-------------------CLIOLD--------------------
+       01  WS-REG-CLIOLD.
+           05 WS-TIPO-REGISTRO-O           PIC X(01).
+           05 FILLER                       PIC X(79).
+      *
+       01  WS-REG-CLIOLD-HEADER REDEFINES WS-REG-CLIOLD.
+           05 FILLER                       PIC X(01).
+           05 WS-SIGLASYS-O                PIC X(05).
+           05 WS-ANOMES-REF-O              PIC X(06).
+           05 FILLER                       PIC X(68).
+      *
+       01  WS-REG-CLIOLD-DATA REDEFINES WS-REG-CLIOLD.
+           05 FILLER                       PIC X(01).
+           05 WS-CODCLI-O                  PIC X(04).
+           05 WS-NOMECLI-O                 PIC X(25).
+           05 WS-ENDCLI-O                  PIC X(30).
+           05 WS-FONECLI                   PIC X(10).
+           05 WS-TOTALDIVIDA-O             PIC 9(08)V99.
+      *
+       01  WS-REG-CLIOLD-TRAILER REDEFINES WS-REG-CLIOLD.
+           05 FILLER                       PIC X(01).
+           05 WS-QTD-REGISTRO-O            PIC X(05).
+           05 FILLER                       PIC X(74).
+      *-----------------FIM CLIOLD-----------------------
+      *
+      *--------------------CLIMOV------------------------
+       01  WS-REG-CLIMOV.
+           05 WS-TIPO-REGISTRO-M           PIC X(01).
+           05 FILLER                       PIC X(80).
+      *
+       01  WS-REG-CLIMOV-HEADER REDEFINES WS-REG-PSMOV.
+           05 FILLER                       PIC X(01).
+           05 WS-SIGLASYS-M                PIC X(05).
+           05 WS-ANOMES-REF-M              PIC X(06).
+           05 FILLER                       PIC X(69).
+      *
+       01  WS-REG-CLIMOV-DATA   REDEFINES WS-REG-PSMOV.
+           05 FILLER                       PIC X(01).
+           05 WS-CODCLI-M                  PIC X(04).
+           05 WS-NOMECLI-M                 PIC X(25).
+           05 WS-ENDCLI-M                  PIC X(30).
+           05 WS-FONECLI-M                 PIC X(10).
+           05 WS-TOTALDIVIDA-M             PIC 9(08)V99.
+           05 WS-TIPOMOV-M                 PIC X(01).
+      *
+       01  WS-REG-CLIMOV-TRAILER REDEFINES WS-REG-PSMOV.
+           05 FILLER                       PIC X(01).
+           05 WS-QTD-REGISTRO-M            PIC 9(05).
+           05 FILLER                       PIC X(75).
+      *
+      *-----------------FIM CLIMOV-----------------------
+      *
+      *---------------------CLINEW-----------------------
+       01  WS-REG-PSNEW.
+           05 WS-CODCLI-N                  PIC X(04).
+           05 WS-NOMECLI-N                 PIC X(25).
+           05 WS-ENDCLI-N                  PIC X(30).
+           05 WS-FONECLI-N                 PIC X(10).
+           05 WS-TOTALDIVIDA-N             PIC 9(08)V99.
+      *
+      *-----------------FIM CLINEW-----------------------
+      *--------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *--------------------------------------------------------------*
+       0000-ERIKEX12.
+           PERFORM 1000-INICIALIZAR
+           PERFORM 2000-PROCESSAR
+           PERFORM 3000-TERMINO
+           STOP RUN
+           .
+      *

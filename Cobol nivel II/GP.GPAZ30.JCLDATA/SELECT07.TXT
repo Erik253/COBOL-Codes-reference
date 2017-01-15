@@ -1,0 +1,4 @@
+----EXIBIR A MEDIA DE PRECO DOS PRODUTOS DO TIPO '02'                   00001000
+SELECT AVG(PRECOPROD) MEDIA                                             00010001
+FROM TBPROD                                                             00020000
+WHERE CODTIPOPROD = '02'                                                00030000

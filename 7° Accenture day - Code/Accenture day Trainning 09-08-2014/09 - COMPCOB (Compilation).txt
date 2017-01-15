@@ -1,0 +1,11 @@
+//GPAZ06AC JOB ACCENTURE,MSGCLASS=X,CLASS=C,NOTIFY=&SYSUID,TIME=(0,20)
+//*****************************************************************   
+//* JOB DE COMPILACAO PROGRAMA COBOL BATCH                      
+//* TROCAR NN       PELO SEU NUMERO                   
+//* TROCAR PPPPPPPP PELO NOME DE SEU PROGRAMA                    
+//*************************************************************     
+// JCLLIB   ORDER=GP.LB.PROCLIB                                  
+//COBCOMP  EXEC DFHCOBOL,INSTR='GPAZ06',NOME='ACC06001'          
+//LKED.SYSIN    DD   *                                         
+  NAME ACC06001(R)                                 
+/*                                            

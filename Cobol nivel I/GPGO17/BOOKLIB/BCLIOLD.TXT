@@ -1,0 +1,23 @@
+       01  WS-REG-CLIOLD.                                               00010001
+           05 WS-TIPO-REGISTRO-O           PIC X(01).                   00020001
+           05 FILLER                       PIC X(80).                   00030001
+      *                                                                 00031001
+       01  WS-REG-CLIOLD-HEADER REDEFINES WS-REG-CLIOLD.                00040001
+           05 FILLER                       PIC X(01).                   00050001
+           05 WS-SIGLASYS-O                PIC X(05).                   00060001
+           05 WS-ANOMES-REF-O              PIC X(06).                   00070001
+           05 FILLER                       PIC X(68).                   00080001
+      *                                                                 00090001
+       01  WS-REG-CLIOLD-DATA REDEFINES WS-REG-CLIOLD.                  00100001
+           05 FILLER                       PIC X(01).                   00110001
+           05 WS-CODCLI-O                  PIC X(04).                   00120001
+           05 WS-NOMECLI-O                 PIC X(25).                   00130001
+           05 WS-ENDCLI-O                  PIC X(30).                   00140001
+           05 WS-FONECLI-O                 PIC X(10).                   00150001
+           05 WS-TOTALDIVIDA               PIC 9(08)V99.                00160001
+      *                                                                 00170001
+       01  WS-REG-CLIOLD-TRAILLER REDEFINES WS-REG-CLIOLD.              00180001
+           05 FILLER                       PIC X(01).                   00190001
+           05 WS-QTD-REGISTRO-O            PIC 9(05).                   00200001
+           05 FILLER                       PIC X(75).                   00210001
+      *                                                                 00220001

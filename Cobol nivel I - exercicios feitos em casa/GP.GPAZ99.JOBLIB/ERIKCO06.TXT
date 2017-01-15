@@ -1,0 +1,16 @@
+//GPAZ9906 JOB ERIK,MSGCLASS=X,CLASS=C,NOTIFY=GPAZ99,TIME=(0,20)        00010024
+//*****************************************************************     00020009
+//*                                                                     00030015
+//* TROCAR GPAZNN POR GPAZXX, SENDO XX SEU NUMERO USE O COMANDO         00040019
+//*                                                                     00050015
+//*        C GPAZNN GPAZXX ALL                                          00060019
+//*                                                                     00061015
+//*****************************************************************     00070009
+//STEP1   EXEC PGM=ERIKEX06                                             00080024
+//STEPLIB DD DSN=GP.GERAL.LOADLIB,DISP=SHR                              00090009
+//CADFUNC DD DSN=GP.GPAZ99.CADFUNC,DISP=SHR                             00090124
+//FOLHAPAG DD DSN=GP.GPAZ99.FOLHAPAG,DISP=(OLD,CATLG,DELETE),           00090225
+//             SPACE=(TRK,(1,1)),UNIT=SYSALLDA,                         00090314
+//             DCB=(LRECL=43,RECFM=FB,DSORG=PS)                         00090424
+//SYSIN   DD *                                                          00090517
+//*                                                                     00090717

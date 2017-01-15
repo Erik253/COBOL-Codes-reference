@@ -1,0 +1,6 @@
+---EXCLUIR OS PRODUTOS QUE NUNCA FORAM VENDIDOS APENAS UMA VEZ          00010000
+---                                                                     00020000
+DELETE FROM TBPROD                                                      00030000
+WHERE CODPROD NOT IN                                                    00040001
+                 (SELECT CODPROD                                        00050000
+                  FROM TBVENDA)                                         00060001

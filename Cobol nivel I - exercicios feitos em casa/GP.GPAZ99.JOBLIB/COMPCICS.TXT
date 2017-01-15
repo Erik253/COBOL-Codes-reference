@@ -1,0 +1,6 @@
+//GPAZ9916 JOB 'SEUNOME',MSGCLASS=X,CLASS=C,NOTIFY=GPAZ99,TIME=(0,20)
+//**********************************************************************
+//*                      COMPILA PROGRAMA CICS
+//**********************************************************************
+// JCLLIB ORDER=GP.LB.PROCLIB
+//CICSPGM  EXEC DFHCICS1,NAME=GPAZ9916,INSTR='GPAZ99'

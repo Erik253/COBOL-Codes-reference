@@ -1,0 +1,41 @@
+-- EXCLUINDO AS TABELAS TBA E TBB --                                    00010000
+-- DROP TABLE TBA; COMMIT;                                              00011000
+-- DROP TABLE TBB; COMMIT;                                              00012000
+                                                                        00013000
+-- CRIANDO A TABELA TBA --                                              00014001
+CREATE TABLE TBA                                                        00020000
+(CHAVEA CHAR(2)        NOT NULL,                                        00030000
+ DESCA  CHAR(5)        NOT NULL,                                        00040000
+ VALA   DECIMAL(4,2),                                                   00050000
+ PRIMARY KEY (CHAVEA));                                                 00060000
+                                                                        00070000
+-- CRIANDO INDICE PARA TABELA DBA --                                    00071001
+CREATE UNIQUE INDEX IDXCHAVEA                                           00080000
+ON TBA(CHAVEA);                                                         00090000
+                                                                        00100000
+-- CRIANDO A TABELA TBB --                                              00110001
+CREATE TABLE TBB                                                        00120000
+(CHAVEB CHAR(2)        NOT NULL,                                        00130000
+ DESCB  CHAR(5)        NOT NULL,                                        00140000
+ VALB   DECIMAL(4,2),                                                   00150000
+ PRIMARY KEY (CHAVEB));                                                 00160000
+                                                                        00170000
+-- CRIANDO INDICE PARA TABELA DBB --                                    00180001
+CREATE UNIQUE INDEX IDXCHAVEB                                           00190000
+ON TBB(CHAVEB);                                                         00200000
+                                                                        00210000
+-- ALIMENTANDO A TABELA TBA --                                          00211000
+INSERT INTO TBA (CHAVEA, DESCA, VALA) VALUES ('01', 'A0001',  1.00);    00220000
+INSERT INTO TBA (CHAVEA, DESCA, VALA) VALUES ('03', 'A0003',  3.00);    00230000
+INSERT INTO TBA (CHAVEA, DESCA, VALA) VALUES ('05', 'A0005',  5.00);    00240000
+INSERT INTO TBA (CHAVEA, DESCA, VALA) VALUES ('08', 'A0008',  8.00);    00250000
+INSERT INTO TBA (CHAVEA, DESCA, VALA) VALUES ('09', 'A0009',  9.00);    00260000
+INSERT INTO TBA (CHAVEA, DESCA, VALA) VALUES ('10', 'A0010', 10.00);    00270000
+                                                                        00280000
+-- ALIMENTANDO A TABELA TBB --                                          00290000
+INSERT INTO TBB (CHAVEB, DESCB, VALB) VALUES ('02', 'B0002',  2.00);    00300000
+INSERT INTO TBB (CHAVEB, DESCB, VALB) VALUES ('04', 'B0004',  4.00);    00310000
+INSERT INTO TBB (CHAVEB, DESCB, VALB) VALUES ('06', 'B0006',  6.00);    00320000
+INSERT INTO TBB (CHAVEB, DESCB, VALB) VALUES ('08', 'B0008',  8.00);    00330000
+INSERT INTO TBB (CHAVEB, DESCB, VALB) VALUES ('09', 'B0009',  9.00);    00340000
+INSERT INTO TBB (CHAVEB, DESCB, VALB) VALUES ('10', 'B0010', 10.00)     00350000

@@ -1,0 +1,6 @@
+       01  WS-REGISTRO-ALTCLI.
+           05 ALTCLI-AGENCIA               PIC 9(05).
+           05 ALTCLI-NUMERO-CONTA          PIC 9(10).
+           05 ALTCLI-NOME-CLIENTE          PIC X(40).
+           05 ALTCLI-TELEFONE              PIC 9(08).
+           05 ALTCLI-RENDA-MENSAL          PIC 9(11)V99.

@@ -1,0 +1,59 @@
+      *--------------------------------------------------------*
+      * EXERCICIO.: PAGINA 68 - APOSTILA COBOL                 *
+      * BOOK......: WRELPROD                                   *
+      *--------------------------------------------------------*
+       01  WS-CABEC1.
+           05 FILLER PIC X(23) VALUE "ATUALIZACAO DO CADASTRO".
+           05 FILLER PIC X(12) VALUE " DE PRODUTOS".
+           05 FILLER PIC X(55) VALUE SPACES.
+           05 FILLER PIC X(08) VALUE "MES BASE".
+           05 CB-DATABASE PIC X(12).
+           05 FILLER PIC X(07) VALUE "  PAG. ".
+           05 CB-PAG      PIC 99.
+
+       01  WS-CABEC2.
+           05 FILLER PIC X(18) VALUE "IMAGEM DO REGISTRO".
+           05 FILLER PIC X(87) VALUE SPACES.
+           05 FILLER PIC X(15) VALUE "  OCORRENCIA   ".
+
+       01  WS-LINDET.
+           05 FILLER PIC X(03) VALUE SPACES.
+           05 LD-REGISTRO PIC X(66).
+           05 FILLER PIC X(03) VALUE SPACES.
+           05 LD-OCORRENCIA PIC X(15).
+           05 FILLER PIC X(03) VALUE SPACES.
+
+       01  WS-RODAPE1.
+           05 FILLER PIC X(33) VALUE
+           "                          ESTATIS".
+           05 FILLER PIC X(33) VALUE
+           "TICA FINAL DE PROCESSAMENTO      ".
+           05 FILLER PIC X(33) VALUE
+           "                                 ".
+       01  WS-RODAPE2.
+           05 FILLER PIC X(33) VALUE
+           "                          TOTAL D".
+           05 FILLER PIC X(33) VALUE
+           "E REGISTROS ALTERADOS      ".
+           05 WS-TOT-ALTERADOS PIC ZZ9.
+
+       01  WS-RODAPE3.
+           05 FILLER PIC X(33) VALUE
+           "                          TOTAL D".
+           05 FILLER PIC X(33) VALUE
+           "E REGISTROS INCLUIDOS      ".
+           05 WS-TOT-INCLUIDOS PIC ZZ9.
+
+       01  WS-RODAPE4.
+           05 FILLER PIC X(33) VALUE
+           "                          TOTAL D".
+           05 FILLER PIC X(33) VALUE
+           "E REGISTROS EXCLUIDOS..... ".
+           05 WS-TOT-EXCLUIDOS PIC ZZ9.
+
+       01  WS-RODAPE5.
+           05 FILLER PIC X(33) VALUE
+           "                          TOTAL D".
+           05 FILLER PIC X(33) VALUE
+           "E REGISTROS REJEITADOS.... ".
+           05 WS-TOT-REJEITADOS PIC ZZ9.

@@ -1,0 +1,13 @@
+      *--------------------------------------------------------*
+      * EXERCICIO.: PAGINA 68 - APOSTILA COBOL                 *
+      * BOOK......: WMOVPROD                                   *
+      *--------------------------------------------------------*
+       01  WS-REG-MOVPROD.
+           05 WS-CODPROD-M               PIC X(06).
+           05 WS-DESCRI-M                PIC X(35).
+           05 WS-LOCAL-M                 PIC X(06).
+           05 WS-QTDEST-M                PIC 9(04).
+           05 WS-QTDMIN-M                PIC 9(04).
+           05 WS-QTDMAX-M                PIC 9(04).
+           05 WS-PRECO-M                 PIC 9(04)V99.
+           05 WS-TIPO-M                  PIC X(01).

@@ -1,0 +1,4 @@
+ALTER TABLE TBCLI                                                       00010000
+ADD FOREIGN KEY (CODTIPOCLI)                                            00020000
+REFERENCES TBTIPOCLI                                                    00030000
+ON DELETE CASCADE                                                       00040000

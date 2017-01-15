@@ -1,0 +1,503 @@
+      *----------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *----------------------------------------------------------*
+       PROGRAM-ID.                         AC050001.
+       AUTHOR.                             ERIK.
+      *----------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *----------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+            DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+       FILE-CONTROL.
+      *
+           SELECT CADCLI   ASSIGN          TO UT-S-CADCLI
+           FILE STATUS IS FS-CADCLI
+           .
+      *
+           SELECT ALTCLI   ASSIGN          TO UT-S-ALTCLI
+           FILE STATUS IS FS-ALTCLI
+           .
+      *
+           SELECT CADCLN   ASSIGN          TO UT-S-CADCLN
+           FILE STATUS IS FS-CADCLN
+           .
+      *
+           SELECT RELATO ASSIGN            TO UT-S-RELATO
+           FILE STATUS IS FS-RELATO
+           .
+      *
+      *----------------------------------------------------------*
+       DATA                                DIVISION.
+      *----------------------------------------------------------*
+       FILE                                SECTION.
+       FD  CADCLI
+           RECORDING MODE IS F
+           .
+       01  REGISTRO-CADCLI                 PIC X(90).
+      *
+       FD  ALTCLI
+           RECORDING MODE IS F
+           .
+       01  REGISTRO-ALTCLI                 PIC X(76).
+      *
+       FD  CADCLN
+           RECORDING MODE IS F
+           .
+       01  REGISTRO-CADCLN                 PIC X(103).
+      *
+       FD  RELATO
+           RECORDING MODE IS F
+           .
+       01  REGISTRO-RELATO                 PIC X(80).
+      *
+      *----------------------------------------------------------
+       WORKING-STORAGE                     SECTION.
+      *--------------------FILE-STATUS/MSG-----------------------
+       01  FS-CADCLI                       PIC X(02).
+           88 EOF-CADCLI                   VALUE "10".
+           88 OK-CADCLI                    VALUE "00".
+      *
+       01  FS-ALTCLI                       PIC X(02).
+           88 EOF-ALTCLI                   VALUE "10".
+           88 OK-ALTCLI                    VALUE "00".
+      *
+       01  FS-CADCLN                       PIC X(02).
+           88 EOF-CADCLN                   VALUE "10".
+           88 OK-CADCLN                    VALUE "00".
+      *
+       01  FS-RELATO                       PIC X(02).
+           88 EOF-RELATO                   VALUE "10".
+           88 OK-RELATO                    VALUE "00".
+      *
+       77  WS-MSG                          PIC X(60).
+      *
+       77  WS-FS                           PIC X(02).
+      *-------------------INCLUSAO DAS BOOKS---------------------*
+           COPY WSALTCLI.
+           COPY WSCADCLI.
+           COPY WSCADCLN.
+      *-------------------CAMPOS CHAVES--------------------------*
+      *--------------------VARIAVEIS DE DATA---------------
+       01  WS-DATA-SISTEMA.
+           05 WS-ANO                       PIC 9(02).
+           05 WS-MES                       PIC 9(02).
+           05 WS-DIA                       PIC 9(02).
+      *
+       01  WS-DATA-FORMATADA.
+           05 WS-DIA                       PIC 9(02).
+           05 FILLER                       PIC X(01) VALUE "/".
+           05 WS-MES                       PIC 9(02).
+           05 FILLER                       PIC X(03) VALUE "/20".
+           05 WS-ANO                       PIC 9(02).
+      *--------------------VARIAVEIS DE TEMPO-------------------
+       01  WS-HORA-SISTEMA.
+           05 WS-HORA                      PIC 9(02).
+           05 WS-MIN                       PIC 9(02).
+           05 WS-SEG                       PIC 9(02).
+      *
+       01  WS-HORA-FORMATADA.
+           05 WS-HORA                      PIC 9(02).
+           05 FILLER                       PIC X(1) VALUE ":".
+           05 WS-MIN                       PIC 9(02).
+           05 FILLER                       PIC X(1) VALUE ":".
+           05 WS-SEG                       PIC 9(02).
+      *-------------------CONTADORES---------------------------
+       01  WS-CONTADORES-COMP.
+           05 WS-CTLIDO-CADCLI-C           PIC 9(04) COMP.
+           05 WS-CTLIDO-ALTCLI-C           PIC 9(04) COMP.
+           05 WS-CTINC-C                   PIC 9(04) COMP.
+           05 WS-CTALT-C                   PIC 9(04) COMP.
+           05 WS-CTEXC-C                   PIC 9(04) COMP.
+           05 WS-CTLINHA-C                 PIC 9(04) COMP.
+           05 WS-CTIMP-C                   PIC 9(04) COMP.
+      *
+       01  WS-CONTADORES-FORMATADOS.
+           05 WS-CTLIDO-CADCLI-F           PIC ZZZ9.
+           05 WS-CTLIDO-ALTCLI-F           PIC ZZZ9.
+           05 WS-CTINC-F                   PIC ZZZ9.
+           05 WS-CTALT-F                   PIC ZZZ9.
+           05 WS-CTEXC-F                   PIC ZZZ9.
+           05 WS-CTLINHA-F                 PIC ZZZ9.
+           05 WS-CTIMP-F                   PIC ZZZ9.
+      *----------------------------------------------------------
+       77  WS-CTPAG-C                      PIC 9(03) COMP.
+       77  WS-PULA                         PIC 9(04).
+      *---------------------CABECALHOS---------------------------
+       01  WS-CABEC1.
+           05 FILLER                       PIC X(17)  VALUE
+           "BANCO DINHEIRO SA".
+           05 FILLER                       PIC X(103) VALUE SPACES.
+           05 FILLER                       PIC X(09)  VALUE
+           "PAG:  ".
+           05 WS-PAG-CABEC1                PIC ZZ9.
+      *
+       01  WS-CABEC2.
+           05 FILLER                       PIC X(10)  VALUE SPACES.
+           05 FILLER                       PIC X(50)  VALUE
+           "RELATORIO DAS ATUALIZACOES NO CADASTRO DE CLIENTES".
+           05 FILLER                       PIC X(72)  VALUE SPACES.
+      *
+       01  WS-CABEC3.
+           05 FILLER                       PIC X(06)  VALUE
+           "DATA: ".
+           05 WS-DATA-CABEC3               PIC X(10).
+           05 FILLER                       PIC X(102) VALUE SPACES.
+           05 FILLER                       PIC X(06) VALUE
+           "HORA: ".
+           05 WS-HORA-CABEC3               PIC X(08).
+      *
+       01  WS-CABEC4.
+           05 FILLER                       PIC X(48).
+           "OCORRENCIA         IMAGEM DO REGISTRO ATUALIZADO"
+           05 FILLER                       PIC X(84) VALUE SPACES.
+      *
+       01  WS-LINDET.
+           05 LD-AGENCIA                   PIC 9(05).
+           05 LD-NUMERO-CONTA              PIC 9(10).
+           05 LD-NOME-CLIENTE              PIC X(40).
+           05 LD-TELEFONE                  PIC 9(08).
+           05 LD-RENDA-MENSAL              PIC 9(11)V99.
+           05 LD-SALDO-ATUAL               PIC 9(11)V99.
+           05 LD-DATA-GRAVACAO             PIC 9(04).
+           05 LD-ANO-GRAVACAO              PIC 9(02).
+           05 LD-MES-GRAVACAO              PIC 9(02).
+           05 LD-DIA-GRAVACAO              PIC 9(06).
+      *          CADCLI-HORA-GRAVACAO
+       01  WS-RODAPE1.
+           05 FILLER                       PIC X(26) VALUE
+              "TOTAL DE REGISTROS LIDOS: ".
+           05 WS-CTINC                     PIC ZZZ.Z99.
+           05 FILLER                       PIC X(100) VALUE SPACES.
+      *
+       01  WS-RODAPE2.
+           05 FILLER                       PIC X(30) VALUE
+              "TOTAL DE REGISTROS ALTERADOS: ".
+           05 WS-CTALT                     PIC ZZZ.Z99.
+           05 FILLER                       PIC X(96) VALUE SPACES.
+      *
+       01  WS-RODAPE3.
+           05 FILLER                       PIC X(30) VALUE
+              "TOTAL DE REGISTROS EXCLUIDOS: ".
+           05 WS-CTEXC                     PIC ZZZ.Z99.
+           05 FILLER                       PIC X(96) VALUE SPACES.
+      *
+      *----------------------------------------------------------*
+       LINKAGE                             SECTION.
+      *----------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *----------------------------------------------------------*
+       000-AC050001.
+           PERFORM 010-INICIALIZAR
+           PERFORM 040-PROCESSAR UNTIL EOF-CADCLI AND EOF-ALTCLI
+           PERFORM 110-TERMINO
+           STOP RUN
+           .
+      *
+       010-INICIALIZAR.
+           INITIALIZE WS-CONTADORES-COMP
+      *
+           ACCEPT WS-DATA-SISTEMA          FROM DATE
+           MOVE CORRESPONDING WS-DATA-SISTEMA TO WS-DATA-FORMATADA
+      *
+           ACCEPT WS-HORA-SISTEMA          FROM TIME
+           MOVE CORRESPONDING WS-HORA-SISTEMA TO WS-HORA-FORMATADA
+      *
+           MOVE 99                         TO WS-CTLINHA-C
+      *
+           OPEN INPUT CADCLI
+           IF NOT OK-CADCLI
+              MOVE "ERRO DE ABERTURA DO ARQ CADCLI" TO WS-MSG
+              MOVE FS-CADCLI               TO WS-FS
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           OPEN INPUT ALTCLI
+           IF NOT OK-ALTCLI
+              MOVE "ERRO DE ABERTURA DO ARQ ALTCLI" TO WS-MSG
+              MOVE FS-ALTCLI               TO WS-FS
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           OPEN OUTPUT CADCLN
+           IF NOT OK-CADCLN
+              MOVE "ERRO DE ABERTURA DO ARQ CADCLN" TO WS-MSG
+              MOVE FS-CADCLN               TO WS-FS
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           OPEN OUTPUT RELATO
+           IF NOT OK-RELATO
+              MOVE "ERRO DE ABERTURA DO ARQ REALTO" TO WS-MSG
+              MOVE FS-RELATO               TO WS-FS
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           PERFORM 020-LER-CADCLI
+           PERFORM 030-LER-ALTCLI
+           .
+      *
+       020-LER-CADCLI.
+           READ CADCLI INTO WS-REGISTRO-CADCLI
+           IF OK-CADCLI
+              ADD 1                        TO WS-CTLIDO-CADCLI-C
+           ELSE
+              IF EOF-CADCLI
+                 MOVE HIGH-VALUES          TO CADCLI-AGENCIA
+                 MOVE HIGH-VALUES          TO CADCLI-NUMERO-CONTA
+              ELSE
+                 MOVE "ERRO DE LEITURA DO ARQ CADCLI" TO WS-MSG
+                 MOVE FS-CADCLI            TO WS-FS
+                 GO                        TO 999-ERRO
+              END-IF
+           END-IF
+           .
+      *
+       030-LER-ALTCLI.
+           READ ALTCLI INTO WS-REGISTRO-ALTCLI
+           IF OK-ALTCLI
+              ADD 1                        TO WS-CTLIDO-ALTCLI-C
+           ELSE
+              IF EOF-ALTCLI
+                 MOVE HIGH-VALUES          TO ALTCLI-AGENCIA
+                 MOVE HIGH-VALUES          TO ALTCLI-NUMERO-CONTA
+              ELSE
+                 MOVE "ERRO DE LEITURA DO ARQ ALTCLI" TO WS-MSG
+                 MOVE FS-ALTCLI            TO WS-FS
+                 GO                        TO 999-ERRO
+              END-IF
+           END-IF
+           .
+      *
+       040-PROCESSAR.
+           IF CADCLI-AGENCIA = ALTCLI-AGENCIA AND
+              CADCLI-NUMERO-CONTA = ALTCLI-NUMERO-CONTA
+              PERFORM 050-ALTERACAO
+           ELSE
+              IF CADCLI-AGENCIA < ALTCLI-AGENCIA AND
+                 CADCLI-NUMERO-CONTA < ALTCLI-NUMERO-CONTA
+                 PERFORM 060-EXCLUSAO
+              ELSE
+                 IF CADCLI-AGENCIA > ALTCLI-AGENCIA AND
+                    CADCLI-NUMERO-CONTA > ALTCLI-NUMERO-CONTA
+                    PERFORM 070-INCLUSAO
+                 END-IF
+              END-IF
+           END-IF
+           .
+      *
+       050-ALTERACAO.
+           IF ALTCLI-AGENCIA IS NUMERIC
+              MOVE ALTCLI-AGENCIA          TO CADCLN-AGENCIA
+           ELSE
+              MOVE CADCLI-AGENCIA          TO CADCLN-AGENCIA
+           END-IF
+      *
+           IF ALTCLI-NUMERO-CONTA IS NUMERIC
+              MOVE ALTCLI-NUMERO-CONTA     TO CADCLN-NUMERO-CONTA
+           ELSE
+              MOVE CADCLI-NUMERO-CONTA     TO CADCLN-NUMERO-CONTA
+           END-IF
+      *
+           IF ALTCLI-NOME-CLIENTE NOT = SPACES
+              MOVE ALTCLI-NOME-CLIENTE     TO CADCLN-NOME-CLIENTE
+           ELSE
+              MOVE CADCLI-NOME-CLIENTE     TO CADCLN-NOME-CLIENTE
+           END-IF
+      *
+           IF ALTCLI-TELEFONE IS NUMERIC
+              MOVE ALTCLI-TELEFONE         TO CADCLN-TELEFONE
+           ELSE
+              MOVE CADCLI-TELEFONE         TO CADCLN-TELEFONE
+           END-IF
+      *
+           MOVE ALTCLI-RENDA-MENSAL        TO CADCLN-RENDA-MENSAL
+      *
+           MOVE CADCLI-SALDO-ATUAL         TO CADCLN-SALDO-ATUAL
+      *
+           MOVE WS-ANO                     TO CADCLN-ANO-GRAVACAO
+           COMPUTE CADCLN-ANO-GRAVACAO = CADCLN-ANO-GRAVACAO + 2000
+      *
+           MOVE WS-MES                     TO CADCLN-MES-GRAVACAO
+      *
+           MOVE WS-DIA                     TO CADCLN-DIA-GRAVACAO
+      *
+           MOVE WS-HORA-SISTEMA            TO CADCLN-HORA-GRAVACAO
+      *
+           WRITE REGISTRO-CADCLN           FROM WS-REGISTRO-CADCLN
+           IF NOT OK-CADCLN
+              MOVE "ERRO DE GRAVACAO DO ARQ CADCLN" TO WS-MSG
+              MOVE FS-CADCLN               TO WS-FS
+              GO                           TO 999-ERRO
+           ELSE
+              ADD 1                        TO WS-CTALT-C
+           END-IF
+      *
+           PERFORM 020-LER-CADCLI
+           PERFORM 030-LER-ALTCLI
+           .
+      *
+       060-EXCLUSAO.
+           ADD 1                           TO WS-CTEXC-C
+           PERFORM 020-LER-CADCLI
+           .
+      *
+       070-INCLUSAO.
+           MOVE ALTCLI-AGENCIA             TO CADCLN-AGENCIA
+           MOVE ALTCLI-NUMERO-CONTA        TO CADCLN-NUMERO-CONTA
+           MOVE ALTCLI-NOME-CLIENTE        TO CADCLN-NOME-CLIENTE
+           MOVE ALTCLI-TELEFONE            TO CADCLN-TELEFONE
+           MOVE ALTCLI-RENDA-MENSAL        TO CADCLN-RENDA-MENSAL
+           MOVE ZEROS                      TO CADCLN-SALDO-ATUAL
+           MOVE WS-ANO                     TO CADCLN-ANO-GRAVACAO
+           COMPUTE CADCLN-ANO-GRAVACAO = CADCLN-ANO-GRAVACAO + 2000
+           MOVE WS-MES                     TO CADCLN-MES-GRAVACAO
+           MOVE WS-DIA                     TO CADCLN-DIA-GRAVACAO
+           MOVE WS-HORA-SISTEMA            TO CADCLN-HORA-GRAVACAO
+      *
+           WRITE REGISTRO-CADCLN           FROM WS-REGISTRO-CADCLN
+           IF NOT OK-CADCLN
+              MOVE "ERRO DE GRAVACAO DO ARQ CADCLN" TO WS-MSG
+              MOVE FS-CADCLN               TO WS-FS
+              GO                           TO 999-ERRO
+           ELSE
+              ADD 1                        TO WS-CTALT-C
+           END-IF
+      *
+           PERFORM 030-LER-ALTCLI
+           .
+      *
+       080-IMPRIME-CABECALHO.
+           ADD 1                           TO WS-CTPAG-C
+           MOVE WS-CTPAG-C                 TO WS-PAG-CABEC1
+      *
+           WRITE REGISTRO-RELATO FROM WS-CABEC1 AFTER PAGE
+           IF NOT OK-RELATO
+              MOVE "ERRO DE WRITE DO CABECALHO-1" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           WRITE REGISTRO-RELATO FROM WS-CABEC2
+           IF NOT OK-RELATO
+              MOVE "ERRO DE WRITE DO CABECALHO-2" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           MOVE WS-DATA-FORMATADA          TO WS-DATA-CABEC3
+           MOVE WS-HORA-FORMATADA          TO WS-HORA-CABEC3
+           WRITE REGISTRO-RELATO  FROM WS-CABEC3
+           IF NOT OK-RELATO
+              MOVE "ERRO DE WRITE DO CABECALHO-3" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           WRITE REGISTRO-RELATO FROM WS-CABEC4
+           IF NOT OK-RELATO
+              MOVE "ERRO DE WRITE DO CABECALHO-4" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           MOVE 4                          TO WS-CTLINHA-C
+           .
+      *
+       090-IMPRIME-DETALHE.
+           MOVE       -AGENCIA             TO LD-AGENCIA
+           MOVE       -NUMERO-CONTA        TO LD-NUMERO-CONTA
+           MOVE       -NOME-CLIENTE        TO LD-NOME-CLIENTE
+           MOVE       -TELEFONE            TO LD-TELEFONE
+           MOVE       -RENDA-MENSAL        TO LD-RENDA-MENSAL
+           MOVE       -SALDO-ATUAL         TO LD-SALDO-ATUAL
+           MOVE       -ANO-GRAVACAO        TO LD-DATA-GRAVACA
+           MOVE       -MES-GRAVACAO        TO LD-ANO-GRAVACAO
+           MOVE       -DIA-GRAVACAO        TO LD-MES-GRAVACAO
+           MOVE       -HORA-GRAVACAO       TO LD-DIA-GRAVACAO
+      *                                       LD-HORA-GRAVACAO
+           WRITE REGISTRO-RELATO FROM WS-LINDET
+           IF NOT OK-RELATO
+              MOVE "ERRO DE WRITE DO LINDET" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+           ADD 1                           TO WS-CTIMP-C
+           ADD 1                           TO WS-CTLINHA-C
+           .
+      *
+       100-IMPRIME-RODAPE.
+           COMPUTE WS-PULA = 59 - WS-CTLINHA-C
+           WRITE REGISTRO-RELATO FROM WS-RODAPE1 AFTER WS-PULA LINES
+           MOVE WS-CTINC-C                 TO WS-CTINC
+           IF NOT OK-RELATO
+              MOVE "ERRO DE WRITE RODAPE1" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           MOVE WS-CTALT-C                 TO WS-CTALT
+           WRITE REGISTRO-RELATO FROM WS-RODAPE2
+           IF NOT OK-RELATO
+              MOVE "ERRO DE WRITE RODAPE2" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           MOVE WS-CTEXC-C                 TO WS-CTEXC
+           WRITE REGISTRO-RELATO FROM WS-RODAPE3
+           IF NOT OK-RELATO
+              MOVE "ERRO DE WRITE RODAPE3" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+           .
+      *
+       110-TERMINO.
+      *
+           CLOSE CADCLI
+           IF NOT OK-CADCLI
+              MOVE "ERRO DE FECHAMENTO DO ARQ CADCLI" TO WS-MSG
+              MOVE FS-CADCLI               TO WS-FS
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           CLOSE ALTCLI
+           IF NOT OK-ALTCLI
+              MOVE "ERRO DE FECHAMENTO DO ARQ ALTCLI" TO WS-MSG
+              MOVE FS-ALTCLI               TO WS-FS
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           CLOSE CADCLN
+           IF NOT OK-CADCLN
+              MOVE "ERRO DE FECHAMENTO DO ARQ CADCLN" TO WS-MSG
+              MOVE FS-CADCLN               TO WS-FS
+              GO                           TO 999-ERRO
+           END-IF
+      *
+          CLOSE RELATO
+          IF NOT OK-RELATO
+             MOVE "ERRO DE FECHAMENTO DO ARQ RELATO" TO WS-MSG
+             MOVE FS-RELATO               TO WS-FS
+             GO                           TO 999-ERRO
+          END-IF
+      *
+           MOVE WS-CTLIDO-CADCLI-C         TO WS-CTLIDO-CADCLI-F
+           MOVE WS-CTLIDO-ALTCLI-C         TO WS-CTLIDO-ALTCLI-F
+           MOVE WS-CTINC-C                 TO WS-CTINC-F
+           MOVE WS-CTALT-C                 TO WS-CTALT-F
+           MOVE WS-CTEXC-C                 TO WS-CTEXC-F
+      *
+           DISPLAY "-----------INFORMACOES GERAIS------------------"
+           DISPLAY "TOTAL DE REGISTROS LIDOS CADCLI:" WS-CTLIDO-CADCLI-F
+           DISPLAY "TOTAL DE REGISTROS LIDOS ALTCLI:" WS-CTLIDO-ALTCLI-F
+           DISPLAY "TOTAL DE REGISTROS INCLUIDOS...:" WS-CTINC-F
+           DISPLAY "TOTAL DE REGISTROS ALTERADOS...:" WS-CTALT-F
+           DISPLAY "TOTAL DE REGISTROS EXCLUIDOS...:" WS-CTEXC-F
+           DISPLAY "-----------------------------------------------"
+           DISPLAY "-----------TERMINO NORMAL DO PROCESSAMENTO-----"
+           DISPLAY "-----------------------------------------------"
+           .
+      *
+       999-ERRO.
+           DISPLAY "--------------ROTINA DE ERRO 999---------------"
+           DISPLAY "MENSAGEM DE ERRO: " WS-MSG
+           DISPLAY "FILE STATUS.....: " WS-FS
+           DISPLAY "--------TERMINO ANORMAL DO PROCESAMENTO--------"
+           MOVE 12                         TO RETURN-CODE
+           STOP RUN
+           .

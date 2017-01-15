@@ -1,0 +1,3 @@
+SELECT NOMECLI, DESCTIPOCLI                                             00010003
+FROM TBCLI,TBTIPOCLI                                                    00020003
+WHERE TBCLI.CODTIPOCLI = TBTIPOCLI.CODTIPOCLI                           00030003

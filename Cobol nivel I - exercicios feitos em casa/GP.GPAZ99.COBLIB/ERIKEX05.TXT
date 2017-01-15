@@ -1,0 +1,147 @@
+      *--------------------------------------------------------------*
+      * EXERCICIO PG:29 PARTE 3 DA APOSTILA
+      * JOB: ERIKEX05 | COMPILADOR: ERIKCO05
+      *--------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *--------------------------------------------------------------*
+       PROGRAM-ID.                         ERIKEX05.
+       AUTHOR.                             ERIK.
+      *--------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *--------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+      *--------------------------------------------------------------*
+       DATA                                DIVISION.
+      *--------------------------------------------------------------*
+       FILE                                SECTION.
+       WORKING-STORAGE                     SECTION.
+       01  WS-REG-SYSIN.
+           05 WS-NUM-SIMULACAO             PIC 9(04).
+           05 WS-VAL-EMPRESTIMO            PIC 9(06)V99.
+           05 WS-TX-JUROS                  PIC 9(02)V99.
+           05 WS-QTD-PARCELAS              PIC 9(02).
+      *
+       77  WS-VPARCELA                     PIC 9(06)V99.
+       77  WS-VTOTAL                       PIC 9(08)V99.
+       77  WS-CTLIDOS                      PIC 9(02).
+       77  WS-CTPROCESS                    PIC 9(02).
+      *
+      *      -------------VARIAVEIS DE DATA---------------
+       01  WS-DATA-SISTEMA.
+           05 WS-ANO                       PIC 9(02).
+           05 WS-MES                       PIC 9(02).
+           05 WS-DIA                       PIC 9(02).
+       01  WS-DATA-FORMATADA.
+           05 WS-DIA                       PIC 9(02).
+           05 FILLER                       PIC X(01) VALUE "/".
+           05 WS-MES                       PIC 9(02).
+           05 FILLER                       PIC X(03) VALUE "/20".
+           05 WS-ANO                       PIC 9(02).
+      *
+       01  WS-DATA-JULIANA.
+           05 WS-ANO                       PIC 9(02).
+           05 WS-DIA                       PIC 9(03).
+      *
+       77  WS-DIA-SEMANA                   PIC 9(01).
+      *
+      *------------VARIAVEIS DE TEMPO-------------------
+       01  WS-HORARIO-I.
+           05 WS-HORA-I                    PIC 9(02).
+           05 WS-MIN-I                     PIC 9(02).
+           05 WS-SEG-I                     PIC 9(02).
+           05 WS-CENT-I                    PIC 9(02).
+      *
+       01  WS-HORARIO-F.
+           05 WS-HORA-F                    PIC 9(02).
+           05 WS-MIN-F                     PIC 9(02).
+           05 WS-SEG-F                     PIC 9(02).
+           05 WS-CENT-F                    PIC 9(02).
+      *
+       01  WS-HORARIO-P.
+           05 WS-HORA-P                    PIC 9(02).
+           05 FILLER                       PIC X(01) VALUE ":".
+           05 WS-MIN-P                     PIC 9(02).
+           05 FILLER                       PIC X(01) VALUE ":".
+           05 WS-SEG-P                     PIC 9(02).
+           05 FILLER                       PIC X(01) VALUE ":".
+           05 WS-CENT-P                    PIC 9(02).
+      *
+       77  WS-TOTAL-CENT                   PIC 9(09).
+      *--------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *--------------------------------------------------------------*
+       0000-ERIKEX05.
+           PERFORM 1000-INICIALIZAR
+           PERFORM 2000-PROCESSAR UNTIL WS-REG-SYSIN = ZEROS
+           PERFORM 3000-TERMINO
+           STOP RUN
+           .
+      *
+       1000-INICIALIZAR.
+           INITIALIZE WS-CTLIDOS
+                      WS-CTPROCESS
+                      WS-VTOTAL
+           ACCEPT WS-DATA-SISTEMA          FROM DATE
+           MOVE CORRESPONDING WS-DATA-SISTEMA TO WS-DATA-FORMATADA
+           ACCEPT WS-DATA-JULIANA          FROM DAY
+           ACCEPT WS-HORARIO-I             FROM TIME
+           PERFORM 1500-LER-SYSIN
+           DISPLAY " ---------------------------------- "
+           DISPLAY " SIMULACOES DE EMPRESTIMO SEM JUROS "
+           DISPLAY " ---------------------------------- "
+           .
+      *
+       1500-LER-SYSIN.
+           ACCEPT WS-REG-SYSIN             FROM SYSIN
+           IF WS-REG-SYSIN NOT = ZEROS
+              ADD 1                        TO WS-CTLIDOS
+           END-IF
+           .
+      *
+       2000-PROCESSAR.
+           COMPUTE WS-VPARCELA = WS-VAL-EMPRESTIMO / WS-QTD-PARCELAS
+           COMPUTE WS-VTOTAL   = WS-VPARCELA * WS-QTD-PARCELAS
+           DISPLAY " "
+           DISPLAY " NUMERO DA SIMULACAO : " WS-NUM-SIMULACAO
+           DISPLAY " VALOR DO EMPRESTIMO : " WS-VAL-EMPRESTIMO
+           DISPLAY " TAXA DE JUROS       : " WS-TX-JUROS
+           DISPLAY " QDTE. DE PARCELAS   : " WS-QTD-PARCELAS
+           DISPLAY " VALOR DA PARCELA    : " WS-VPARCELA
+           DISPLAY " VALOR TOTAL         : " WS-VTOTAL
+           ADD 1                           TO WS-CTPROCESS
+           PERFORM 1500-LER-SYSIN
+           .
+      *
+       3000-TERMINO.
+      *---------------CALCULO DO TEMPO DE PROCESSAMENTO-------
+           ACCEPT WS-HORARIO-F             FROM TIME
+           COMPUTE WS-TOTAL-CENT = ( WS-HORA-I * 360000 +
+                                     WS-MIN-I  * 60000  +
+                                     WS-SEG-I  * 100    +
+                                     WS-CENT-I )
+                                               -
+                                   ( WS-HORA-F * 360000 +
+                                     WS-MIN-F  * 60000  +
+                                     WS-SEG-F  * 100    +
+                                     WS-CENT-F )
+           COMPUTE WS-HORA-P     = WS-TOTAL-CENT / 360000
+           COMPUTE WS-TOTAL-CENT = WS-TOTAL-CENT - WS-HORA-P * 360000
+           COMPUTE WS-MIN-P      = WS-TOTAL-CENT / 60000
+           COMPUTE WS-TOTAL-CENT = WS-TOTAL-CENT - WS-MIN-P * 60000
+           COMPUTE WS-SEG-P      = WS-TOTAL-CENT / 100
+           COMPUTE WS-TOTAL-CENT = WS-TOTAL-CENT - WS-SEG-P * 100
+           COMPUTE WS-CENT-P     = WS-TOTAL-CENT
+           DISPLAY " "
+           DISPLAY " ---------------------------------- "
+           DISPLAY "        INFORMACOES GERAIS          "
+           DISPLAY " ---------------------------------- "
+           DISPLAY " TOTAL DE REGISTROS LIDOS .....: " WS-CTLIDOS
+           DISPLAY " TOTAL DE REGISTROS PROCESSADOS: " WS-CTPROCESS
+           DISPLAY " DATA DO PROCESSAMENTO.........: " WS-DATA-FORMATADA
+           DISPLAY " DATA JULIANA..................: " WS-DATA-JULIANA
+           DISPLAY " TEMPO DE PROCESSAMENTO....... : " WS-HORARIO-P
+           DISPLAY " **********************************"
+           .

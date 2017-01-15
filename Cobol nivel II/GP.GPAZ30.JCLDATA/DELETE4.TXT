@@ -1,0 +1,5 @@
+DELETE FROM TBCLI                                                       00010000
+WHERE CODCLI NOT IN                                                     00020000
+                   (SELECT CODCLI                                       00030000
+                    FROM TBVENDA                                        00040000
+                    WHERE CODPROD IN ('0001','0003'))                   00050001

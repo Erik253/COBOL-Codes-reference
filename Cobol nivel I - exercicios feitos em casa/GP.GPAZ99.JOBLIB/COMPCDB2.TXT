@@ -1,0 +1,13 @@
+//GPNENN22 JOB SEUNOME,MSGCLASS=X,CLASS=C,NOTIFY=GPNENN,TIME=(0,10)
+//*-------------------------------------------------------------------*
+//*      JOB DE COMPILACAO DE PROGRAMA COBOL COM DB2 CICS             *
+//*-------------------------------------------------------------------*
+// JCLLIB ORDER=GP.LB.PROCLIB
+//COMPCIDB EXEC DFHCIDB2,NAME='GPNENN22',INSTR='GPNENN' MEMBRO
+//*
+//BIND.SYSTSIN  DD *
+DSN SYSTEM(DB2N)
+BIND PLAN(GPNENN22) MEM(GPNENN22) ACT(REP) ISOLATION(CS)  -
+     LIB('SYS2.DB2.DBRMLIB.DATA')
+END
+//*

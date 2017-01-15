@@ -1,0 +1,8 @@
+       01  WS-REG-CADFUNCA.
+           05 WS-CODFUN-A         PIC 9(04).
+           05 WS-NOME-A           PIC X(35).
+           05 WS-FUNCAO-A         PIC X(20).
+           05 WS-SALARIO-A        PIC 9(04)V99.
+           05 WS-VENCTOS-A        PIC 9(04)V99.
+           05 WS-DESCTOS-A        PIC 9(04)V99.
+           05 FILLER              PIC X(03).

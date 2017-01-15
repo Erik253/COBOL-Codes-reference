@@ -1,0 +1,14 @@
+       FD       CADPROD
+                RECORD CONTAINS 65 CHARACTERS
+                DATA RECORD REG-CADPROD
+                .
+
+       01       REG-CADPROD.
+                05   CODPROD-P           PIC X(06).
+                05   DESCRI-P            PIC X(35).
+                05   LOCAL-P             PIC X(06).
+                05   QTDEST-P            PIC 9(04).
+                05   QTDMIN-P            PIC 9(04).
+                05   QTDMAX-P            PIC 9(04).
+                05   PRECO-P             PIC 9(04)V99.
+

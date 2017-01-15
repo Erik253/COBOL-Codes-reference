@@ -1,0 +1,8 @@
+ALTER TABLE TBVENDA                                                     00010000
+ADD FOREIGN KEY (CODCLI)                                                00020000
+REFERENCES TBCLI                                                        00030000
+ON DELETE CASCADE ;                                                     00040000
+ALTER TABLE TBVENDA                                                     00050000
+ADD FOREIGN KEY (CODPROD)                                               00060000
+REFERENCES TBPROD                                                       00070000
+ON DELETE RESTRICT                                                      00080000

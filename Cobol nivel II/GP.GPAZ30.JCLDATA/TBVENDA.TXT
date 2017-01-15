@@ -1,0 +1,32 @@
+      ******************************************************************00010000
+      * DCLGEN TABLE(TBVENDA)                                          *00020000
+      *        LIBRARY(GP.GPAZ30.JCLDATA(TBVENDA))                     *00030000
+      *        LANGUAGE(COBOL)                                         *00040000
+      *        QUOTE                                                   *00050000
+      *        INDVAR(YES)                                             *00060000
+      * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *00070000
+      ******************************************************************00080000
+           EXEC SQL DECLARE TBVENDA TABLE                               00090000
+           ( NUMVENDA                       CHAR(6) NOT NULL,           00100000
+             DATAHORAVENDA                  TIMESTAMP,                  00110000
+             QTDVENDA                       SMALLINT,                   00120000
+             CODCLI                         CHAR(4) NOT NULL,           00130000
+             CODPROD                        CHAR(4) NOT NULL            00140000
+           ) END-EXEC.                                                  00150000
+      ******************************************************************00160000
+      * COBOL DECLARATION FOR TABLE TBVENDA                            *00170000
+      ******************************************************************00180000
+       01  DCLTBVENDA.                                                  00190000
+           10 NUMVENDA             PIC X(6).                            00200000
+           10 DATAHORAVENDA        PIC X(26).                           00210000
+           10 QTDVENDA             PIC S9(4) USAGE COMP.                00220000
+           10 CODCLI               PIC X(4).                            00230000
+           10 CODPROD              PIC X(4).                            00240000
+      ******************************************************************00250000
+      * INDICATOR VARIABLE STRUCTURE                                   *00260000
+      ******************************************************************00270000
+       01  ITBVENDA.                                                    00280000
+           10 INDSTRUC             PIC S9(4) USAGE COMP OCCURS 5 TIMES. 00290000
+      ******************************************************************00300000
+      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 5       *00310000
+      ******************************************************************00320000

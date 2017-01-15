@@ -1,0 +1,8 @@
+---------------EXERCICIO 16-------------------------------------------- 00010000
+---------------SEGUNDO JEITO DE RESOLVER USANDO JOIN------------------- 00020000
+----------------------------------------------------------------------- 00030000
+SELECT DISTINCT DESCPROD                                                00040000
+FROM TBPROD,TBVENDA,TBCLI                                               00050000
+WHERE TBPROD.CODPROD = TBVENDA.CODPROD AND                              00060000
+      TBVENDA.CODCLI = TBCLI.CODCLI    AND                              00070000
+      CODTIPOCLI = '04'                                                 00080002

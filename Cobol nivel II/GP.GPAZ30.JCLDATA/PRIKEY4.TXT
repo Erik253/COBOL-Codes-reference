@@ -1,0 +1,2 @@
+ALTER TABLE TBPROD                                                      00010000
+ADD PRIMARY KEY (CODPROD)                                               00020000

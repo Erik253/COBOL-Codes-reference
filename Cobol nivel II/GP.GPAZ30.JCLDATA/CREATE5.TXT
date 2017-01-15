@@ -1,0 +1,8 @@
+CREATE TABLE TBVENDA                                                    00010000
+(                                                                       00020000
+ NUMVENDA       CHAR(6)   UNIQUE NOT NULL ,                             00030000
+ DATAHORAVENDA  TIMESTAMP DEFAULT ,                                     00040000
+ QTDVENDA       SMALLINT  CHECK ( QTDVENDA > 0 ) ,                      00050000
+ CODCLI         CHAR(4)          NOT NULL ,                             00060000
+ CODPROD        CHAR(4)          NOT NULL                               00070000
+)                                                                       00080000

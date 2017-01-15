@@ -1,0 +1,6 @@
+---O COMANDO 'RIGTH JOIN'SELECIONA OS DADOS DA TABELA QUE ESTIVER A DIRE00010000
+--ITA DA PALAVRA 'JOIN'                                                 00020000
+---                                                                     00030000
+SELECT CHAVEA, DESCB,VALB                                               00040000
+FROM TBA A RIGHT JOIN TBB B                                             00050001
+ON A.CHAVEA = B.CHAVEB                                                  00060000

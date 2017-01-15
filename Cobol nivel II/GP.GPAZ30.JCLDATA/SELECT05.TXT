@@ -1,0 +1,4 @@
+----EXIBIR O NOME DOS CLIENTES QUE MORAM EM RUA (LIKE)                  00010000
+SELECT NOMECLI,ENDCLI                                                   00020001
+FROM TBCLI                                                              00030000
+WHERE ENDCLI LIKE 'RUA%'                                                00040000

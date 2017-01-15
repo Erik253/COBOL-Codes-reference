@@ -1,0 +1,5 @@
+---'INNER JOIN' COMANDO QUE FAZ A INTERSECCAO ENTRE AS DUAS TABELAS     00001002
+---                                                                     00002000
+SELECT CHAVEA,DESCB,VALB                                                00010000
+FROM TBA A INNER JOIN TBB B                                             00020001
+ON A.CHAVEA = B.CHAVEB                                                  00030000

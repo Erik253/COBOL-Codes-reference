@@ -1,0 +1,5 @@
+--ALTERAR OS CLIENTES DO TIPO '01' PARA '03'                            00010000
+--                                                                      00020000
+UPDATE TBCLI                                                            00030000
+SET CODTIPOCLI = '03'                                                   00040000
+WHERE CODTIPOCLI = '01'                                                 00050000

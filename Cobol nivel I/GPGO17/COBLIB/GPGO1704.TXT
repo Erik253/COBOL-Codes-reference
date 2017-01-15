@@ -1,0 +1,304 @@
+      *--------------------------------------------------------------*  00001019
+      * PROJETO 04 - CHAPEU DE COURO INDUSTRIA BRASILEIRA S.A        *  00002019
+      *--------------------------------------------------------------*  00003019
+      * OBJETIVO : UNIFICAR OS 3 DOCUMENTOS DE CADASTRO DE CLIENTE EM*  00004019
+      * APENAS 1, E GERAR O DOCUMENTO DE SAIDA "CLIUNIF " OU         *  00005019
+      *                 CADASTRO DE CLIENTES UNIFICADO               *  00006019
+      *--------------------------------------------------------------*  00010013
+       IDENTIFICATION                      DIVISION.                    00020019
+      *--------------------------------------------------------------*  00030013
+       PROGRAM-ID.                         GPGO1704.                    00040019
+       AUTHOR.                             ERIK.                        00050013
+
+      *--------------------------------------------------------------*  00060013
+       ENVIRONMENT                         DIVISION.                    00070019
+      *--------------------------------------------------------------*  00080013
+       CONFIGURATION                       SECTION.                     00090019
+       SPECIAL-NAMES.                                                   00100013
+           DECIMAL-POINT IS COMMA.                                      00110013
+                                                                        00111019
+       INPUT-OUTPUT                        SECTION.                     00120019
+       FILE-CONTROL.                                                    00130019
+           SELECT CLISP   ASSIGN           TO UT-S-CLISP                00135019
+           FILE STATUS IS FS-CLISP.
+      *
+           SELECT CLIRJ   ASSIGN           TO UT-S-CLIRJ
+           FILE STATUS IS FS-CLIRJ.
+      *
+           SELECT CLIMG   ASSIGN           TO UT-S-CLIMG
+           FILE  STATUS IS FS-CLIMG.
+      *
+           SELECT CLIUNIF ASSIGN           TO UT-S-CLIUNIF
+           FILE STATUS IS FS-CLIUNIF.
+      *--------------------------------------------------------------*  00140013
+       DATA                                DIVISION.                    00150019
+      *--------------------------------------------------------------*  00160013
+       FILE                                SECTION.                     00170019
+       FD  CLISP
+           LABEL RECORD STANDARD                                        00179119
+           BLOCK CONTAINS 0 CHARACTERS
+           RECORDING MODE IS F
+           RECORD CONTAINS 96 CHARACTERS
+           DATA RECORD IS REG-CLISP.
+      *--
+           COPY BCLISP REPLACING ==:XX-:== BY ==== .
+      *--
+       FD  CLIRJ
+           LABEL RECORD STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+           RECORD CONTAINS 96 CHARACTERS
+           DATA RECORD IS REG-CLIRJ.
+      *--
+           COPY BCLIRJ REPLACING ==:XX-:== BY ==== .
+      *--
+       FD  CLIMG
+           LABEL RECORD STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+           RECORD CONTAINS 96 CHARACTERS
+           DATA RECORD IS REG-CLIMG.
+      *--
+           COPY BCLIMG REPLACING ==:XX-:== BY ==== .
+      *--
+       FD  CLIUNIF
+           LABEL RECORD STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+           RECORD CONTAINS 96 CHARACTERS
+           DATA RECORD IS REG-CLIUNIF.
+      *--
+           COPY BCLIUNIF REPLACING ==:XX-:== BY ==== .
+      *--
+       WORKING-STORAGE                     SECTION.                     00180019
+           COPY BCLISP   REPLACING ==:XX-:== BY ==WS-==.
+           COPY BCLIRJ   REPLACING ==:XX-:== BY ==WS-==.
+           COPY BCLIMG   REPLACING ==:XX-:== BY ==WS-==.
+           COPY BCLIUNIF REPLACING ==:XX-:== BY ==WS-==.
+           COPY VARERRO.
+           COPY VARTEMPO.
+      *
+       01  WS-CONTADORES-COMP.
+           05 WS-CTLIDO-SP                 PIC 9(04).
+           05 WS-CTLIDO-RJ                 PIC 9(04).
+           05 WS-CTLIDO-MG                 PIC 9(04).
+           05 WS-CTGRAV-UNIF               PIC 9(04).
+           05 WS-CTGRAV                    PIC 9(04).
+      *           |
+       01  WS-CONTADORES-FORMATADOS.
+           05 WS-CTLIDO-SP-F               PIC ZZZ9.
+           05 WS-CTLIDO-RJ-F               PIC ZZZ9.
+           05 WS-CTLIDO-MG-F               PIC ZZZ9.
+           05 WS-CTGRAV-UNIF-F             PIC ZZZ9.
+           05 WS-CTGRAV-F                  PIC ZZZ9.
+      *
+       01  WS-FILE-STATUS.
+           05 FS-CLISP                     PIC X(02).
+           05 FS-CLIRJ                     PIC X(02).
+           05 FS-CLIMG                     PIC X(02).
+           05 FS-CLIUNIF                   PIC X(02).
+      *--------------------------------------------------------------*  00240013
+       PROCEDURE                           DIVISION.                    00250019
+      *--------------------------------------------------------------*  00260013
+       0000-PRINCIPAL.                                                  00270019
+           PERFORM 1000-INICIALIZAR
+           PERFORM 2000-PROCESSAR UNTIL FS-CLISP = "10" AND
+                                        FS-CLIRJ = "10" AND
+                                        FS-CLIMG = "10"
+           PERFORM 3000-TERMINO
+           STOP RUN
+           .
+      *
+       1000-INICIALIZAR.
+           ACCEPT WS-HORARIO-I FROM TIME
+           ACCEPT WS-DATA-SYS  FROM DATE
+           INITIALIZE WS-CONTADORES-COMP
+      *
+           OPEN INPUT CLISP
+           IF  FS-CLISP  NOT = "00"
+               MOVE "ERRO NA ABERTURA DO CLISP" TO WS-MSG
+               MOVE  FS-CLISP                   TO WS-FS
+               GO TO 9000-ERRO
+           END-IF
+      *
+           OPEN INPUT  CLIRJ
+           IF FS-CLIRJ NOT = "00"
+              MOVE "ERRO ABERTURA DO CLIRJ"     TO WS-MSG
+              MOVE FS-CLIRJ                     TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+      *
+           OPEN INPUT  CLIMG
+           IF FS-CLIMG NOT = "00"
+              MOVE "ERRO ABERUTA DO CLIMG"      TO WS-MSG
+              MOVE FS-CLIMG                     TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+      *
+           OPEN OUTPUT CLIUNIF
+           IF FS-CLIUNIF NOT = "00"
+              MOVE "ERRO ABERUTA DO CLIUNIF"     TO WS-MSG
+              MOVE FS-CLIUNIF                    TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+      *
+           PERFORM 1500-LER-CLISP
+           PERFORM 1600-LER-CLIRJ
+           PERFORM 1700-LER-CLIMG
+           .
+       1500-LER-CLISP.
+           READ CLISP INTO WS-REG-CLISP
+           IF FS-CLISP = "00"
+              COMPUTE WS-CTLIDO-SP = WS-CTLIDO-SP + 1
+           ELSE
+              IF FS-CLISP = "10"
+                 MOVE HIGH-VALUES             TO WS-CPFCLI-SP
+              ELSE
+                 MOVE "ERRO DE LEITURA CLISP" TO WS-MSG
+                 MOVE FS-CLISP                TO WS-FS
+                 GO                           TO 9000-ERRO
+              END-IF
+           END-IF
+           .
+      *-
+       1600-LER-CLIRJ.
+           READ CLIRJ INTO WS-REG-CLIRJ
+           IF FS-CLIRJ = "00"
+              COMPUTE WS-CTLIDO-RJ = WS-CTLIDO-RJ + 1
+           ELSE
+              IF FS-CLIRJ = "10"
+                 MOVE HIGH-VALUES             TO WS-CPFCLI-RJ
+              ELSE
+                 MOVE "ERRO DE LEITURA CLIRJ" TO WS-MSG
+                 MOVE FS-CLIRJ                TO WS-FS
+                 GO                           TO 9000-ERRO
+              END-IF
+           END-IF
+           .
+      *--
+       1700-LER-CLIMG.
+           READ CLIMG INTO WS-REG-CLIMG
+           IF FS-CLIMG = "00"
+              COMPUTE WS-CTLIDO-MG = WS-CTLIDO-MG + 1
+           ELSE
+              IF FS-CLIMG = "10"
+                 MOVE HIGH-VALUES             TO WS-CPFCLI-RJ
+              ELSE
+                 MOVE "ERRO DE LEITURA CLIMG" TO WS-FS
+                 GO                           TO 9000-ERRO
+              END-IF
+           END-IF
+           .
+      *--
+       2000-PROCESSAR.
+           IF WS-CPFCLI-SP < WS-CPFCLI-RJ AND
+              WS-CPFCLI-SP < WS-CPFCLI-MG
+              PERFORM 2500-GRAVA-SP
+              PERFORM 1500-LER-CLISP
+      *--
+           ELSE
+              IF WS-CPFCLI-RJ < WS-CPFCLI-SP AND
+                 WS-CPFCLI-RJ < WS-CPFCLI-MG
+                 PERFORM 2600-GRAVA-RJ
+                 PERFORM 1600-LER-CLIRJ
+              ELSE
+                 PERFORM 2700-GRAVA-MG
+                 PERFORM 1700-LER-CLIMG
+              END-IF
+           END-IF
+           .
+      *--
+       2500-GRAVA-SP.
+           MOVE WS-REG-CLISP                   TO WS-REG-CLIUNIF
+           WRITE REG-CLIUNIF                 FROM WS-REG-CLIUNIF
+           IF FS-CLIUNIF NOT = "00"
+              MOVE "ERRO DE GRAVACAO CLIUNIF"  TO WS-MSG
+              MOVE FS-CLIUNIF                  TO WS-FS
+              GO TO 9000-ERRO
+           ELSE
+              COMPUTE WS-CTGRAV = WS-CTGRAV + 1
+           END-IF
+           .
+      *--
+       2600-GRAVA-RJ.
+           MOVE WS-REG-CLIRJ                   TO WS-REG-CLIUNIF
+           WRITE REG-CLIUNIF                   FROM WS-REG-CLIUNIF
+           IF FS-CLIUNIF NOT = "00"
+              MOVE "ERRO DE GRAVACAO CLIUNIF" TO WS-MSG
+              MOVE FS-CLIUNIF                 TO WS-FS
+              GO TO 9000-ERRO
+           ELSE
+              COMPUTE WS-CTGRAV = WS-CTGRAV + 1
+           END-IF
+           .
+      *--
+       2700-GRAVA-MG.
+           MOVE WS-REG-CLIMG                   TO WS-REG-CLIUNIF
+           WRITE REG-CLIUNIF                   FROM WS-REG-CLIUNIF
+           IF FS-CLIUNIF NOT = "00"
+              MOVE " ERRO GRAVACAO CLIUNIF "   TO WS-MSG
+              MOVE FS-CLIUNIF                  TO WS-FS
+              GO                               TO 9000-ERRO
+           ELSE
+              COMPUTE WS-CTGRAV = WS-CTGRAV + 1
+           END-IF
+           .
+      *--
+           COPY ROTTEMPO.
+      *--
+       3000-TERMINO.
+           ACCEPT WS-HORARIO-F                  FROM TIME
+           PERFORM 9100-TEMPO
+           MOVE WS-CTLIDO-SP                    TO WS-CTLIDO-SP-F
+           MOVE WS-CTLIDO-RJ                    TO WS-CTLIDO-RJ-F
+           MOVE WS-CTLIDO-MG                    TO WS-CTLIDO-MG-F
+           MOVE WS-CTGRAV                       TO WS-CTGRAV-F
+           DISPLAY " TOTAL DE CADASTROS LIDOS SP : " WS-CTLIDO-SP-F
+           DISPLAY " TOTAL DE CADASTROS LIDOS RJ : " WS-CTLIDO-RJ-F
+           DISPLAY " TOTAL DE CADASTROS LIDOS MG : " WS-CTLIDO-MG-F
+           DISPLAY " TOTAL DE GRAVADOS...........: " WS-CTGRAV-F
+      *
+           CLOSE CLISP
+           IF FS-CLISP NOT = ZEROS
+              MOVE " ERRO FECHAMENTO CLISP "    TO WS-MSG
+              MOVE FS-CLISP                     TO WS-FS
+              GO                                TO 9000-ERRO
+           END-IF
+
+      *
+           CLOSE CLIRJ
+           IF FS-CLIRJ NOT = ZEROS
+              MOVE " ERRO FECHAMENTO CLIRJ "    TO WS-MSG
+              MOVE FS-CLIRJ                     TO WS-FS
+              GO                                TO 9000-ERRO
+           END-IF
+
+      *
+           CLOSE CLIMG
+           IF FS-CLIMG NOT = ZEROS
+              MOVE " ERRO FECHAMENTO CLIMG "    TO WS-MSG
+              MOVE FS-CLIMG                     TO WS-FS
+              GO                                TO 9000-ERRO
+           END-IF
+
+      *
+           CLOSE CLIUNIF
+           IF FS-CLIUNIF NOT = ZEROS
+              MOVE " ERRO FECHAMENTO CLIUNIF "  TO WS-MSG
+              MOVE FS-CLIUNIF                   TO WS-FS
+              GO                                TO 9000-ERRO
+           END-IF
+           .
+      *
+       9000-ERRO.
+           DISPLAY "*----------------------------------*"
+           DISPLAY "MENSAGEM.....:" WS-MSG
+           DISPLAY "FILE STATUS..:" WS-FS
+           DISPLAY "TERMINO ANORMAL DO PROGRAMA GPGO1704"
+           DISPLAY "*----------------------------------*"
+           MOVE 12 TO RETURN-CODE
+           STOP RUN
+           .
+      ****************************************************************
+      *          F I M  D O  P R O G R A M A  G P G O 1 7 0 4        *
+      ****************************************************************

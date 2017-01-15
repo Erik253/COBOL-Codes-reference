@@ -1,0 +1,13 @@
+CREATE TABLE TESTEDCL                                                   00010000
+(                                                                       00020000
+ CAMPO01 CHAR(5)      ,                                                 00030000
+ CAMPO02 VARCHAR(20)  ,                                                 00040000
+ CAMPO03 INTEGER      ,                                                 00050000
+ CAMPO04 SMALLINT     ,                                                 00060000
+ CAMPO05 DECIMAL(10,4),                                                 00070000
+ CAMPO06 REAL         ,                                                 00080000
+ CAMPO07 DOUBLE       ,                                                 00090000
+ CAMPO08 DATE         ,                                                 00100000
+ CAMPO09 TIME         ,                                                 00110000
+ CAMPO10 TIMESTAMP                                                      00120000
+)                                                                       00130000

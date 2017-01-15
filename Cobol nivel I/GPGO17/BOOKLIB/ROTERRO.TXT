@@ -1,0 +1,12 @@
+       9000-ERRO.                                                       00010000
+           DISPLAY "*--------------------------*"                       00020000
+           DISPLAY "          ATENCAO          *"                       00030000
+           DISPLAY "*--------------------------*"                       00040000
+           DISPLAY "*MENSAGEM:....." WS-MENSAGEM                        00050000
+           DISPLAY "*FILE STATUS:.." WS-FS                              00060000
+           DISPLAY "*--------------------------*"                       00070000
+           DISPLAY "*TERMINO ANORMAL DO PROGRAMA: " WS-PROGRAMA         00080000
+           DISPLAY "*--------------------------*"                       00090000
+           MOVE 12                         TO RETURN-CODE               00100000
+           STOP RUN                                                     00110000
+           .                                                            00120000

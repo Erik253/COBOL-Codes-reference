@@ -1,0 +1,12 @@
+---EXCLUIR AS VENDAS FEITAS PARA OS PRODUTOS DO TIPO '01' E CLIENTES DO 00010000
+---TIPO '02'                                                            00020000
+---                                                                     00021000
+DELETE FROM TBVENDA                                                     00030000
+WHERE CODCLI IN                                                         00040000
+               (SELECT CODCLI                                           00050001
+               FROM TBCLI                                               00060000
+               WHERE CODTIPOCLI = '02')                                 00070002
+                        AND                                             00071000
+               CODPROD IN (SELECT CODPROD                               00080000
+                           FROM TBPROD                                  00090000
+                           WHERE CODTIPOPROD = '01')                    00100000

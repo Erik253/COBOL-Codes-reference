@@ -1,0 +1,79 @@
+      *--------------------------------------------------------------*
+      * EXERCICIO PG:26 PARTE 1 DA APOSTILA
+      * JOB: ERIKEX04 | COMPILADOR: ERIKCO04
+      *--------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *--------------------------------------------------------------*
+       PROGRAM-ID.                         ERIKEX04.
+       AUTHOR.                             ERIK.
+      *--------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *--------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+      *--------------------------------------------------------------*
+       DATA                                DIVISION.
+      *--------------------------------------------------------------*
+       FILE                                SECTION.
+       WORKING-STORAGE                     SECTION.
+       01  WS-REG-SYSIN.
+           05 WS-NUM-SIMULACAO             PIC 9(04).
+           05 WS-VAL-EMPRESTIMO            PIC 9(06)V99.
+           05 WS-TX-JUROS                  PIC 9(02)V99.
+           05 WS-QTD-PARCELAS              PIC 9(02).
+      *
+       77  WS-VPARCELA                     PIC 9(06)V99.
+       77  WS-VTOTAL                       PIC 9(08)V99.
+       77  WS-CTLIDOS                      PIC 9(03).
+       77  WS-CTPROCESSADOS                PIC 9(03).
+      *--------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *--------------------------------------------------------------*
+       0000-ERIKEX04.
+           PERFORM 1000-INICIALIZAR
+           PERFORM 2000-PROCESSAR UNTIL WS-REG-SYSIN = ZEROS
+           PERFORM 3000-TERMINO
+           STOP RUN
+           .
+      *
+       1000-INICIALIZAR.
+           INITIALIZE WS-VTOTAL
+                      WS-CTLIDOS
+                      WS-CTPROCESSADOS
+           PERFORM 1500-LER-SYSIN
+           DISPLAY " ---------------------------------- "
+           DISPLAY " SIMULACOES DE EMPRESTIMO SEM JUROS "
+           DISPLAY " ---------------------------------- "
+           .
+      *
+       1500-LER-SYSIN.
+           ACCEPT WS-REG-SYSIN             FROM SYSIN
+           IF WS-REG-SYSIN NOT = ZEROS
+              ADD 1                        TO WS-CTLIDOS
+           END-IF
+           .
+      *
+       2000-PROCESSAR.
+           COMPUTE WS-VPARCELA = WS-VAL-EMPRESTIMO / WS-QTD-PARCELAS
+           COMPUTE WS-VTOTAL   = WS-VPARCELA * WS-QTD-PARCELAS
+           DISPLAY " "
+           DISPLAY " NUMERO DA SIMULACAO : " WS-NUM-SIMULACAO
+           DISPLAY " VALOR DO EMPRESTIMO : " WS-VAL-EMPRESTIMO
+           DISPLAY " TAXA DE JUROS       : " WS-TX-JUROS
+           DISPLAY " QTDE DE PARCELAS    : " WS-QTD-PARCELAS
+           DISPLAY " VALOR DA PARCELA    : " WS-VPARCELA
+           DISPLAY " VALOR TOTAL DO EMPRESTIMO : " WS-VTOTAL
+           ADD 1                             TO WS-CTPROCESSADOS
+           PERFORM 1500-LER-SYSIN
+           .
+      *
+       3000-TERMINO.
+           DISPLAY " "
+           DISPLAY " ******************** "
+           DISPLAY " *INFORMACOES GERAIS* "
+           DISPLAY " ******************** "
+           DISPLAY " TOTAL DE REGISTROS LIDOS...... : " WS-CTLIDOS
+           DISPLAY " TOTAL DE REGISTROS PROCESSADOS.: " WS-CTPROCESSADOS
+           .

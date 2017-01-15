@@ -1,0 +1,20 @@
+      *----------------------VARIAVEIS DE DATA-----------------------
+       01  WS-DATA-SISTEMA.
+           05 WS-ANO                       PIC 9(02).
+           05 WS-MES                       PIC 9(02).
+           05 WS-DIA                       PIC 9(02).
+      *
+       01  WS-DATA-FORMATADA.
+           05 WS-DIA                       PIC 9(02).
+           05 FILLER                       PIC X(01) VALUE "/".
+           05 WS-MES                       PIC 9(02).
+           05 FILLER                       PIC X(03) VALUE "/20".
+           05 WS-ANO                       PIC 9(02).
+      *
+       01  WS-DATA-JULIANA.
+           05 WS-ANO                       PIC 9(02).
+           05 WS-DIA                       PIC 9(03).
+      *
+       77  WS-DIA-SEMANA                   PIC 9(01).
+      *--------------------FIM VARIAVES DE DATA-----------------------
+      *

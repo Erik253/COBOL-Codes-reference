@@ -1,0 +1,7 @@
+       01  :XX-:REG-CLISP.                                              00010002
+           05 :XX-:CPFCLI-SP               PIC x(11).                   00020000
+           05 :XX-:NOMECLI-SP              PIC X(25).                   00030000
+           05 :XX-:ENDCLI-SP               PIC X(30).                   00040000
+           05 :XX-:FONECLI-SP              PIC X(10).                   00050000
+           05 :XX-:TOTALCOMPRAS-SP         PIC 9(08)V99.                00060003
+           05 :XX-:ULTIMACOMPRA-SP         PIC X(10).                   00070004

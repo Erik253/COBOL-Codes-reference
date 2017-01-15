@@ -1,0 +1,4 @@
+---EXIBIR A QUANTIDADE DE VENDAS (COUNT) FEITAS PARA O CLIENTE '0001'   00010000
+SELECT COUNT(*) AS CONTAGEM                                             00020002
+FROM TBVENDA                                                            00030000
+WHERE CODCLI = '0001'                                                   00040000

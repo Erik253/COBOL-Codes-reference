@@ -1,0 +1,152 @@
+      *--------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *--------------------------------------------------------------*
+       PROGRAM-ID.                         ACNN0010.
+      *--------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *--------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+      *--------------------------------------------------------------*
+       DATA                                DIVISION.
+      *--------------------------------------------------------------*
+       WORKING-STORAGE                     SECTION.
+      *--------------------------------------------------------------*
+       01  WS-SITUACAO-DATA                PIC X(01).
+           88 DATA-INVALIDA                        VALUE '0'.
+           88 DATA-VALIDA                          VALUE '1'.
+
+       01  WS-CALCULO-BISSEXTO.
+           03 WS-Q4                        PIC 9(06) COMP.
+           03 WS-Q100                      PIC 9(06) COMP.
+           03 WS-Q400                      PIC 9(06) COMP.
+           03 WS-Q3600                     PIC 9(06) COMP.
+           03 WS-R4                        PIC 9(06) COMP.
+           03 WS-R100                      PIC 9(06) COMP.
+           03 WS-R400                      PIC 9(06) COMP.
+           03 WS-R3600                     PIC 9(06) COMP.
+
+       01  WS-DATA-SISTEMA.
+           03 WS-ANO-D                     PIC X(02).
+           03 WS-MES-D                     PIC X(02).
+           03 WS-DIA-D                     PIC X(02).
+
+       01  WS-HORA-SISTEMA.
+           03 WS-HORA                      PIC X(02).
+           03 WS-MINUTO                    PIC X(02).
+           03 WS-SEGUNDO                   PIC X(02).
+           03 WS-CENTESIMO                 PIC X(02).
+
+       01  WS-DATA-FORMATADA.
+           03 WS-DIA-D                     PIC X(02).
+           03 FILLER                       PIC X(01) VALUE "/".
+           03 WS-MES-D                     PIC X(02).
+           03 FILLER                       PIC X(03) VALUE "/20".
+           03 WS-ANO-D                     PIC X(02).
+
+       01  WS-HORA-FORMATADA.
+           03 WS-HORA                      PIC X(02).
+           03 FILLER                       PIC X(01) VALUE ":".
+           03 WS-MINUTO                    PIC X(02).
+           03 FILLER                       PIC X(01) VALUE ":".
+           03 WS-SEGUNDO                   PIC X(02).
+
+       01  WS-DT-PARA-VALIDAR.
+           03 WS-ANO                    PIC 9(04).
+           03 WS-MES                    PIC 9(02).
+           03 WS-DIA                    PIC 9(02).
+      *--------------------------------------------------------------*
+       LINKAGE                             SECTION.
+      *--------------------------------------------------------------*
+           COPY POOL0010.
+      *--------------------------------------------------------------*
+       PROCEDURE                           DIVISION
+           USING POOL0010-LINKAGE.
+      *--------------------------------------------------------------*
+           IF LS-FLAG-ROTINA = 1
+              PERFORM 1000-FORMATA-DATA-HORA
+           ELSE
+              PERFORM 2000-VALIDA-DATA
+           END-IF
+
+           GOBACK
+           .
+
+       1000-FORMATA-DATA-HORA.
+           ACCEPT WS-DATA-SISTEMA FROM DATE
+           ACCEPT WS-HORA-SISTEMA FROM DATE
+
+           MOVE CORRESPONDING WS-DATA-SISTEMA
+                                           TO WS-DATA-FORMATADA
+           MOVE CORRESPONDING WS-HORA-SISTEMA
+                                           TO WS-HORA-FORMATADA
+
+           MOVE WS-DATA-FORMATADA          TO LS-DATA-MASC
+           MOVE WS-HORA-FORMATADA          TO LS-HORA-MASC
+           .
+
+       2000-VALIDA-DATA.
+           MOVE LS-DT-PARA-VALIDAR         TO WS-DT-PARA-VALIDAR
+      *
+      * PRIMEIRO VAMOS CONSIDERAR QUE A DATA EH VALIDA
+      *
+           SET DATA-VALIDA TO TRUE
+
+      *
+      * TESTE 01 - ANO ENTRE 1 E 2099
+      *
+           IF DATA-VALIDA AND (WS-ANO < 1 OR > 2099)
+              SET DATA-INVALIDA TO TRUE
+           END-IF
+      *
+      * TESTE 02 - MES ENTRE 1 E 12
+      *
+           IF DATA-VALIDA AND (WS-MES < 1 OR > 12)
+              SET DATA-INVALIDA TO TRUE
+           END-IF
+      *
+      * TESTE 03 - MES COM 30 OU 31 DIAS
+      *
+           IF DATA-VALIDA AND (WS-MES = 1 OR  3 OR  5 OR 7 OR
+                                        8 OR 10 OR 12)
+              IF WS-DIA < 1 OR > 31
+                 SET DATA-INVALIDA TO TRUE
+              END-IF
+           ELSE
+              IF WS-MES NOT = 2 AND (WS-DIA < 1 OR > 30)
+                 SET DATA-INVALIDA TO TRUE
+              END-IF
+           END-IF
+
+      *
+      * TESTE 04 - FEVEREIRO EM ANO BISSEXTO
+      *
+           IF DATA-VALIDA AND WS-MES = 2
+              DIVIDE WS-ANO BY    4 GIVING WS-Q4    REMAINDER WS-R4
+              DIVIDE WS-ANO BY  100 GIVING WS-Q100  REMAINDER WS-R100
+              DIVIDE WS-ANO BY  400 GIVING WS-Q400  REMAINDER WS-R400
+              DIVIDE WS-ANO BY 3600 GIVING WS-Q3600 REMAINDER WS-R3600
+
+              IF WS-R4   = 0 AND WS-R100  NOT = 0 OR
+                 WS-R400 = 0 AND WS-R3600 NOT = 0
+                 IF WS-DIA < 1 OR > 29
+                    SET DATA-INVALIDA TO TRUE
+                 END-IF
+              ELSE
+                 IF WS-DIA < 1 OR > 28
+                    SET DATA-INVALIDA TO TRUE
+                 END-IF
+              END-IF
+           END-IF
+
+      *
+      * VERIFICANDO SE A DATA CONTINUA VALIDA
+      *
+           IF DATA-VALIDA
+              MOVE 1                       TO LS-FLAG-RETORNO
+           ELSE
+              MOVE 2                       TO LS-FLAG-RETORNO
+           END-IF
+           .

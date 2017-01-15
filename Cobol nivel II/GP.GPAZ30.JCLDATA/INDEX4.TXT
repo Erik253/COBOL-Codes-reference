@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX IDXPROD                                             00010001
+ ON TBPROD  (CODPROD)                                                   00020001

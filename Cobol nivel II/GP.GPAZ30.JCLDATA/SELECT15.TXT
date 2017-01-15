@@ -1,0 +1,5 @@
+---EXIBIR O NOME E A DESCRICAO DO TIPO DE CLIENTE (JOIN)                00001002
+---                                                                     00002002
+SELECT NOMECLI,DESCTIPOCLI                                              00010000
+FROM TBCLI,TBTIPOCLI                                                    00020000
+WHERE TBCLI.CODTIPOCLI = TBTIPOCLI.CODTIPOCLI                           00030001

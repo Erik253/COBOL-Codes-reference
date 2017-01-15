@@ -1,0 +1,12 @@
+---EXIBIR O NOME DOS CLIENTES QUE COMPRARAM MAIS DE R$1.000.00 EM PRODUT00010000
+---OS DO TIPO '01' (JOIN/SUB-QUERIE)                                    00020000
+---                                                                     00030000
+SELECT NOMECLI                                                          00040000
+FROM TBCLI                                                              00050000
+WHERE CODCLI IN                                                         00060000
+               (SELECT CODCLI                                           00070002
+                FROM TBVENDA V,TBPROD P                                 00080002
+                WHERE V.CODPROD = P.CODPROD AND                         00100002
+                      CODTIPOPROD = '01'                                00110000
+                GROUP BY CODCLI                                         00120000
+                HAVING SUM(PRECOPROD * QTDVENDA) > 1000 )               00130000

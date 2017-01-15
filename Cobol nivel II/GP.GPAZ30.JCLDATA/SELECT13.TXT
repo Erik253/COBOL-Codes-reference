@@ -1,0 +1,6 @@
+---EXIBIR A MEDIA DA ALTURA DOS CLIENTES POR TIPO DE CLIENTE(AVG E GROUP00010000
+---BY)                                                                  00020000
+----                                                                    00030000
+SELECT CODTIPOCLI,AVG(ALTURACLI) MEDIA_DE_ALTURA                        00040006
+FROM TBCLI                                                              00050000
+GROUP BY CODTIPOCLI                                                     00060000

@@ -1,0 +1,40 @@
+      *----------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*
+       PROGRAM-ID.                         PGMAUX03.
+       AUTHOR.                             SEUNOME.
+      *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*
+       ENVIRONMENT                         DIVISION.
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+       FILE-CONTROL.
+      *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*
+       DATA                                DIVISION.
+      *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*
+       FILE                                SECTION.
+      *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*
+       WORKING-STORAGE                     SECTION.
+      *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*
+      *
+      *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*
+       LINKAGE                             SECTION.
+      *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*
+       01  LS-PARAMETRO.
+           05 LS-MENS-CODPROD              PIC 9(04).
+           05 LS-MENS-TIPOMOVTO            PIC X(01).
+           05 LS-MENS-QTDE                 PIC 9(08) COMP-3.
+           05 LS-MENS-CLASSIFIC            PIC X(01).
+      *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*
+       PROCEDURE                              DIVISION
+           USING LS-PARAMETRO.
+      *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*
+           IF LS-MENS-TIPOMOVTO = 'E' OR
+              LS-MENS-QTDE      > 5000
+              MOVE '1'                     TO LS-MENS-CLASSIFIC
+           ELSE
+              MOVE '0'                     TO LS-MENS-CLASSIFIC
+           END-IF
+           GOBACK
+           .

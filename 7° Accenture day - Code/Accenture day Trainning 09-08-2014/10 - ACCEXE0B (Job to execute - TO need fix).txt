@@ -1,0 +1,57 @@
+//GPAZ06B  JOB SEUNOME,CLASS=C,MSGCLASS=X,NOTIFY=&SYSUID,TIME=1         00010021
+//JOBLIB   DD  DSN=GP.GERAL.LOADLIB,DISP=SHR                            00020000
+//*                                                                     00021000
+//* ARQUIVO E1USUAR VAZIO                                               00022019
+//*                                                                     00023000
+//E01VAZ   EXEC PGM=ACC06001                                            00024020
+//E1USUAR  DD  DUMMY                                                    00025019
+//E2TELES  DD  DSN=GP.GPAZ99.D140531.E2TELES,DISP=SHR                   00026019
+//S1USRNEW DD  DSN=GP.GPAZ99.D140531.S1USRNEW,DISP=SHR                  00027019
+//*                                                                     00028000
+//* ARQUIVO E2TELES VAZIO                                               00029019
+//*                                                                     00030000
+//E02VAZ   EXEC PGM=ACC06001                                            00031020
+//E1USUAR  DD  DSN=GP.GPAZ99.D140531.E1USUAR,DISP=SHR                   00032019
+//E2TELES  DD  DUMMY                                                    00033019
+//S1USRNEW DD  DSN=GP.GPAZ99.D140531.S1USRNEW,DISP=SHR                  00034019
+//*                                                                     00035000
+//* ARQUIVO E1USUAR COM ERRO                                            00036019
+//*                                                                     00037000
+//E01ERRO  EXEC PGM=ACC06001                                            00038020
+//E1USUAR  DD  DSN=GP.GPAZ99.D140531.E1USUARE,DISP=SHR                  00039019
+//E2TELES  DD  DSN=GP.GPAZ99.D140531.E2TELES,DISP=SHR                   00040019
+//S1USRNEW DD  DSN=GP.GPAZ99.D140531.S1USRNEW,DISP=SHR                  00050019
+//*                                                                     00051000
+//* ARQUIVO E2TELES COM ERRO                                            00052019
+//*                                                                     00053000
+//E02ERRO  EXEC PGM=ACC06001                                            00054020
+//E1USUAR  DD  DSN=GP.GPAZ99.D140531.E1USUAR,DISP=SHR                   00055019
+//E2TELES  DD  DSN=GP.GPAZ99.D140531.E2TELESE,DISP=SHR                  00056019
+//S1USRNEW DD  DSN=GP.GPAZ99.D140531.S1USRNEW,DISP=SHR                  00057019
+//*                                                                     00058000
+//* ARQUIVO S1USRNEW COM ERRO                                           00059019
+//*                                                                     00059100
+//S01ERRO  EXEC PGM=ACC06001                                            00059220
+//E1USUAR  DD  DSN=GP.GPAZ99.D140531.E1USUAR,DISP=SHR                   00059319
+//E2TELES  DD  DSN=GP.GPAZ99.D140531.E2TELES,DISP=SHR                   00059419
+//S1USRNEW DD  DSN=GP.GPAZ99.D140531.S1USRNWE,DISP=SHR                  00059519
+//*                                                                     00059600
+//* ARQUIVO E2TELES COM DATA NASCIMENTO INVALIDA                        00059719
+//*                                                                     00059800
+//DTINVAL  EXEC PGM=ACC06001                                            00059920
+//E1USUAR  DD  DSN=GP.GPAZ99.D140531.E1USUAR,DISP=SHR                   00060019
+//E2TELES  DD  DSN=GP.GPAZ99.D140531.E2TELESN,DISP=SHR                  00061019
+//S1USRNEW DD  DSN=GP.GPAZ99.D140531.S1USRNEW,DISP=SHR                  00061119
+//*                                                                     00061200
+//*                                                                     00061300
+//ERRCH10  EXEC PGM=ACC06001                                            00061420
+//E1USUAR  DD  DSN=GP.GPAZ99.D140531.E1USUAR,DISP=SHR                   00061519
+//E2TELES  DD  DSN=GP.GPAZ99.D140531.E2TELESX,DISP=SHR                  00061619
+//S1USRNEW DD  DSN=GP.GPAZ99.D140531.S1USRNEW,DISP=SHR                  00061719
+//*                                                                     00061800
+//* EXECUCAO NORMAL                                                     00061900
+//*                                                                     00062000
+//PROCOK   EXEC PGM=ACC06001                                            00062120
+//E1USUAR  DD  DSN=GP.GPAZ99.D140531.E1USUAR,DISP=SHR                   00062219
+//E2TELES  DD  DSN=GP.GPAZ99.D140531.E2TELES,DISP=SHR                   00062319
+//S1USRNEW DD  DSN=GP.GPAZ99.D140531.S1USRNEW,DISP=SHR                  00062419

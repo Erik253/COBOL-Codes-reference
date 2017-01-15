@@ -1,0 +1,136 @@
+      *----------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *----------------------------------------------------------------*
+       PROGRAM-ID.                         AC990010.
+
+      *----------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *----------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+       FILE-CONTROL.
+
+      *----------------------------------------------------------------*
+       DATA                                DIVISION.
+      *----------------------------------------------------------------*
+       FILE                                SECTION.
+      *----------------------------------------------------------------*
+       WORKING-STORAGE                     SECTION.
+      *----------------------------------------------------------------*
+       01  WS-CALCULO-BISSEXTO.
+           05 Q4                           PIC 9(04).
+           05 Q100                         PIC 9(04).
+           05 Q400                         PIC 9(04).
+           05 R4                           PIC 9(04).
+           05 R100                         PIC 9(04).
+           05 R400                         PIC 9(04).
+      *
+       01  WS-DATA-SISTEMA.
+           05 WS-ANO                       PIC 9(02).
+           05 WS-MES                       PIC 9(02).
+           05 WS-DIA                       PIC 9(02).
+      *
+       01  WS-HORARIO-SISTEMA.
+           05 WS-HH-SISTEMA                PIC 9(02).
+           05 WS-MM-SISTEMA                PIC 9(02).
+           05 WS-SS-SISTEMA                PIC 9(02).
+           05 WS-CC-SISTEMA                PIC 9(02).
+      *
+       01  WS-DATA-FORMATADA.
+           05 WS-DIA                       PIC 9(02).
+           05 FILLER                       PIC X(01)
+                                                   VALUE "/".
+           05 WS-MES                       PIC 9(02).
+           05 FILLER                       PIC X(03)
+                                                   VALUE "/20".
+           05 WS-ANO                       PIC 9(02).
+      *
+       01  WS-HORARIO-FORMATADO.
+           05 WS-HH-SISTEMA                PIC 9(02).
+           05 FILLER                       PIC X(01)
+                                                   VALUE ":".
+           05 WS-MM-SISTEMA                PIC 9(02).
+           05 FILLER                       PIC X(01)
+                                                   VALUE ":".
+           05 WS-SS-SISTEMA                PIC 9(02).
+      *
+       01  WS-DURACAO-JUNTO                PIC X(24)
+                                                   VALUE
+           "312931303130313130313031".
+      *
+       01  WS-DURACAO-SEPARADO REDEFINES WS-DURACAO-JUNTO.
+           05 WS-DURACAO                   PIC 9(02)
+                                                   OCCURS 12 TIMES.
+      *----------------------------------------------------------------*
+       LINKAGE                             SECTION.
+      *----------------------------------------------------------------*
+           COPY POOL0010.
+      *----------------------------------------------------------------*
+       PROCEDURE DIVISION USING POOL0010-LINKAGE.
+      *----------------------------------------------------------------*
+       0000-PRINCIPAL.
+           EVALUATE LS-FLAG-ROTINA
+              WHEN 1
+                   PERFORM 1000-DEVOLVE-DATA-HORA
+              WHEN 2
+                   PERFORM 2000-VALIDA-DATA
+              WHEN OTHER
+                   MOVE 9 TO LS-FLAG-RETORNO
+           END-EVALUATE
+           GOBACK
+           .
+      *
+       1000-DEVOLVE-DATA-HORA.
+           ACCEPT WS-DATA-SISTEMA          FROM DATE
+           ACCEPT WS-HORARIO-SISTEMA       FROM TIME
+
+           MOVE CORRESPONDING
+                WS-DATA-SISTEMA            TO WS-DATA-FORMATADA
+           MOVE CORRESPONDING
+                WS-HORARIO-SISTEMA         TO WS-HORARIO-FORMATADO
+
+           MOVE WS-DATA-FORMATADA          TO LS-DATA-MASC
+           MOVE WS-HORARIO-FORMATADO       TO LS-HORA-MASC
+           .
+      *
+       2000-VALIDA-DATA.
+      *
+      *    CALCULO DOS QUOCIENTES E RESTOS PARA VERIFICAR
+      *    SE ANO EH BISSEXTO
+      *
+           DIVIDE LS-ANO-VALIDA BY 4   GIVING Q4   REMAINDER R4
+           DIVIDE LS-ANO-VALIDA BY 100 GIVING Q100 REMAINDER R100
+           DIVIDE LS-ANO-VALIDA BY 400 GIVING Q400 REMAINDER R400
+
+      *
+      *    ASSUMIR QUE A DATA ESTA CORRETA (1) E SE NAO PASSAR
+      *    NAS VALIDACOES, INVALIDAR (2)
+      *
+           MOVE 1 TO LS-FLAG-RETORNO
+
+      *
+      *    MES DEVE ESTAR ENTRE 1 E 12
+      *
+           IF LS-MES-VALIDA <  1 OR
+              LS-MES-VALIDA > 12
+              MOVE 2 TO LS-FLAG-RETORNO
+           END-IF
+
+      *
+      *    DIA DEVE ESTAR ENTRE 1 E O 29/30/31 (DEPENDE DO MES)
+      *
+           IF LS-DIA-VALIDA <  1 OR
+              LS-DIA-VALIDA > WS-DURACAO(LS-MES-VALIDA)
+              MOVE 2 TO LS-FLAG-RETORNO
+           END-IF
+
+      *
+      *    29 DE FEVEREIRO SO VALE PARA ANO BISSEXTO
+      *
+           IF LS-MES-VALIDA = 2 AND LS-DIA-VALIDA = 29 AND
+              NOT(R4 = 0 AND R100 NOT = 0 OR R400 = 0)
+              MOVE 2 TO LS-FLAG-RETORNO
+           END-IF
+           .

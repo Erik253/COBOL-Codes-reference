@@ -1,0 +1,26 @@
+      ********************************************                      00010000
+      * BOOK DE ARQUIVO                          *                      00020000
+      ********************************************                      00030000
+       01  WS-REG-MOVTOEST.                                             00040007
+           05 WS-TIPO-REG-MOVTO             PIC X(01).                  00050007
+           05 FILLER                        PIC X(32).                  00060007
+                                                                        00061001
+       01  WS-REG-CLIMOV-TRAILLER REDEFINES WS-REG-CLIMOV.              00070004
+           05 FILLER                       PIC X(01).                   00090001
+           05 WS-QTDREG-MOVTO              PIC 9(05).                   00100007
+           05 FILLER                       PIC X(27).                   00110007
+                                                                        00120001
+       01  WS-REG-CLIMOV-DATA REDEFINES WS-REG-CLIMOV.                  00130004
+           05 FILLER                       PIC X(01).                   00140001
+           05 WS-NUMMOVTO                  PIC 9(08).                   00150007
+           05 WS-DATAMOVTO                 PIC 9(08).                   00160007
+           05 WS-HORAMOVTO                 PIC 9(06).                   00170007
+           05 WS-CODPRODMOVTO              PIC 9(04).                   00180007
+           05 WS-TIPOMOVTO                 PIC X(01).                   00190007
+           05 WS-QTDEMOVTO                 PIC 9(08) COMP-3.            00191007
+                                                                        00200001
+       01  WS-REG-CLIMOV-HEADER REDEFINES WS-REG-CLIMOV.                00210004
+           05 FILLER                       PIC X(01).                   00220001
+           05 WS-SIGLA-SYS-CAD             PIC X(05).                   00230007
+           05 WS-MES-ANO-REF-CAD           PIC X(06).                   00240007
+           05 FILLER                       PIC X(21).                   00250007

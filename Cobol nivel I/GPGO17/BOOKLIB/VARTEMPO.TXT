@@ -1,0 +1,43 @@
+       01  WS-HORARIO-I.                                                00010001
+           05 WS-HORA-I                    PIC 99.                      00020001
+           05 WS-MIN-I                     PIC 99.                      00030001
+           05 WS-SEG-I                     PIC 99.                      00040001
+           05 WS-CENT-I                    PIC 99.                      00050001
+      *---                                                              00060004
+       01  WS-HORARIO-F.                                                00070001
+           05 WS-HORA-F                    PIC 99.                      00080001
+           05 WS-MIN-F                     PIC 99.                      00090001
+           05 WS-SEG-F                     PIC 99.                      00100001
+           05 WS-CENT-F                    PIC 99.                      00110001
+      *---                                                              00120004
+       01  WS-HORARIO-P.                                                00130001
+           05 WS-HORA-P                    PIC 9(02).                   00140001
+           05 WS-HORA-P                    PIC 9(02).                   00150001
+           05 FILLER                       PIC X(01)                    00160001
+                                                VALUE ":".              00170001
+           05 WS-MIN-P                     PIC 9(02).                   00180001
+           05 FILLER                       PIC X(02)                    00190001
+                                                VALUE ":".              00200001
+           05 WS-SEG-P                     PIC 99.                      00210001
+           05 FILLER                       PIC X(02)                    00220001
+                                                VALUE ":".              00230001
+           05 WS-CENT-P                    PIC 99.                      00240001
+      *---                                                              00250001
+       01  WS-TOT-CENT                     PIC 9(07).                   00260001
+      *---                                                              00270001
+       01  WS-DATA-SYS.                                                 00280001
+           05 WS-ANO                       PIC 9(02).                   00290001
+           05 WS-MES                       PIC 9(02).                   00300001
+           05 WS-DIA                       PIC 99.                      00310001
+      *---                                                              00320001
+       01  WS-DATA-FORMATADA.                                           00330001
+           05 WS-DIA                       PIC 99.                      00340001
+           05 FILLER                       PIC X(01)                    00350001
+                                                VALUE "/".              00360001
+           05 WS-MES                       PIC 99.                      00370001
+           05 FILLER                       PIC X(03)                    00380009
+                                                VALUE "/20".            00381009
+           05 WS-ANO                       PIC 99.                      00390002
+      *--                                                               00420003
+       77  WS-DATA-JULIANA                 PIC 9(03).                   00430003
+       77  WS-DIA-SEMANA                   PIC 9(01).                   00440003

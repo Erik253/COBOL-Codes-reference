@@ -1,0 +1,6 @@
+---O COMANDO 'LEFT JOIN'SELECIONA OS DADOS DA TABELA QUE ESTIVER A ESQU 00010000
+---ERDA DA PALAVRA 'JOIN'                                               00020000
+---                                                                     00030000
+SELECT CHAVEA, DESCB,VALB                                               00040001
+FROM TBA A LEFT JOIN TBB B                                              00050000
+ON A.CHAVEA = B.CHAVEB                                                  00060000

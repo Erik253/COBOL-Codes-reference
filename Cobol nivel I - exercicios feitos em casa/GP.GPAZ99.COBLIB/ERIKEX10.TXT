@@ -1,0 +1,31 @@
+      *--------------------------------------------------------------*
+      * EXERCICIO PG:24 PARTE 6 DA APOSTILA
+      * JOB: ERIKEX10 | COMPILADOR: ERIKCO10
+      *--------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *--------------------------------------------------------------*
+       PROGRAM-ID.                         ERIKEX10.
+       AUTHOR.                             ERIK.
+      *--------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *--------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+       FILE-CONTROL.
+      *--------------------------------------------------------------*
+       DATA                                DIVISION.
+      *--------------------------------------------------------------*
+       FILE                                SECTION.
+       WORKING-STORAGE                     SECTION.
+      *--------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *--------------------------------------------------------------*
+       0000-ERIKEX10.
+           PERFORM 1000-INICIALIZAR
+           PERFORM 2000-PROCESSAR
+           PERFORM 3000-TERMINO
+           STOP RUN
+           .
+      *

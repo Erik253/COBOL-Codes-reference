@@ -1,0 +1,14 @@
+//GPAZ30D4 JOB 'ERIK',MSGCLASS=X,CLASS=C,NOTIFY=GPAZ30,TIME=(0,40)
+//*-------------------------------------------------------------------*
+//*   JOB DE COMPILACAO DE PROGRAMA COBOL COM DB2 BATCH               *
+//*   TROCAR GPAZ30 PELO SEU USUARIO *
+//*-------------------------------------------------------------------*
+// JCLLIB ORDER=GP.LB.PROCLIB
+//COMPDB2B EXEC DFHCODB2,NAME='GPAZ30D4',INSTR='GPAZ30' MEMBRO
+//*
+//BIND.SYSTSIN  DD *
+DSN SYSTEM(DB2N)
+BIND PLAN(GPAZ30D4) MEM(GPAZ30D4) ACT(REP) ISOLATION(CS) -
+     LIB('SYS2.DB2.DBRMLIB.DATA')
+END
+//*

@@ -1,0 +1,12 @@
+       01  WS-REG-MOVPRDD2.
+           05 WS-CODPROD-M                 PIC X(04).
+           05 WS-DESCPROD-M                PIC X(20).
+           05 WS-UNIDPROD-M                PIC X(05).
+           05 WS-LOCALPROD-M               PIC X(05).
+           05 WS-QTDEST-M                  PIC 9(05).
+           05 WS-QTDMAX-M                  PIC 9(05).
+           05 WS-QTDMIN-M                  PIC 9(05).
+           05 WS-PRECOCOMPRA-M             PIC 9(06)V99.
+           05 WS-PRECOVENDA-M              PIC 9(06)V99.
+           05 WS-PERCOMIS-M                PIC 9(02)V99.
+           05 WS-TIPOMOVTO-M               PIC X(01).

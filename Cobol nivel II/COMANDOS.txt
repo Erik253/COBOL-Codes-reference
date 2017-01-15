@@ -1,0 +1,78 @@
+COMANDOS
+...............................................................................
+SELECT MAX(PRECOPROD) MAXIMO, MIN(PRECOPROD) MINIMO,                    
+       SUM(PRECOPROD), COUNT(*),                                        
+       AVG(PRECOPROD)                                                   
+FROM TBPROD                                                             
+...............................................................................
+
+SELECT CODTIPOPROD, MAX(PRECOPROD)
+FROM TBPROD                                   
+GROUP BY CODTIPOPROD                          
+...............................................................................
+
+SELECT CODCLI, AVG(QTDVENDA)              
+FROM TBVENDA                              
+GROUP BY CODCLI                           
+
+...............................................................................
+
+SELECT CODCLI, AVG(QTDVENDA)       
+FROM TBVENDA                       
+GROUP BY CODCLI                    
+HAVING AVG(QTDVENDA) > 11          
+
+...............................................................................
+SELECT NOMECLI,                        
+       DATANASCCLI,                    
+       YEAR(DATANASCCLI),              
+       CURRENT DATE - DATANASCCLI,     
+       YEAR(CURRENT DATE - DATANASCCLI)
+FROM TBCLI                             
+...............................................................................
+
+SELECT SUBSTR(NOMECLI,1,5) NOME , 
+       HEX(ALTURACLI)             
+FROM TBCLI                        
+
+...............................................................................
+
+SELECT NOMECLI, DESCTIPOCLI                  
+FROM TBCLI,TBTIPOCLI                         
+WHERE TBCLI.CODTIPOCLI = TBTIPOCLI.CODTIPOCLI
+
+...............................................................................
+
+SELECT CODCLI,SUM(QTDVENDA*PRECOPROD) 
+FROM TBVENDA,TBPROD                   
+WHERE TBVENDA.CODPROD = TBPROD.CODPROD
+GROUP BY  CODCLI                      
+
+.........................................................................
+
+
+----EXIBIR  SEM REPETICAO, O NOME DOS CLIENTES QUE COMPRARAM PRODUTOS  
+----DO TIPO '03' EM ORDEM CRESCENTE DE NOME.(JOIN OU SUB-QUERIE)       
+----                                                                   
+SELECT DISTINCT NOMECLI                                                
+FROM TBCLI                                                             
+WHERE CODCLI IN                                                        
+               (SELECT CODCLI                                          
+                FROM TBVENDA                                           
+                WHERE CODPROD IN                                       
+                                (SELECT CODPROD                        
+                                 FROM TBPROD                           
+                                 WHERE CODTIPOPROD = '03'))    
+
+        
+
+
+
+
+
+
+
+
+
+
+

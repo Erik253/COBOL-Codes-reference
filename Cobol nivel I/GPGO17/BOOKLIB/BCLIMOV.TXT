@@ -1,0 +1,23 @@
+       01  WS-REG-CLIMOV.                                               00010001
+           05 WS-TIPO-REGISTRO-M           PIC X(01).                   00020001
+           05 FILLER                       PIC X(81).                   00030001
+      *                                                                 00040001
+       01  WS-REG-CLIMOV-HEADER REDEFINES WS-REG-CLIMOV.                00050001
+           05 FILLER                       PIC X(01).                   00060001
+           05 WS-SIGLASYS-M                PIC X(05).                   00070001
+           05 WS-ANOMES-REF-M              PIC X(06).                   00080001
+           05 FILLER                       PIC X(69).                   00090001
+      *                                                                 00100001
+       01  WS-REG-CLIMOV-DATA REDEFINES WS-REG-CLIMOV.                  00110001
+           05 FILLER                       PIC X(01).                   00120001
+           05 WS-CODCLI-M                  PIC X(04).                   00130001
+           05 WS-NOMECLI-M                 PIC X(25).                   00140001
+           05 WS-ENDCLI-M                  PIC X(30).                   00150001
+           05 WS-FONECLI-M                 PIC X(10).                   00160001
+           05 WS-TOTALDIVIDA               PIC 9(08)V99.                00170001
+           05 WS-TIPOMOV-M                 PIC X(01).                   00180001
+      *                                                                 00190001
+       01  WS-REG-CLIMOV-TRAILLER REDEFINES WS-REG-CLIMOV.              00200001
+           05 FILLER                       PIC X(01).                   00210001
+           05 WS-QTD-REGISTRO-M            PIC 9(05).                   00220001
+           05 FILLER                       PIC X(74).                   00230001

@@ -1,0 +1,10 @@
+//GPAZ9901 JOB ERIK,MSGCLASS=X,CLASS=C,NOTIFY=GPAZ99,TIME=(0,20)        00010019
+//*****************************************************************     00020007
+//STEP1   EXEC PGM=ERIKEX01                                             00080019
+//STEPLIB DD DSN=GP.GERAL.LOADLIB,DISP=SHR                              00090007
+//SYSIN   DD *                                                          00100007
+010                                                                     00201019
+005                                                                     00210019
+004                                                                     00210119
+000                                                                     00211019
+//*                                                                     00220007

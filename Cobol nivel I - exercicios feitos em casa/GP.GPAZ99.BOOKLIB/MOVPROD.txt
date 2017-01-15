@@ -1,0 +1,20 @@
+      *--------------------------------------------------------*
+      * EXERCICIO.: PAGINA 68 - APOSTILA COBOL                 *
+      * BOOK......: MOVPROD                                    *
+      *--------------------------------------------------------*
+       FD  MOVPROD
+           LABEL RECORD STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+           RECORD CONTAINS 66 CHARACTERS
+           DATA RECORD IS REG-MOVPROD
+           .
+       01  REG-MOVPROD.
+           05 CODPROD-M                  PIC X(06).
+           05 DESCRI-M                   PIC X(35).
+           05 LOCAL-M                    PIC X(06).
+           05 QTDEST-M                   PIC 9(04).
+           05 QTDMIN-M                   PIC 9(04).
+           05 QTDMAX-M                   PIC 9(04).
+           05 PRECO-M                    PIC 9(04)V99.
+           05 TIPO-M                     PIC X(01).

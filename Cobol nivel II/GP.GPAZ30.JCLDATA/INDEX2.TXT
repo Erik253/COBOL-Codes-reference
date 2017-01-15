@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX IDXTIPOPROD                                         00010000
+ ON TBTIPOPROD (CODTIPOPROD)                                            00020000

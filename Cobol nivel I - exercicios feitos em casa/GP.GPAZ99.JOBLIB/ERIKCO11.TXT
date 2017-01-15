@@ -1,0 +1,9 @@
+//GPAZ9911 JOB ERIK,MSGCLASS=X,CLASS=C,NOTIFY=GPAZ99,TIME=(0,20)        00010028
+//*****************************************************************     00020009
+//STEP1   EXEC PGM=ERIKEX11                                             00080028
+//STEPLIB DD DSN=GP.GERAL.LOADLIB,DISP=SHR                              00090009
+//PSOLD   DD DSN=GP.GPAZ99.PSOLD,DISP=SHR                               00090128
+//PSMOV   DD DSN=GP.GPAZ99.PSMOV,DISP=SHR                               00090228
+//PSNEW   DD DSN=GP.GPAZ99.PSNEW,DISP=(OLD,CATLG,DELETE),               00090429
+//             SPACE=(TRK,(1,1)),UNIT=SYSALLDA,                         00090514
+//             DCB=(LRECL=42,RECFM=FB,DSORG=PS)                         00090628

@@ -1,0 +1,7 @@
+       FD  RELATO
+           LABEL RECORD OMITTED
+           RECORDING MODE IS F
+           RECORD CONTAINS 120 CHARACTERS
+           DATA RECORD IS REG-RELATO
+           .
+       01  REG-RELATO PIC X(120).

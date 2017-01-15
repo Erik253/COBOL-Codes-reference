@@ -1,0 +1,8 @@
+      *                                                                 00001001
+       01  WS-REG-CLINEW                                                00010001
+           05 WS-CODCLI-N                  PIC X(04).                   00020001
+           05 WS-NOMECLI-N                 PIC X(25).                   00030001
+           05 WS-ENDCLI-N                  PIC X(30).                   00040001
+           05 WS-FONECLI-N                 PIC X(10).                   00050001
+           05 WS-TOTALDIVIDA-N             PIC 9(08)V99.                00060001
+      *                                                                 00070001

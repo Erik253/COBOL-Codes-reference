@@ -1,0 +1,22 @@
+       01  WS-CABEC1.
+           05 FILLER               PIC X(19) VALUE SPACES.
+           05 CB-DATA              PIC X(10).
+           05 FILLER               PIC X(05) VALUE SPACES.
+           05 FILLER               PIC X(54) VALUE
+              "RELATORIO DAS ATUALIZACOES NO CADASTRO DE FUNCIONARIOS".
+           05 FILLER               PIC X(10) VALUE "     PAG. ".
+           05 CB-PAG               PIC Z9.
+           05 FILLER               PIC X(20).
+       01  WS-CABEC2.
+           05 FILLER               PIC X(40) VALUE
+              "         IMAGEM DO REGISTRO            ".
+           05 FILLER               PIC X(40) VALUE
+              "                                       ".
+           05 FILLER               PIC X(40) VALUE
+              "                 OCORRENCIA            ".
+       01  WS-LINDET.
+           05 FILLER               PIC X(09) VALUE SPACES.
+           05 LD-REGISTRO          PIC X(80).
+           05 FILLER               PIC X(05) VALUE SPACES.
+           05 LD-OCORRENCIA        PIC X(15).
+           05 FILLER               PIC X(11) VALUE SPACES.

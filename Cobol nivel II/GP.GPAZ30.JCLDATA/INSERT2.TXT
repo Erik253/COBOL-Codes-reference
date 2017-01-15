@@ -1,0 +1,25 @@
+INSERT INTO TBTIPOPROD                                                  00010000
+( CODTIPOPROD,DESCTIPOPROD )                                            00020000
+VALUES                                                                  00030000
+('01','LIVROS');                                                        00040002
+-----------------------------------------------------------------       00050000
+INSERT INTO TBTIPOPROD                                                  00060000
+( CODTIPOPROD,DESCTIPOPROD )                                            00070000
+VALUES                                                                  00080000
+('02','BONES');                                                         00090002
+-----------------------------------------------------------------       00110000
+INSERT INTO TBTIPOPROD                                                  00120000
+( CODTIPOPROD,DESCTIPOPROD )                                            00130000
+VALUES                                                                  00140000
+('03','ALIMENTOS');                                                     00150002
+-----------------------------------------------------------------       00160000
+INSERT INTO TBTIPOPROD                                                  00170000
+( CODTIPOPROD,DESCTIPOPROD )                                            00180000
+VALUES                                                                  00190001
+('04','VEICULOS');                                                      00200002
+-----------------------------------------------------------------       00210001
+INSERT INTO TBTIPOPROD                                                  00220001
+( CODTIPOPROD,DESCTIPOPROD )                                            00230001
+VALUES                                                                  00240001
+('05','MASCOTES');                                                      00250002
+-----------------------------------------------------------------       00260001

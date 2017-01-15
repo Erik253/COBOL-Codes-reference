@@ -1,0 +1,10 @@
+
+       01       WS-REG-CADPROD.
+                05  WS-CODPROD-P           PIC X(06).
+                05  WS-DESCRI-P            PIC X(35).
+                05  WS-LOCAL-P             PIC X(06).
+                05  WS-QTDEST-P            PIC 9(04).
+                05  WS-QTDMIN-P            PIC 9(04).
+                05  WS-QTDMAX-P            PIC 9(04).
+                05  WS-PRECO-P             PIC 9(04)V99.
+

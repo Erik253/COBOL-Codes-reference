@@ -1,0 +1,19 @@
+      *----------------------CALCULO DE TEMPO------------------------
+           ACCEPT WS-HORARIO-F             FROM TIME
+           COMPUTE WS-TOTAL-CENT = ( WS-HORA-I * 360000 +
+                                     WS-MIN-I  * 60000  +
+                                     WS-SEG-I  * 100    +
+                                     WS-CENT-I )
+                                               -
+                                   ( WS-HORA-F * 360000 +
+                                     WS-MIN-F  * 60000  +
+                                     WS-SEG-F  * 100    +
+                                     WS-CENT-F )
+           COMPUTE WS-HORA-P     = WS-TOTAL-CENT / 360000
+           COMPUTE WS-TOTAL-CENT = WS-TOTAL-CENT - WS-HORA-P * 360000
+           COMPUTE WS-MIN-P      = WS-TOTAL-CENT / 60000
+           COMPUTE WS-TOTAL-CENT = WS-TOTAL-CENT - WS-MIN-P * 60000
+           COMPUTE WS-SEG-P      = WS-TOTAL-CENT / 100
+           COMPUTE WS-TOTAL-CENT = WS-TOTAL-CENT - WS-SEG-P * 100
+           COMPUTE WS-CENT-P     = WS-TOTAL-CENT
+      *----------------------FIM DO CALCULO-----------------------

@@ -1,0 +1,15 @@
+       FD  CADFUNCA
+           LABEL RECORD STANDARD
+           BLOCK CONTAINS 0 RECORDS
+           RECORDING MODE IS F
+           RECORD CONTAINS 80 CHARACTERS
+           DATA RECORD IS REG-CADFUNA
+           .
+       01  REG-CADFUNCA.
+           05 CODFUN-A         PIC 9(04).
+           05 NOME-A           PIC X(35).
+           05 FUNCAO-A         PIC X(20).
+           05 SALARIO-A        PIC 9(04)V99.
+           05 VENCTOS-A        PIC 9(04)V99.
+           05 DESCTOS-A        PIC 9(04)V99.
+           05 FILLER           PIC X(03).

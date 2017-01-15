@@ -1,0 +1,4 @@
+---EXIBIR TODOS OS DADOS (*) DE VENDAS FEITOS PARA O CLIENTE '0001'     00010001
+SELECT *                                                                00020001
+FROM TBVENDA                                                            00030001
+WHERE CODCLI = '0001'                                                   00040001

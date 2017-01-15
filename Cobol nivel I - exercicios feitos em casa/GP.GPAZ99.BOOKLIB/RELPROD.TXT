@@ -1,0 +1,11 @@
+      *--------------------------------------------------------*
+      * EXERCICIO.: PAGINA 68 - APOSTILA COBOL                 *
+      * BOOK......: RELPROD                                    *
+      *--------------------------------------------------------*
+       FD  RELPROD
+           LABEL RECORD OMITTED
+           RECORDING MODE IS F
+           RECORD CONTAINS 132 CHARACTERS
+           DATA RECORD IS REG-RELPROD
+           .
+       01  REG-RELPROD                   PIC X(132).

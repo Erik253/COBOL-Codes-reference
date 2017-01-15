@@ -1,0 +1,5 @@
+--- O COMANDO 'FULL OUTER JOIN' FAZ A UNIAO                             00001000
+---                                                                     00002000
+SELECT CHAVEA,DESCB,VALB                                                00010000
+FROM TBA A FULL OUTER JOIN TBB B                                        00020001
+ON A.CHAVEA = B.CHAVEB                                                  00030000

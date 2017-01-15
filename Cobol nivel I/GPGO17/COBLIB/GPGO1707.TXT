@@ -1,0 +1,148 @@
+      *--------------------------------------------------------------*  00001019
+      *     PROJETO 07 - RELATORIO                                   *  00002019
+      *--------------------------------------------------------------*  00003019
+      *                                                              *  00004019
+      *                                                              *  00005019
+      *                                                              *  00006019
+      *--------------------------------------------------------------*  00010013
+       IDENTIFICATION                      DIVISION.                    00020019
+      *--------------------------------------------------------------*  00030013
+       PROGRAM-ID.                         GPGO1707.                    00040019
+       AUTHOR.                             ERIK.                        00050013
+
+      *--------------------------------------------------------------*  00060013
+       ENVIRONMENT                         DIVISION.                    00070019
+      *--------------------------------------------------------------*  00080013
+       CONFIGURATION                       SECTION.                     00090019
+       SPECIAL-NAMES.                                                   00100013
+           DECIMAL-POINT IS COMMA.                                      00110013
+                                                                        00111019
+       INPUT-OUTPUT                        SECTION.                     00120019
+       FILE-CONTROL.                                                    00130019
+           SELECT MOVTOEST ASSIGN          TO UT-S-MOVTOEST             00135019
+           FILE STATUS IS FS-MOVTOEST.
+      *
+           SELECT RELMOV1 ASSIGN           TO UT-S-RELMOV1
+           FILE STATUS IS RELMOV1.
+      *
+      *--------------------------------------------------------------*  00140013
+       DATA                                DIVISION.                    00150019
+      *--------------------------------------------------------------*  00160013
+       FILE                                SECTION.                     00170019
+       FD  MOVTOEST
+           RECORDING MODE IS F
+           .
+       01  REG-MOVTOEST                    PIC X(33).
+      *
+       FD  RELMOV1
+           RECORDING MODE IS F
+           .
+           REG-RELMOV1                     PIC X(80).
+      *
+       WORKING-STORAGE                     SECTION.                     00180019
+      *
+       COPY BMOVTE.
+       COPY VARTEMPO.
+       COPY VARERRO.
+      *
+       01 FS-MOVTOEST                      PIC X(02).
+          88 SUCESSO-M                     VALUE "00".
+          88 FIM-ARQ-M                     VALUE "10".
+      *
+       01 FS-RELMOV1                       PIC X(02).
+          88 SUCESSO-R                     VALUE "00".
+          88 FIM-ARQ-R                     VALUE "10".
+      *
+       01 WS-CABEC1.
+          05 CB-DATA                       PIC X(10).
+          05 FILLER                        PIC X(17) VALUE SPACES.
+          05 FILLER                        PIC X(27)
+                                    "** BOX CONPANY DO BRASIL **".
+          05 FILLER                        PIC X(18).
+          05 CB-HORA                       PIC X(08).
+      *
+       01 WS-CABEC2.
+          05 FILLER                        PIC X(36) VALUE
+                           "RELATORIO DE MOVIMENTACAO DE ESTOQUE".
+          05 FILLER                        PIC X(34) VALUE SPACES.
+          05 FILLER                        PIC X(05)      "PAG. ".
+          05 CB-PAG                        PIC Z.ZZ9.
+      *
+       01 WS-CABEC3                        PIC X(80) VALUE ALL "-".
+      *
+       01 WS-CABC4.
+          05 FILLER                        PIC X(09) VALUE SPACES.
+          05 FILLER                        PIC X(06) VALUE "NUMERO".
+          05 FILLER                        PIC X(07) VALUE SPACES.
+          05 FILLER                        PIC X(04) VALUE "DATA".
+          05 FILLER                        PIC X(10) VALUE SPACES.
+          05 FILLER                        PIC X(04) VALUE "HORA".
+          05 FILLER                        PIC X(07) VALUE SPACES.
+          05 FILLER                        PIC X(07) VALUE "PRODUTO".
+          05 FILLER                        PIC X(02) VALUE SPACES.
+          05 FILLER                        PIC X(07) VALUE "QUANTIDADE".
+          05 FILLER                        PIC X(14) VALUE SPACES.
+      *
+       01 WS-CABEC5.
+           05 FILLER                       PIC X(09) VALUE SPACES.
+           05 FILLER                       PIC X(10) VALUE ALL "-".
+           05 FILLER                       PIC X(03) VALUE SPACES.
+           05 FILLER                       PIC X(11) VALUE SPACES.
+           05 FILLER                       PIC X(03) VALUE SPACES.
+           05 FILLER                       PIC X(08) VALUE ALL "-".
+           05 FILLER                       PIC X(04) VALUE SPACES.
+           05 FILLER                       PIC X(05) VALUE ALL "-".
+           05 FILLER                       PIC X(04) VALUE SPACES.
+           05 FILLER                       PIC X(10) VALUE ALL "-".
+           05 FILLER                       PIC X(13) VALUE SPACES.
+      *
+       01 WS-LINDET.
+           05 FILLER                       PIC X(09) VALUE SPACES.
+           05 LD-NUMERO                    PIC 99.999.999
+           05 FILLER                       PIC X(03) VALUE SPACES.
+           05 LD-DATA                      PIC X(10).
+           05 FILLER                       PIC X(04) VALUE SPACES.
+           05 LD-HORA                      PIC X(08).
+           05 FILLER                       PIC X(04) VALUE SPACES.
+           05 LD-PRODUTO                   PIC 9999.
+           05 FILLER                       PIC X(05) VALUE SPACES.
+           05 LD-QTD                       PIC ZZ.ZZZ.ZZ9.
+           05 FILLER                       PIC X(13) VALUE SPACES.
+      *
+       01 WS-RODAPE1                       PIC X(80) ALL "-".
+      *
+       01 WS-RODAPE2.
+          05 FILLER                        PIC X(07) VALUE SPACES.
+          05 FILLER                        PIC X(65) VALUE
+             "APOS O USO UTILIZE ESTE PAPEL COMO RASCUNHO - RECICLE SUAS
+      -      " IDEIAS".
+          05 FILLER                        PIC X(08) VALUE SPACES.
+      *
+      *--------------------------------------------------------------*  00240013
+       PROCEDURE                           DIVISION.                    00250019
+      *--------------------------------------------------------------*  00260013
+       0000-PRINCIPAL.                                                  00270019
+           PERFORM 1000-INICIALIZAR
+           PERFORM 2000-PROCESSAR UNTIL WS-TIPO-REGISTRO-M = "T"
+           PERFORM 3000-TERMINO
+           STOP RUN
+           .
+       1000-INICIALIZAR
+           ACCEPT WS-HORARIO-I FROM TIME
+           INITIALIZE WS-CTLIDO
+                      WS-CTIMP
+                      WS-CTPAG
+           MOVE 99                         TO WS-CTLIN
+           OPEN INPUT MOVTOESTO
+           IF NOT SUCESSO-M
+              MOVE "ERRO DE ABERTURA DO MOVTOEST0" TO WS-MSG
+              MOVE FS-MOVTOESTO            TO WS-FS
+      *
+      *
+      *PARAI AKI, FALTA ABRIR OS ARQUIVOS CORRETAMENTE E O RESTO
+      *                    FLW
+      *
+      *
+      ****************************************************************
+      *          F I M  D O  P R O G R A M A  G P G O 1 7 0 4        *
+      ****************************************************************

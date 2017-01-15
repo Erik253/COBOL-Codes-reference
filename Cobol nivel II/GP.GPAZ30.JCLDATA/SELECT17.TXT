@@ -1,0 +1,21 @@
+----EXIBIR  SEM REPETICAO, O NOME DOS CLIENTES QUE COMPRARAM PRODUTOS   00010000
+----DO TIPO '03' EM ORDEM CRESCENTE DE NOME.(JOIN OU SUB-QUERIE)        00020000
+----                                                                    00030000
+SELECT DISTINCT NOMECLI                                                 00040001
+FROM TBCLI                                                              00050000
+WHERE CODCLI IN                                                         00060001
+               (SELECT CODCLI                                           00070001
+                FROM TBVENDA                                            00080001
+                WHERE CODPROD IN                                        00090001
+                                (SELECT CODPROD                         00100001
+                                 FROM TBPROD                            00110001
+                                 WHERE CODTIPOPROD = '03'))             00120001
+----------------------------------------------------------------------- 00130002
+-------------SEGUNDO JEITO DE RESOLVER / EXERCICIO 17 / SELECT 24------ 00140002
+-------------USANDO JOIN----------------------------------------------- 00150002
+SELECT DISTINCT NOMECLI                                                 00160002
+FROM TBCLI,TBVENDA,TBPROD                                               00170002
+WHERE TBCLI.CODCLI    = TBVENDA.CODCLI AND                              00180002
+      TBVENDA.CODPROD = TBPROD.CODPROD AND                              00190002
+      CODPROD = '03'                                                    00200002
+      ORDER BY NOMECLI ASC                                              00210002

@@ -1,0 +1,10 @@
+//GPGO1704 JOB ERIK,MSGCLASS=X,CLASS=C,NOTIFY=GPGO17,TIME=(0,20)        00010014
+//*----------------------------------------------------------------     00020000
+//STEP1    EXEC PGM=GPGO1704                                            00030014
+//STEPLIB  DD DSN=GP.GERAL.LOADLIB,DISP=SHR                             00040011
+//CLISP    DD DSN=GP.GPGO99.CLISP,DISP=SHR                              00050014
+//CLIRJ    DD DSN=GP.GPGO99.CLIRJ,DISP=SHR                              00051014
+//CLIMG    DD DSN=GP.GPGO99.CLIMG,DISP=SHR                              00052014
+//CLIUNIF  DD DSN=GP.GPGO17.CLIUNIF,DISP=(OLD,CATLG,DELETE),            00060015
+//            SPACE=(TRK,(1,1),RLSE),UNIT=SYSALLDA,                     00070012
+//            DCB=(LRECL=96,RECFM=FB,DSORG=PS,BLKSIZE=0)                00080013

@@ -1,0 +1,4 @@
+----EXIBIR A DESCRICAO DOS PRODUTOS DO TIPO 03                          00001000
+SELECT DESCPROD                                                         00010000
+FROM TBPROD                                                             00020000
+WHERE CODTIPOPROD = '03'                                                00030000

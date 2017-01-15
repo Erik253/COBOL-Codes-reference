@@ -1,0 +1,10 @@
+      *----------------------------------------------------------------*
+      * BOOK - POOL0010
+      *      - PARA CHAMADA AO PROGRAMA ACNN0010
+      *----------------------------------------------------------------*
+       01  POOL0010-LINKAGE.
+           03 LS-FLAG-ROTINA               PIC 9(01).
+           03 LS-FLAG-RETORNO              PIC 9(01).
+           03 LS-DATA-MASC                 PIC X(10).
+           03 LS-HORA-MASC                 PIC X(08).
+           03 LS-DT-PARA-VALIDAR           PIC X(08).

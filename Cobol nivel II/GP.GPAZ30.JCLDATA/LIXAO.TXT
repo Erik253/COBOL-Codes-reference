@@ -1,0 +1,2 @@
+DELETE                                                                  00010048
+FROM PRODUTO                                                            00020047

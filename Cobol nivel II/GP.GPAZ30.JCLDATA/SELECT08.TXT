@@ -1,0 +1,5 @@
+----EXIBIR TODOS OS DADOS DOS PRODUTOS (*) EM ORDERM CRESCENTE DE DESC- 00010000
+----RICAO(ORDER BY)                                                     00020000
+SELECT *                                                                00030000
+FROM TBPROD                                                             00040002
+ORDER BY DESCPROD                                                       00050007

@@ -1,0 +1,7 @@
+---EXEMPLO DE UNIAO(UNION)                                              00010000
+---                                                                     00020000
+SELECT CODPROD,DESCPROD                                                 00030000
+FROM TBPROD                                                             00040000
+UNION                                                                   00050000
+SELECT CODCLI,NOMECLI                                                   00060001
+FROM TBCLI                                                              00070000

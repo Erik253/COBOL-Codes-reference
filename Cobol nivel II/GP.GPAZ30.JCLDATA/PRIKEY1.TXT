@@ -1,0 +1,2 @@
+ALTER TABLE TBTIPOCLI                                                   00010000
+ADD PRIMARY KEY (CODTIPOCLI)                                            00020000

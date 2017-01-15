@@ -1,0 +1,18 @@
+//GPAZ30D3 JOB 'ERIK',MSGCLASS=X,CLASS=C,NOTIFY=GPAZ30,TIME=1           00010010
+//STEP1A   EXEC PGM=IKJEFT01,DYNAMNBR=20,COND=(4,LT)                    00020002
+//STEPLIB  DD DISP=SHR,DSN=SYS2.DB2.SDSNLOAD                            00030002
+//DBRMLIB  DD DSN=SYS2.DB2.DBRMLIB.DATA,DISP=SHR                        00040002
+//SYSTSPRT DD SYSOUT=*                                                  00050002
+//SYSPRINT DD SYSOUT=*                                                  00060002
+//SYSUDUMP DD SYSOUT=*                                                  00070002
+//SYSOUT   DD SYSOUT=*                                                  00080002
+//REPORT   DD SYSOUT=*                                                  00090002
+//SYSTSIN  DD *                                                         00100002
+ DSN SYSTEM(DB2N)                                                       00110002
+ RUN  PROGRAM(GPAZ30D3) PLAN(GPAZ30D3) -                                00120010
+      LIB('GP.GERAL.LOADLIB')                                           00130002
+ END                                                                    00140002
+//*RELREPO  DD SYSOUT=*                                                 00150011
+//RELREPO  DD DSN=GP.GPAZ30.RELREPO,DISP=(NEW,CATLG,DELETE),            00151011
+//            UNIT=SYSALLDA,SPACE=(TRK,(1,1),RLSE),                     00152011
+//            DCB=(DSORG=PS,RECFM=FA,LRECL=81)                          00153011

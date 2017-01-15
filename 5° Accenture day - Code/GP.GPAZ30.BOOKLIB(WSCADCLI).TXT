@@ -1,0 +1,11 @@
+       01  WS-REGISTRO-CADCLI.
+           05 CADCLI-AGENCIA               PIC 9(05).
+           05 CADCLI-NUMERO-CONTA          PIC 9(10).
+           05 CADCLI-NOME-CLIENTE          PIC X(40).
+           05 CADCLI-TELEFONE              PIC 9(08).
+           05 CADCLI-SALDO-ATUAL           PIC 9(11)V99.
+           05 CADCLI-DATA-GRAVACAO.        PIC 9(05).
+              10 CADCLI-ANO-GRAVACAO       PIC 9(04).
+              10 CADCLI-MES-GRAVACAO       PIC 9(02).
+              10 CADCLI-DIA-GRAVACAO       PIC 9(02).
+           05 CADCLI-HORA-GRAVACAO         PIC 9(06).

@@ -1,0 +1,335 @@
+      *----------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *----------------------------------------------------------*
+       PROGRAM-ID.                         GPAZ30D3.
+       AUTHOR.                             ERIK.
+      *----------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *----------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+            DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+       FILE-CONTROL.
+      *
+           SELECT RELREPO ASSIGN           TO UT-S-RELREPO
+           FILE STATUS IS FS-RELREPO
+           .
+      *----------------------------------------------------------*
+       DATA                                DIVISION.
+      *----------------------------------------------------------*
+       FILE                                SECTION.
+       FD  RELREPO
+           RECORDING MODE IS F
+           .
+       01  REG-RELREPO                     PIC X(80).
+      *----------------------------------------------------------
+       WORKING-STORAGE                     SECTION.
+      *--------------------FILE-STATUS/MSG/SQLCODE---------------
+       01  FS-RELREPO                      PIC X(02).
+           88 EOF                          VALUE "10".
+           88 OK                           VALUE "00".
+       77  WS-MSG                          PIC X(60).
+       77  WS-SQLCODE                      PIC +9(9).
+      *-------------------CONTADORES---------------------------
+       01  WS-CONTADORES-COMP.
+           05 WS-CTLIDO-C                  PIC 9(04) COMP.
+           05 WS-CTIMP-C                   PIC 9(04) COMP.
+           05 WS-CTPAG-C                   PIC 9(04) COMP.
+           05 WS-CTLINHA-C                 PIC 9(04) COMP.
+      *                         ||
+       01  WS-CONTADORES-F.
+           05 WS-CTLIDO-F                  PIC ZZZ9.
+           05 WS-CTIMP-F                   PIC ZZZ9.
+           05 WS-CTPAG-F                   PIC ZZZ9.
+           05 WS-CTLINHA-F                 PIC ZZZ9.
+      *--------------------VARIAVEIS GERADAS PELO DCLGEN
+           EXEC SQL
+                INCLUDE PRODUTO
+           END-EXEC
+      *--------------------VARIAVEIS DO SQLCODE
+           EXEC SQL
+                INCLUDE SQLCA
+           END-EXEC
+      *--------------------VARIAVEIS DE DATA---------------
+       01  WS-DATA-SISTEMA.
+           05 WS-ANO                       PIC 9(02).
+           05 WS-MES                       PIC 9(02).
+           05 WS-DIA                       PIC 9(02).
+       01  WS-DATA-FORMATADA.
+           05 WS-DIA                       PIC 9(02).
+           05 FILLER                       PIC X(01) VALUE "/".
+           05 WS-MES                       PIC 9(02).
+           05 FILLER                       PIC X(03) VALUE "/20".
+           05 WS-ANO                       PIC 9(02).
+      *--------------------VARIAVEIS DE TEMPO-------------------
+       01  WS-HORARIO.
+           05 WS-HORA                      PIC 9(02).
+           05 WS-MIN                       PIC 9(02).
+           05 WS-SEG                       PIC 9(02).
+      *                        ||
+       01  WS-HORARIO-F.
+           05 WS-HORA                      PIC 9(02).
+           05 FILLER                       PIC X(01) VALUE ":".
+           05 WS-MIN                       PIC 9(02).
+           05 FILLER                       PIC X(01) VALUE ":".
+           05 WS-SEG                       PIC 9(02).
+      *--------------------VARIAVEIS DE CALCULO-----------------*
+       77  WS-LUCRO                        PIC S9(3)V9(6).
+       77  WS-QTDREP                       PIC 9(05).
+      *---------------------
+       77  WS-PULA                         PIC 9(04).
+      *--------------------
+      *--------------------CABECARIOS----------------------------
+       01  WS-CABEC1.
+           05 WS-DATA-CABEC1               PIC X(10).
+           05 FILLER                       PIC X(02) VALUE SPACES.
+           05 WS-HORA-CABEC1               PIC X(08).
+           05 FILLER                       PIC X(13) VALUE SPACES.
+           05 FILLER                       PIC X(18) VALUE
+              "RESUMO DE PRODUTOS".
+           05 FILLER                       PIC X(27) VALUE
+              "                      PAG. ".
+           05 WS-PAG-CABEC1                PIC Z9.
+      *                        ||
+       01  WS-CABEC2.
+           05 FILLER                       PIC X(80) VALUE ALL "-".
+      *
+       01  WS-CABEC3.
+           05 FILLER                       PIC X(56) VALUE
+           " CODIGO   DESCRICAO                       PRECO    LUCRO".
+           05 FILLER                       PIC X(24) VALUE
+           "   ESTOQUE  REPOSICAO   ".
+      *
+       01  WS-CABEC4.
+           05 FILLER                       PIC X(80) VALUE ALL "-".
+      *
+       01  WS-LINDET.
+           05 FILLER                       PIC X(02) VALUE SPACES.
+           05 LD-CODPROD                   PIC X(04).
+           05 FILLER                       PIC X(04) VALUE SPACES.
+           05 LD-DESCPROD                  PIC X(20).
+           05 FILLER                       PIC X(04) VALUE SPACES.
+           05 FILLER                       PIC X(03) VALUE "R$ ".
+           05 LD-PRECOVENDA                PIC ZZZ.ZZ9,99.
+           05 FILLER                       PIC X(04) VALUE SPACES.
+           05 LD-LUCRO                     PIC ZZ9,99+.
+           05 FILLER                       PIC X(03) VALUE SPACES.
+           05 LD-QTDEST                    PIC ZZZZ9.
+           05 FILLER                       PIC X(06) VALUE  SPACES.
+           05 LD-QTDREP                    PIC ZZZZ9.
+           05 FILLER                       PIC X(03) VALUE SPACES.
+      *
+       01  WS-RODAPE1.
+           05 FILLER                       PIC X(80) VALUE ALL "-".
+      *
+       01  WS-RODAPE2.
+           05 FILLER                       PIC X(40) VALUE
+           "INDUSTRIAS ERIK S/A.                    ".
+           05 FILLER                       PIC X(40) VALUE
+           "SERVIMOS BEM PARA SERVIR SEMPRE.        ".
+      *    20                              32
+      *----------------------------------------------------------*
+       LINKAGE                             SECTION.
+      *----------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *----------------------------------------------------------*
+      **000-GPAZ30D3.
+           PERFORM 010-INICIALIZAR
+           PERFORM 030-PROCESSAR UNTIL SQLCODE = 100
+           PERFORM 070-TERMINO
+           STOP RUN
+           .
+      *
+       010-INICIALIZAR.
+           INITIALIZE WS-CONTADORES-COMP
+           MOVE 99                         TO WS-CTLINHA-C
+      *
+           OPEN OUTPUT RELREPO
+           IF NOT OK
+              MOVE " ERRO DE ABERTURA DO ARQ RELREPO" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           EXEC SQL
+               DECLARE REPOSICAO CURSOR FOR
+               SELECT *
+               FROM PRODUTO
+               WHERE QTDEST < QTDMIN
+               ORDER BY CODPROD
+           END-EXEC
+      *                 ||
+           EXEC SQL
+               OPEN REPOSICAO
+           END-EXEC
+      *
+           IF SQLCODE NOT = ZEROS
+              MOVE "ERRO DE ABERTURA DO CURSOR REPOSICAO" TO WS-MSG
+              MOVE SQLCODE                 TO WS-SQLCODE
+              GO                           TO 999-ERRO-DB2
+           END-IF
+      *
+           PERFORM 999-FORMATA-DATA-HORA
+           PERFORM 020-LER-REPOSICAO
+           .
+      *
+       020-LER-REPOSICAO.
+           EXEC SQL
+                FETCH REPOSICAO
+                INTO :DCLPRODUTO
+           END-EXEC
+      *
+           IF SQLCODE = 0
+              ADD 1                        TO WS-CTLIDO-C
+           ELSE
+              IF SQLCODE NOT = +100
+                 MOVE "ERRO DE LEITURA DO CURSOR PRODUTO" TO WS-MSG
+                 MOVE SQLCODE              TO WS-SQLCODE
+                 GO                        TO 999-ERRO-DB2
+              END-IF
+           END-IF
+           .
+      *
+       030-PROCESSAR.
+           IF WS-CTLINHA-C > 59
+              PERFORM 040-IMPRIME-CABECALHO
+           END-IF
+      *
+           PERFORM 050-IMPRIME-DETALHE
+      *
+           IF WS-CTLINHA-C = 58
+              PERFORM 060-IMPRIME-RODAPE
+           END-IF
+      *
+           PERFORM 020-LER-REPOSICAO
+           .
+      *
+       040-IMPRIME-CABECALHO.
+           MOVE WS-DATA-FORMATADA          TO WS-DATA-CABEC1
+           MOVE WS-HORARIO-F               TO WS-HORA-CABEC1
+           ADD 1                           TO WS-CTPAG-C
+           MOVE WS-CTPAG-C                 TO WS-PAG-CABEC1
+      *
+           WRITE REG-RELREPO FROM WS-CABEC1 AFTER PAGE
+           IF NOT OK
+              MOVE "ERRO DE WRITE DO CABECALHO-1" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           WRITE REG-RELREPO FROM WS-CABEC2
+           IF NOT OK
+              MOVE "ERRO DE WRITE DO CABECALHO-2" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           WRITE REG-RELREPO FROM WS-CABEC3
+           IF NOT OK
+              MOVE "ERRO DE WRITE DO CABECALHO-3" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           WRITE REG-RELREPO FROM WS-CABEC4
+           IF NOT OK
+              MOVE "ERRO DE WRITE DO CABECALHO-4" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           MOVE 4                          TO WS-CTLINHA-C
+           .
+      *
+       050-IMPRIME-DETALHE.
+           MOVE CODPROD                    TO LD-CODPROD
+           MOVE DESCPROD                   TO LD-DESCPROD
+           MOVE PRECOVENDA                 TO LD-PRECOVENDA
+           MOVE QTDEST                     TO LD-QTDEST
+           COMPUTE WS-LUCRO = ( PRECOVENDA / PRECOCOMPRA ) - 1 * 100
+           MOVE WS-LUCRO                   TO LD-LUCRO
+           COMPUTE WS-QTDREP = ( QTDMAX - QTDEST )
+           MOVE WS-QTDREP                  TO LD-QTDREP
+      *
+           WRITE REG-RELREPO FROM WS-LINDET
+           IF NOT OK
+              MOVE "ERRO DE WRITE DO LINDET" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           ADD 1                           TO WS-CTIMP-C
+           ADD 1                           TO WS-CTLINHA-C
+           .
+      *
+       060-IMPRIME-RODAPE.
+           COMPUTE WS-PULA = 59 - WS-CTLINHA-C
+           WRITE REG-RELREPO FROM WS-RODAPE1 AFTER WS-PULA LINES
+           IF NOT OK
+              MOVE "ERRO DE WRITE RODAPE1" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           WRITE REG-RELREPO FROM WS-RODAPE2
+           IF NOT OK
+              MOVE "ERRO DE WRITE RODAPE2" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+           MOVE 60                         TO WS-CTLINHA-C
+           .
+      *
+       070-TERMINO.
+           IF WS-CTLINHA-C < 60
+              PERFORM 060-IMPRIME-RODAPE
+           END-IF
+      *
+           MOVE WS-CTLIDO-C                TO WS-CTLIDO-F
+           MOVE WS-CTIMP-C                 TO WS-CTIMP-F
+           MOVE WS-CTPAG-C                 TO WS-CTPAG-F
+           MOVE WS-CTLINHA-C               TO WS-CTLINHA-F
+      *
+           DISPLAY "---------------ROTINA DE TERMINO-------------"
+           DISPLAY "TOTAL DE REGISTROS LIDOS....: "   WS-CTLIDO-F
+           DISPLAY "TOTAL DE REGISTROS IMPRESSOS: "   WS-CTIMP-F
+           DISPLAY "TOTAL DE PAGINAS ...........: "   WS-CTPAG-F
+           DISPLAY "TOTAL DE LINHAS ............: "   WS-CTLINHA-F
+      *
+           CLOSE RELREPO
+           IF NOT OK
+              MOVE "ERRO DE FECHAMENTO DO ARQ RELREPO" TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+      *
+          EXEC SQL
+                CLOSE REPOSICAO
+           END-EXEC
+           IF SQLCODE NOT = 0
+              MOVE "ERRO DE FECHAMENTO DO CURSOR REPOSICAO" TO WS-MSG
+              MOVE  SQLCODE                TO WS-SQLCODE
+              GO                           TO 999-ERRO-DB2
+           END-IF
+           DISPLAY " ---TERMINO ANORMAL DO PROGRAMA GPAZ30D3---"
+           .
+      *
+       999-FORMATA-DATA-HORA.
+           ACCEPT WS-DATA-SISTEMA          FROM DATE
+           MOVE CORRESPONDING WS-DATA-SISTEMA TO WS-DATA-FORMATADA
+           ACCEPT WS-HORARIO               FROM TIME
+           MOVE CORRESPONDING WS-HORARIO   TO WS-HORARIO-F
+           .
+      *
+       999-ERRO-DB2.
+           DISPLAY " "
+           DISPLAY "-------------ROTINA DE ERRO DB2----------"
+           DISPLAY " MENSAGEM.:" WS-MSG
+           DISPLAY " SQLCODE..:" WS-SQLCODE
+           DISPLAY " TERMINO ANORMAL DO PROGRAMA GPAZ30D3 "
+           MOVE 12                         TO RETURN-CODE
+           STOP RUN
+           .
+      *
+       999-ERRO.
+           DISPLAY " "
+           DISPLAY "------------ROTINA DE ERRO NORMAL----------"
+           DISPLAY "MENSAGEM....:" WS-MSG
+           DISPLAY "FILE-STATUS.:" FS-RELREPO
+           DISPLAY "TERMINO ANORMAL DO PROGRAMA GPAZ30D3"
+           MOVE 12                          TO RETURN-CODE
+           STOP RUN
+           .
+      *

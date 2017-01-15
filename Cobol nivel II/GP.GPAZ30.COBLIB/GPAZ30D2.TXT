@@ -1,0 +1,344 @@
+      *----------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *----------------------------------------------------------*
+       PROGRAM-ID.                         GPAZ30D2.
+       AUTHOR.                             ERIK.
+      *----------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *----------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+            DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+       FILE-CONTROL.
+      *
+           SELECT MOVPRDD2 ASSIGN          TO UT-S-MOVPRDD2
+           FILE STATUS IS FS-MOVPRDD2
+           .
+      *----------------------------------------------------------*
+       DATA                                DIVISION.
+      *----------------------------------------------------------*
+       FILE                                SECTION.
+       FD  MOVPRDD2
+           RECORDING MODE IS F
+           .
+       01  REG-MOVPRDD2                    PIC X(70).
+      *
+       WORKING-STORAGE                     SECTION.
+      *-------------------VARIAVES COM SQL-------------------
+      *--------------------VARIAVEIS DA BOOKLIB
+            EXEC SQL
+                 INCLUDE MOVPRDD2
+            END-EXEC
+      *--------------------VARIAVEIS GERADAS PELO DCLGEN
+           EXEC SQL
+                INCLUDE PRODUTO
+           END-EXEC
+      *--------------------VARIAVEIS DO SQLCODE
+           EXEC SQL
+                INCLUDE SQLCA
+           END-EXEC
+      *-------------------FILE STATUS/SQLCODE/MSG----------------
+       01  FS-MOVPRDD2                     PIC X(02).
+           88 EOF                          VALUE "10".
+           88 OK                           VALUE "00".
+       77  WS-MSG                          PIC X(60).
+       77  WS-SQLCODE                      PIC +9(9).
+      *------------------CONTADORES------------------------------
+       01  WS-CONTADORES-COMP.
+           05 WS-CTLIDO-C                  PIC 9(04) COMP.
+           05 WS-CTINC-C                   PIC 9(04) COMP.
+           05 WS-CTEXC-C                   PIC 9(04) COMP.
+           05 WS-CTALT-C                   PIC 9(04) COMP.
+           05 WS-CTCON-C                   PIC 9(04) COMP.
+           05 WS-CTINV-C                   PIC 9(04) COMP.
+      *                 ------------------
+       01  WS-CONTADORES-F.
+           05 WS-CTLIDO-F                  PIC ZZZ9.
+           05 WS-CTINC-F                   PIC ZZZ9.
+           05 WS-CTEXC-F                   PIC ZZZ9.
+           05 WS-CTALT-F                   PIC ZZZ9.
+           05 WS-CTCON-F                   PIC ZZZ9.
+           05 WS-CTINV-F                   PIC ZZZ9.
+      *----------------------------------------------------------*
+       LINKAGE                             SECTION.
+      *----------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *----------------------------------------------------------*
+      **000-GPAZ30D2.
+           PERFORM 010-INICIALIZAR
+           PERFORM 030-PROCESSAR UNTIL EOF
+           PERFORM 040-TERMINO
+           STOP RUN
+           .
+      *
+       010-INICIALIZAR.
+           INITIALIZE  WS-CONTADORES-COMP
+      *
+           OPEN INPUT MOVPRDD2
+           IF NOT OK
+              MOVE " ERRO DE ABERTURA DO AQV MOVPRDD2 " TO WS-MSG
+              GO                           TO 999-ERRO
+           END-IF
+      *
+           PERFORM 020-LER-MOVPRDD2
+           .
+      *
+       020-LER-MOVPRDD2.
+           READ MOVPRDD2 INTO WS-REG-MOVPRDD2
+           IF OK
+              ADD 1                        TO WS-CTLIDO-C
+           ELSE
+              IF NOT EOF
+                 MOVE " ERRO DE LEITURA DO ARQ MOVPRDD2 " TO WS-MSG
+                 GO                        TO 999-ERRO
+              END-IF
+           END-IF
+           .
+      *
+       030-PROCESSAR.
+           EVALUATE WS-TIPOMOVTO-M
+                WHEN "I" PERFORM 040-INCLUSAO
+                WHEN "E" PERFORM 050-EXCLUSAO
+                WHEN "A" PERFORM 060-ALTERACAO
+                WHEN "C" PERFORM 070-CONSULTAR
+                WHEN OTHER
+                     ADD 1                 TO WS-CTINV-C
+           END-EVALUATE
+      *
+           PERFORM 020-LER-MOVPRDD2
+           .
+      *
+       040-INCLUSAO.
+           MOVE WS-CODPROD-M               TO CODPROD
+           MOVE WS-DESCPROD-M              TO DESCPROD-TEXT
+           MOVE +20                        TO DESCPROD-LEN
+           MOVE WS-UNIDPROD-M              TO UNIDPROD
+           MOVE WS-LOCALPROD-M             TO LOCALPROD
+           MOVE WS-QTDEST-M                TO QTDEST
+           MOVE WS-QTDMAX-M                TO QTDMAX
+           MOVE WS-QTDMIN-M                TO QTDMIN
+           MOVE WS-PRECOCOMPRA-M           TO PRECOCOMPRA
+           MOVE WS-PRECOVENDA-M            TO PRECOVENDA
+           MOVE WS-PERCOMIS-M              TO PERCOMIS
+      *
+           EXEC SQL
+               INSERT INTO PRODUTO
+               (
+                CODPROD,
+                DESCPROD,
+                UNIDPROD,
+                LOCALPROD,
+                QTDEST,
+                QTDMAX,
+                QTDMIN,
+                PRECOCOMPRA,
+                PRECOVENDA,
+                PERCOMIS
+               )
+               VALUES
+               (
+                :CODPROD,
+                :DESCPROD,
+                :UNIDPROD,
+                :LOCALPROD,
+                :QTDEST,
+                :QTDMAX,
+                :QTDMIN,
+                :PRECOCOMPRA,
+                :PRECOVENDA,
+                :PERCOMIS
+               )
+           END-EXEC
+      *
+           EVALUATE SQLCODE
+                WHEN 0      ADD 1          TO WS-CTINC-C
+                WHEN -803   ADD 1          TO WS-CTINV-C
+                WHEN -545   ADD 1          TO WS-CTINV-C
+                WHEN OTHER
+                   MOVE " ERRO DE INSERT PRODUTO " TO WS-MSG
+                   MOVE SQLCODE            TO WS-SQLCODE
+                   GO                      TO 999-ERRO-DB2
+           END-EVALUATE
+           .
+      *
+       050-EXCLUSAO.
+           MOVE WS-CODPROD-M               TO CODPROD
+      *
+           EXEC SQL
+             DELETE FROM PRODUTO
+             WHERE CODPROD = :CODPROD
+           END-EXEC
+      *
+           EVALUATE SQLCODE
+              WHEN 0      ADD 1            TO WS-CTEXC-C
+              WHEN 100    ADD 1            TO WS-CTINV-C
+              WHEN OTHER
+                 MOVE " ERRO NO DELETE DA TABELA PRODUTO " TO WS-MSG
+                 MOVE SQLCODE              TO WS-SQLCODE
+                 GO                        TO 999-ERRO-DB2
+           END-EVALUATE
+           .
+      *
+       060-ALTERACAO.
+      * LER O PRODUTO ATUAL COM "SELECT"
+           MOVE WS-CODPROD-M               TO CODPROD
+      *
+           EXEC SQL
+             SELECT * INTO :DCLPRODUTO
+             FROM PRODUTO
+             WHERE CODPROD = :CODPROD
+           END-EXEC
+      *
+           EVALUATE SQLCODE
+             WHEN 0 PERFORM 065-MOVER-DADOS
+                    PERFORM 068-UPDATE
+             WHEN 100 ADD 1                TO WS-CTINV-C
+             WHEN OTHER
+                MOVE " ERRO DE SELECT DA ROTINA ALTERACAO " TO WS-MSG
+                MOVE SQLCODE               TO WS-SQLCODE
+                GO                         TO 999-ERRO-DB2
+           END-EVALUATE
+           .
+      *
+       065-MOVER-DADOS.
+      *
+           IF WS-DESCPROD-M NOT = SPACES
+            MOVE WS-DESCPROD-M            TO DESCPROD-TEXT
+            MOVE +20                      TO DESCPROD-LEN
+           END-IF
+      *
+           IF WS-UNIDPROD-M NOT = SPACES
+             MOVE WS-UNIDPROD-M           TO UNIDPROD
+           END-IF
+      *
+           IF WS-LOCALPROD-M NOT = SPACES
+             MOVE WS-LOCALPROD-M          TO LOCALPROD
+           END-IF
+      *
+           IF WS-QTDEST-M IS NUMERIC
+             MOVE WS-QTDEST-M             TO QTDEST
+           END-IF
+      *
+           IF WS-QTDMAX-M IS NUMERIC
+             MOVE WS-QTDMAX-M             TO QTDMAX
+           END-IF
+      *
+           IF WS-QTDMIN-M IS NUMERIC
+             MOVE WS-QTDMIN-M             TO QTDMIN
+           END-IF
+      *
+           IF WS-PRECOCOMPRA-M IS NUMERIC
+             MOVE WS-PRECOCOMPRA-M        TO PRECOCOMPRA
+           END-IF
+      *
+           IF WS-PRECOVENDA-M IS NUMERIC
+             MOVE WS-PRECOVENDA-M         TO PRECOVENDA
+           END-IF
+      *
+           IF WS-PERCOMIS-M IS NUMERIC
+             MOVE WS-PERCOMIS-M           TO PERCOMIS
+           END-IF
+           .
+      *
+       068-UPDATE.
+           EXEC SQL
+              UPDATE PRODUTO
+              SET DESCPROD    = :DESCPROD,
+                  UNIDPROD    = :UNIDPROD,
+                  LOCALPROD   = :LOCALPROD,
+                  QTDEST      = :QTDEST,
+                  QTDMAX      = :QTDMAX,
+                  QTDMIN      = :QTDMIN,
+                  PRECOCOMPRA = :PRECOCOMPRA,
+                  PRECOVENDA  = :PRECOVENDA,
+                  PERCOMIS    = :PERCOMIS
+              WHERE CODPROD = :CODPROD
+           END-EXEC
+      *
+           EVALUATE SQLCODE
+              WHEN 0   ADD 1               TO WS-CTALT-C
+              WHEN 100 ADD 1               TO WS-CTINV-C
+              WHEN -545 ADD 1              TO WS-CTINV-C
+              WHEN OTHER
+                   MOVE " ERRO DE UPDATE DA TABELA PRODUTO " TO WS-MSG
+                   MOVE SQLCODE            TO WS-SQLCODE
+                   GO                      TO 999-ERRO-DB2
+           END-EVALUATE
+           .
+      *
+       070-CONSULTAR.
+           MOVE WS-CODPROD-M               TO CODPROD
+           EXEC SQL
+              SELECT * INTO :DCLPRODUTO
+              FROM PRODUTO
+              WHERE CODPROD = :CODPROD
+           END-EXEC
+      *
+           EVALUATE SQLCODE
+              WHEN 0
+                   DISPLAY " "
+                   DISPLAY " *----------------------------------* "
+                   DISPLAY " *----------CONSULTA DE PRODUTO-----* "
+                   DISPLAY " *          -------------------     * "
+                   DISPLAY " * CODIGO DO PRODUTO....: "  CODPROD
+                   DISPLAY " * DESCRICAO DO PRODUTO.: "  DESCPROD
+                   DISPLAY " * UNIDADE DO PRODUTO...: "  UNIDPROD
+                   DISPLAY " * LOCAL DO PRODUTO.....: "  LOCALPROD
+                   DISPLAY " * QUANTIDADE EM ESTOQUE: "  QTDEST
+                   DISPLAY " * QUANTIDADE MAXIMA....: "  QTDMAX
+                   DISPLAY " * QUANTIDADE MINIMA....: "  QTDMIN
+                   DISPLAY " * PRECO DE COMPRA......: "  PRECOCOMPRA
+                   DISPLAY " * PRECO DE VENDA.......: "  PRECOVENDA
+                   DISPLAY " * PERCENTUAL DE COMISSAO: " PERCOMIS
+                   ADD 1                     TO WS-CTCON-C
+              WHEN 100 ADD 1                 TO WS-CTINV-C
+              WHEN OTHER
+                   MOVE " ERRO NO SELECT DA TABELA PRODUTO " TO WS-MSG
+                   MOVE SQLCODE              TO WS-SQLCODE
+                   GO                        TO 999-ERRO-DB2
+           END-EVALUATE
+           .
+      *
+       040-TERMINO.
+           MOVE WS-CTLIDO-C                  TO WS-CTLIDO-F
+           MOVE WS-CTINC-C                   TO WS-CTINC-F
+           MOVE WS-CTEXC-C                   TO WS-CTEXC-F
+           MOVE WS-CTALT-C                   TO WS-CTALT-F
+           MOVE WS-CTCON-C                   TO WS-CTCON-F
+           MOVE WS-CTINV-C                   TO WS-CTINV-F
+      *
+           DISPLAY " -------------TERMINO-----------------"
+           DISPLAY " | TOTAL DE REGISTROS LIDOS....:"   WS-CTLIDO-F
+           DISPLAY " | TOTAL DE REGISTROS INCLUIDOS:"   WS-CTINC-F
+           DISPLAY " | TOTAL DE REGISTROS EXCLUIDOS:"   WS-CTEXC-F
+           DISPLAY " | TOTAL DE REGISTROS ALTERADOS:"   WS-CTALT-F
+           DISPLAY " | TOTAL DE REGISTROS CONSULTADOS:" WS-CTCON-F
+           DISPLAY " | TOTAL DE REGISTROS INVALIDOS..:" WS-CTINV-F
+      *
+           CLOSE MOVPRDD2
+           IF NOT OK
+              MOVE " ERRO DE FECHAMENTO DO ARQ MOVPRDD2 " TO WS-MSG
+              DISPLAY "---TERMINO ANORMAL DE PROCESSAMENTO ----"
+              GO                           TO 999-ERRO
+           END-IF
+           DISPLAY "TERMINO NORMAL DO PROCESSAMENTO"
+               .
+      *
+       999-ERRO.
+           DISPLAY " ---------ROTINA DE ERRO 999-----------"
+           DISPLAY " MENSAGEM...: " WS-MSG
+           DISPLAY " FILE-STATUS: " FS-MOVPRDD2
+           MOVE 12                          TO RETURN-CODE
+           DISPLAY " TERMINO ANORMAL DO PROGAMA "
+           STOP RUN
+           .
+      *
+       999-ERRO-DB2.
+           DISPLAY " ---------ROTINA DE ERRO 999-DB2-------"
+           DISPLAY " MENSAGEM...: " WS-MSG
+           DISPLAY " SQL-CODE...: " WS-SQLCODE
+           MOVE 12                          TO RETURN-CODE
+           DISPLAY " TERMINO ANORMAL DO PROGAMA "
+           STOP RUN
+           .

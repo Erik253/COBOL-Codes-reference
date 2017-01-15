@@ -1,0 +1,45 @@
+INSERT INTO TBPROD                                                      00010000
+(CODPROD,DESCPROD,PRECOPROD,UNIDPROD,CODTIPOPROD)                       00020000
+VALUES                                                                  00030000
+('0001','COBOL STAR BOOK',0000020.00,'PECA','01');                      00040000
+----------------------------------------------------------------------- 00050000
+INSERT INTO TBPROD                                                      00060000
+(CODPROD,DESCPROD,PRECOPROD,UNIDPROD,CODTIPOPROD)                       00070000
+VALUES                                                                  00080000
+('0002','BONE DO MARIO',0000030.00,'PECA','02');                        00090001
+----------------------------------------------------------------------- 00100000
+INSERT INTO TBPROD                                                      00110000
+(CODPROD,DESCPROD,PRECOPROD,UNIDPROD,CODTIPOPROD)                       00120000
+VALUES                                                                  00130000
+('0003','LIVRO LADO NEGRO',0000035.00,'PECA','01');                     00140001
+----------------------------------------------------------------------- 00150000
+INSERT INTO TBPROD                                                      00160000
+(CODPROD,DESCPROD,PRECOPROD,UNIDPROD,CODTIPOPROD)                       00170000
+VALUES                                                                  00180000
+('0004','BONE DO LUIGI',0000030.00,'PECA','02');                        00190002
+----------------------------------------------------------------------- 00200000
+INSERT INTO TBPROD                                                      00210000
+(CODPROD,DESCPROD,PRECOPROD,UNIDPROD,CODTIPOPROD)                       00220000
+VALUES                                                                  00230000
+('0005','COGUMELO DO MARIO',0000130.00,'PECA','03');                    00240000
+----------------------------------------------------------------------- 00250000
+INSERT INTO TBPROD                                                      00260000
+(CODPROD,DESCPROD,PRECOPROD,UNIDPROD,CODTIPOPROD)                       00270000
+VALUES                                                                  00280000
+('0006','FUSCA 67 ZERO BALA',0000430.00,'PECA','04');                   00290000
+----------------------------------------------------------------------- 00300000
+INSERT INTO TBPROD                                                      00310000
+(CODPROD,DESCPROD,PRECOPROD,UNIDPROD,CODTIPOPROD)                       00320000
+VALUES                                                                  00330000
+('0008','YOSHI AMARELO',0000055.00,'PECA','05');                        00340000
+----------------------------------------------------------------------- 00350000
+INSERT INTO TBPROD                                                      00360000
+(CODPROD,DESCPROD,PRECOPROD,UNIDPROD,CODTIPOPROD)                       00370000
+VALUES                                                                  00380000
+('0009','YOSHO VERMELHO',0000055.00,'PECA','05');                       00390000
+----------------------------------------------------------------------- 00400000
+INSERT INTO TBPROD                                                      00410000
+(CODPROD,DESCPROD,PRECOPROD,UNIDPROD,CODTIPOPROD)                       00420000
+VALUES                                                                  00430000
+('0010','FERRARI SUPER CARA',0000155.00,'PECA','04')                    00440000
+----------------------------------------------------------------------- 00450000

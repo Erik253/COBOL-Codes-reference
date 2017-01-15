@@ -1,0 +1,4 @@
+ALTER TABLE TBPROD                                                      00010000
+ADD FOREIGN KEY (CODTIPOPROD)                                           00020000
+REFERENCES TBTIPOPROD                                                   00030000
+ON DELETE RESTRICT                                                      00040000

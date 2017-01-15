@@ -1,0 +1,8 @@
+---EXIBIR TODOS OS DADOS DOS CLIENTES DO TIPO '03' E QUE TENHM MAIS DE  00001000
+---1.7M DE ALTURA EM ORDEM DECRESCENTE DE NOME                          00002000
+---                                                                     00003000
+SELECT *                                                                00010000
+FROM TBCLI                                                              00020000
+WHERE CODTIPOCLI = '03' AND                                             00030000
+      ALTURACLI > 1.7                                                   00040000
+ORDER BY NOMECLI DESC                                                   00050003

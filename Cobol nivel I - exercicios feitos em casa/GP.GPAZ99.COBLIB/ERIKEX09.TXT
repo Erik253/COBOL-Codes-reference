@@ -1,0 +1,353 @@
+      *--------------------------------------------------------------*
+      * EXERCICIO PG:15 PARTE 5 DA APOSTILA
+      * JOB: ERIKEX09 | COMPILADOR: ERIKCO09
+      *--------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *--------------------------------------------------------------*
+       PROGRAM-ID.                         ERIKEX09.
+       AUTHOR.                             ERIK.
+      *--------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *--------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT                        SECTION.
+       FILE-CONTROL.
+           SELECT CLISP ASSIGN             TO UT-S-CLISP
+           FILE STATUS IS FS-CLISP
+           .
+      *
+           SELECT CLIRJ ASSIGN             TO UT-S-CLIRJ
+           FILE STATUS IS FS-CLIRJ
+           .
+      *
+           SELECT CLIMG ASSIGN             TO UT-S-CLIMG
+           FILE STATUS IS FS-CLIMG
+           .
+      *
+           SELECT CLIUNIF ASSIGN           TO UT-S-CLIUNIF
+           FILE STATUS IS FS-CLIUNIF
+           .
+      *--------------------------------------------------------------*
+       DATA                                DIVISION.
+      *--------------------------------------------------------------*
+       FILE                                SECTION.
+       FD  CLISP
+           LABEL RECORD IS STANDARD
+           BLOCK CONTAINS 0 CHARACTERS
+           RECORDING MODE IS F
+           RECORD CONTAINS 20 CHARACTERS
+           DATA RECORD IS REG-CLISP
+           .
+       01  REG-CLISP.
+           05 CODCLI-SP                    PIC X(04).
+           05 NOMECLI-SP                   PIC X(14).
+           05 UFCLI-SP                     PIC X(02).
+      *
+       FD  CLIRJ
+           LABEL RECORD IS STANDARD
+           BLOCK CONTAINS 0 CHARACTERS
+           RECORDING MODE IS F
+           RECORD CONTAINS 20 CHARACTERS
+           DATA RECORD IS REG-CLIRJ
+           .
+       01  REG-CLIRJ.
+           05 CODCLI-RJ                    PIC X(04).
+           05 NOMECLI-RJ                   PIC X(14).
+           05 UFCLI-RJ                     PIC X(02).
+      *
+       FD  CLIMG
+           LABEL RECORD IS STANDARD
+           BLOCK CONTAINS 0 CHARACTERS
+           RECORDING MODE IS F
+           RECORD CONTAINS 20 CHARACTERS
+           DATA RECORD IS REG-CLIMG
+           .
+       01  REG-CLIMG.
+           05 CODCLI-MG                    PIC X(04).
+           05 NOMECLI-MG                   PIC X(14).
+           05 UFCLI-MG                     PIC X(02).
+      *
+       FD  CLIUNIF
+           LABEL RECORD IS STANDARD
+           BLOCK CONTAINS 0 CHARACTERS
+           RECORDING MODE IS F
+           RECORD CONTAINS 20 CHARACTERS
+           DATA RECORD IS REG-CLIUNIF
+           .
+       01  REG-CLIUNIF.
+           05 CODCLI-UNIF                  PIC X(04).
+           05 NOMECLI-UNIF                 PIC X(14).
+           05 UFCLI-UNIF                   PIC X(02).
+      *
+       WORKING-STORAGE                     SECTION.
+       77  FS-CLISP                        PIC X(02).
+       77  FS-CLIRJ                        PIC X(02).
+       77  FS-CLIMG                        PIC X(02).
+       77  FS-CLIUNIF                      PIC X(02).
+      *
+       77  WS-CTLIDOS                      PIC 9(02).
+       77  WS-CTLIDO-SP                    PIC 9(02).
+       77  WS-CTLIDO-RJ                    PIC 9(02).
+       77  WS-CTLIDO-MG                    PIC 9(02).
+       77  WS-CTGRAV                       PIC 9(02).
+      *
+       77  WS-FS                           PIC X(02).
+       77  WS-MSG                          PIC X(60).
+      *
+       01  WS-REG-CLISP.
+           05 WS-CODCLI-SP                 PIC X(04).
+           05 WS-NOMECLI-SP                PIC X(14).
+           05 WS-UFCLI-SP                  PIC X(02).
+      *
+       01  WS-REG-CLIRJ.
+           05 WS-CODCLI-RJ                 PIC X(04).
+           05 WS-NOMECLI-RJ                PIC X(14).
+           05 WS-UFCLI-RJ                  PIC X(02).
+      *
+       01  WS-REG-CLIMG.
+           05 WS-CODCLI-MG                 PIC X(04).
+           05 WS-NOMECLI-MG                PIC X(14).
+           05 WS-UFCLI-MG                  PIC X(02).
+      *
+       01  WS-REG-CLIUNIF.
+           05 WS-CODCLI-UNIF               PIC X(04).
+           05 WS-NOMECLI-UNIF              PIC X(14).
+           05 WS-UFCLI-UNIF                PIC X(02).
+      *
+      *-------------------VARIAVEIS DE DATA---------------------*
+       01  WS-DATA-SISTEMA.
+           05 WS-ANO                       PIC 9(02).
+           05 WS-MES                       PIC 9(02).
+           05 WS-DIA                       PIC 9(02).
+      *
+       01  WS-DATA-FORMATADA.
+           05 WS-DIA                       PIC 9(02).
+           05 FILLER                       PIC X(01) VALUE "/".
+           05 WS-MES                       PIC 9(02).
+           05 FILLER                       PIC X(03) VALUE "/20".
+           05 WS-ANO                       PIC 9(02).
+      *
+       01  WS-DATA-JULIANA.
+           05 WS-ANO                       PIC 9(02).
+           05 WS-DIA                       PIC 9(03).
+      *
+       77  WS-DIA-SEMANA                   PIC 9(01).
+      *------------------------        ------------------------------*
+      *----------------------VARIAVEIS DE TEMPO-------------------*
+       01  WS-HORARIO-I.
+           05 WS-HORA-I                    PIC 9(02).
+           05 WS-MIN-I                     PIC 9(02).
+           05 WS-SEG-I                     PIC 9(02).
+           05 WS-CENT-I                    PIC 9(02).
+      *
+       01  WS-HORARIO-F.
+           05 WS-HORA-F                    PIC 9(02).
+           05 WS-MIN-F                     PIC 9(02).
+           05 WS-SEG-F                     PIC 9(02).
+           05 WS-CENT-F                    PIC 9(02).
+      *
+       01  WS-HORARIO-P.
+           05 WS-HORA-P                    PIC 9(02).
+           05 FILLER                       PIC X(01) VALUE ":".
+           05 WS-MIN-P                     PIC 9(02).
+           05 FILLER                       PIC X(01) VALUE ":".
+           05 WS-SEG-P                     PIC 9(02).
+           05 FILLER                       PIC X(01) VALUE ":".
+           05 WS-CENT-P                    PIC 9(02).
+      *
+       77  WS-TOTAL-CENT                   PIC 9(09).
+      *-------------------------------------------*
+      *--------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *--------------------------------------------------------------*
+       0000-ERIKEX09.
+           PERFORM 1000-INICIALIZAR
+           PERFORM 2000-PROCESSAR UNTIL FS-CLISP = "10" AND
+                                        FS-CLIRJ = "10" AND
+                                        FS-CLIMG = "10"
+           PERFORM 3000-TERMINO
+           STOP RUN
+           .
+      *
+       1000-INICIALIZAR.
+           INITIALIZE WS-CTLIDOS
+                      WS-CTLIDO-SP
+                      WS-CTLIDO-RJ
+                      WS-CTLIDO-MG
+                      WS-CTGRAV
+           ACCEPT WS-HORARIO-I             FROM TIME
+           ACCEPT WS-DIA-SEMANA            FROM DAY-OF-WEEK
+           ACCEPT WS-DATA-JULIANA          FROM DAY
+           ACCEPT WS-DATA-SISTEMA          FROM DATE
+           MOVE CORRESPONDING WS-DATA-SISTEMA TO WS-DATA-FORMATADA
+      *
+           OPEN INPUT CLISP
+           IF FS-CLISP NOT = ZEROS
+              MOVE " ERRO DE ABERTURA DO ARQ CLISP " TO WS-MSG
+              MOVE FS-CLISP                TO WS-FS
+              GO                           TO 9999-ERRO
+           END-IF
+      *
+           OPEN INPUT CLIRJ
+           IF FS-CLIRJ NOT = ZEROS
+              MOVE " ERRO DE ABERTURA DO ARQ CLIRJ " TO WS-MSG
+              MOVE FS-CLIRJ                TO WS-FS
+              GO                           TO 9999-ERRO
+           END-IF
+      *
+           OPEN INPUT CLIMG
+           IF FS-CLIMG NOT = ZEROS
+              MOVE " ERRO DE ABERTURA DO ARQ CLIMG " TO WS-MSG
+              MOVE FS-CLIMG                TO WS-FS
+              GO                           TO 9999-ERRO
+           END-IF
+      *
+           OPEN OUTPUT CLIUNIF
+           IF FS-CLIUNIF NOT = ZEROS
+              MOVE " ERRO DE ABERTURA DO ARQ CLIUNIF " TO WS-MSG
+              MOVE FS-CLIUNIF              TO WS-FS
+              GO                           TO 9999-ERRO
+           END-IF
+      *
+           PERFORM 1500-LER-CLISP
+           PERFORM 1600-LER-CLIRJ
+           PERFORM 1700-LER-CLIMG
+           .
+      *
+       1500-LER-CLISP.
+           READ CLISP INTO WS-REG-CLISP
+           IF FS-CLISP = ZEROS
+              ADD 1                        TO WS-CTLIDO-SP
+              ADD 1                        TO WS-CTLIDOS
+           ELSE
+              IF FS-CLISP = "10"
+                 MOVE HIGH-VALUES          TO WS-CODCLI-SP
+              ELSE
+                 MOVE " ERRO DE LEITURA DO ARQ CLISP " TO WS-MSG
+                 MOVE FS-CLISP             TO WS-FS
+                 GO                        TO 9999-ERRO
+              END-IF
+           END-IF
+           .
+      *
+       1600-LER-CLIRJ.
+           READ CLIRJ INTO WS-REG-CLIRJ
+           IF FS-CLIRJ = ZEROS
+              ADD 1                        TO WS-CTLIDO-RJ
+              ADD 1                        TO WS-CTLIDOS
+           ELSE
+              IF FS-CLIRJ = "10"
+                 MOVE HIGH-VALUES          TO WS-CODCLI-RJ
+              ELSE
+                 MOVE " ERRO DE LEITURA DO ARQ CLIRJ " TO WS-MSG
+                 MOVE FS-CLIRJ             TO WS-FS
+                 GO                        TO 9999-ERRO
+              END-IF
+           END-IF
+           .
+      *
+       1700-LER-CLIMG.
+           READ CLIMG INTO WS-REG-CLIMG
+           IF FS-CLIMG = ZEROS
+              ADD 1                        TO WS-CTLIDO-MG
+              ADD 1                        TO WS-CTLIDOS
+           ELSE
+              IF FS-CLIMG = "10"
+                 MOVE HIGH-VALUES          TO WS-CODCLI-MG
+              ELSE
+                 MOVE " ERRO DE LEITURA DO ARQ CLIMG " TO WS-MSG
+                 MOVE FS-CLIMG             TO WS-FS
+                 GO                        TO 9999-ERRO
+              END-IF
+           END-IF
+           .
+      *
+       2000-PROCESSAR.
+           IF WS-CODCLI-SP < WS-CODCLI-RJ AND
+              WS-CODCLI-SP < WS-CODCLI-MG
+              MOVE WS-CODCLI-SP            TO WS-CODCLI-UNIF
+              MOVE WS-NOMECLI-SP           TO WS-NOMECLI-UNIF
+              MOVE WS-UFCLI-SP             TO WS-UFCLI-UNIF
+              WRITE REG-CLIUNIF            FROM WS-REG-CLIUNIF
+              IF FS-CLIUNIF NOT = ZEROS
+                 MOVE " ERRO DE GRAVACAO DO ARQ CLIUNIF " TO WS-MSG
+                 MOVE FS-CLIUNIF           TO WS-FS
+                 GO                        TO 9999-ERRO
+              END-IF
+              ADD 1                        TO WS-CTGRAV
+              PERFORM 1500-LER-CLISP
+           ELSE
+              IF WS-CODCLI-RJ < WS-CODCLI-SP AND
+                 WS-CODCLI-RJ < WS-CODCLI-MG
+                 MOVE WS-CODCLI-RJ         TO WS-CODCLI-UNIF
+                 MOVE WS-NOMECLI-RJ        TO WS-NOMECLI-UNIF
+                 MOVE WS-UFCLI-RJ          TO WS-UFCLI-UNIF
+                 WRITE REG-CLIUNIF         FROM WS-REG-CLIUNIF
+                 IF FS-CLIUNIF NOT = ZEROS
+                    MOVE " ERRO DE GRAVACAO DO ARQ CLIUNIF " TO WS-MSG
+                    MOVE FS-CLIUNIF        TO WS-FS
+                    GO                     TO 9999-ERRO
+                 END-IF
+                 ADD 1                     TO WS-CTGRAV
+                 PERFORM 1600-LER-CLIRJ
+              ELSE
+                 MOVE WS-CODCLI-MG         TO WS-CODCLI-UNIF
+                 MOVE WS-NOMECLI-MG        TO WS-NOMECLI-UNIF
+                 MOVE WS-UFCLI-MG          TO WS-UFCLI-UNIF
+                 WRITE REG-CLIUNIF         FROM WS-REG-CLIUNIF
+                 IF FS-CLIUNIF NOT = ZEROS
+                    MOVE " ERRO DE GRAVACAO DO ARQ CLIUNIF " TO WS-MSG
+                    MOVE FS-CLIUNIF        TO WS-FS
+                    GO                     TO 9999-ERRO
+                 END-IF
+                 ADD 1                     TO WS-CTGRAV
+                 PERFORM 1700-LER-CLIMG
+              END-IF
+           END-IF
+           .
+      *
+       3000-TERMINO.
+      *-------------------CALCULO DO TEMPO-------------------------*
+           ACCEPT WS-HORARIO-F             FROM TIME
+           COMPUTE WS-TOTAL-CENT = ( WS-HORA-I * 360000 +
+                                     WS-MIN-I  * 60000  +
+                                     WS-SEG-I  * 100    +
+                                     WS-CENT-I )
+                                               -
+                                   ( WS-HORA-F * 360000 +
+                                     WS-MIN-F  * 60000  +
+                                     WS-SEG-F  * 100    +
+                                     WS-CENT-F )
+           COMPUTE WS-HORA-P     = WS-TOTAL-CENT / 360000
+           COMPUTE WS-TOTAL-CENT = WS-TOTAL-CENT - WS-HORA-P * 360000
+           COMPUTE WS-MIN-P      = WS-TOTAL-CENT / 60000
+           COMPUTE WS-TOTAL-CENT = WS-TOTAL-CENT - WS-MIN-P * 60000
+           COMPUTE WS-SEG-P      = WS-TOTAL-CENT / 100
+           COMPUTE WS-TOTAL-CENT = WS-TOTAL-CENT - WS-SEG-P * 100
+           COMPUTE WS-CENT-P     = WS-TOTAL-CENT
+      */------------------------FIM DO CALCULO--------------------/*
+           DISPLAY " "
+           DISPLAY "------------INFORMACOES GERAIS-----------"
+           DISPLAY " TOTAL DE REGISTROS LIDOS CLISP: " WS-CTLIDO-SP
+           DISPLAY " TOTAL DE REGISTROS LIDOS CLIRJ: " WS-CTLIDO-RJ
+           DISPLAY " TOTAL DE REGISTROS LIDOS CLIMG: " WS-CTLIDO-MG
+           DISPLAY " TOTAL DE RESGITROS LIDOS......: " WS-CTLIDOS
+           DISPLAY " TOTAL DE REGISTROS GRAVADOS...: " WS-CTGRAV
+           DISPLAY " DATA DO PROCESSAMENTO.........: " WS-DATA-FORMATADA
+           DISPLAY " DATA JULIANA..................: " WS-DATA-JULIANA
+           DISPLAY " DIA DA SEMANA.................: " WS-DIA-SEMANA
+           DISPLAY " TEMPO TOTAL DE PROCESSAMENTO..: " WS-HORARIO-P
+           DISPLAY " -----------------------------------------"
+           .
+      *
+       9999-ERRO.
+           DISPLAY " "
+           DISPLAY " ------------ROTINA DE ERRO --------------"
+           DISPLAY " MENSAGEM....: " WS-MSG
+           DISPLAY " FILE STATUS.: " WS-FS
+           DISPLAY " TERMINO ANORMAL DO JOB ERIKEX09 "
+           DISPLAY " ----------------////---------------------"
+           STOP RUN
+           .
